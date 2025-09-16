@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useConfigurations } from '../contexts/ConfigurationsContext';
+import { useConfigurations } from '../hooks/useConfigurations';
 import { ConfigurationModal } from './ConfigurationModal';
 import { SavedConfiguration, CachedInputs } from '../types';
 
@@ -92,7 +92,7 @@ export function SavedConfigurations({
         <p className="text-gray-500 text-center py-4">No saved configurations yet.</p>
       ) : (
         <div className="space-y-2">
-          {configurations.map((config) => (
+          {configurations.map((config: SavedConfiguration) => (
             <div
               key={config.id}
               className={`flex items-center justify-between p-3 border rounded-md ${

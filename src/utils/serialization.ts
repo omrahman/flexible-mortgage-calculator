@@ -71,15 +71,13 @@ export function deserializeLoanConfiguration(
   options: ImportOptions = {}
 ): CachedInputs {
   const {
-    preserveIds = false,
-    mergeWithExisting = false
+    preserveIds = false
   } = options;
 
   // Generate new IDs if not preserving them
   const extraPayments = schema.extraPayments.map(extra => ({
     ...extra,
     id: preserveIds ? extra.id : generateId(),
-    createdAt: extra.createdAt || new Date().toISOString(),
     lastModified: new Date().toISOString()
   }));
 
@@ -102,7 +100,7 @@ export function deserializeLoanConfiguration(
  * Validates and imports a JSON configuration
  */
 export function importLoanConfiguration(
-  jsonData: any,
+  jsonData: LoanConfigurationSchema,
   options: ImportOptions = {}
 ): ConfigurationValidationResult {
   const { validateSchema = true } = options;
@@ -119,7 +117,7 @@ export function importLoanConfiguration(
   }
 
   try {
-    const inputs = deserializeLoanConfiguration(jsonData, options);
+    deserializeLoanConfiguration(jsonData, options);
     return {
       isValid: true,
       errors: [],

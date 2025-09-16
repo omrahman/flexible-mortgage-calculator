@@ -3,7 +3,6 @@
 
 import type { ExtraItem, LoanConfigurationSchema } from '../types';
 import { 
-  serializeLoanConfiguration, 
   deserializeLoanConfiguration,
   createSampleConfiguration 
 } from '../utils/serialization';
@@ -119,5 +118,4 @@ export function demonstrateSerialization() {
   }
 }
 
-// Export the demonstration function for use in tests or demos
-export { demonstrateSerialization };
+// The demonstrateSerialization function is already exported above

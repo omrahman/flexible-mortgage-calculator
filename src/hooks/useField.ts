@@ -33,7 +33,7 @@ export const useField = <T>({
   // Default validation
   const defaultValidate = useCallback((value: T): boolean => {
     if (typeof value === 'string' && !allowEmpty && value.trim() === '') return false;
-    if (typeof value === 'number' && isNaN(value as any)) return false;
+    if (typeof value === 'number' && isNaN(value)) return false;
     if (typeof value === 'number' && min !== undefined && value < min) return false;
     if (typeof value === 'number' && max !== undefined && value > max) return false;
     return true;

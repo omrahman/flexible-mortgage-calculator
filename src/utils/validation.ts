@@ -1,3 +1,5 @@
+import { ExtraItem, LoanConfigurationSchema } from "../types";
+
 export interface ValidationResult {
   isValid: boolean;
   errors: string[];
@@ -128,7 +130,7 @@ export function validateConfigurationName(name: string): ValidationResult {
 }
 
 // Enhanced validation for ExtraItem with recurrence information
-export function validateExtraItem(extra: any, termMonths: number): ValidationResult {
+export function validateExtraItem(extra: ExtraItem, termMonths: number): ValidationResult {
   const errors: string[] = [];
   
   // Required fields
@@ -147,7 +149,7 @@ export function validateExtraItem(extra: any, termMonths: number): ValidationRes
   
   // Recurring payment validation
   if (extra.isRecurring) {
-    if (!Number.isFinite(extra.recurringQuantity) || extra.recurringQuantity < 1) {
+    if (!Number.isFinite(extra.recurringQuantity) || (extra.recurringQuantity && extra.recurringQuantity < 1)) {
       errors.push('Recurring quantity must be at least 1');
     }
     
@@ -167,7 +169,7 @@ export function validateExtraItem(extra: any, termMonths: number): ValidationRes
 }
 
 // Validation for loan configuration schema
-export function validateLoanConfigurationSchema(data: any): ValidationResult {
+export function validateLoanConfigurationSchema(data: LoanConfigurationSchema): ValidationResult {
   const errors: string[] = [];
   
   // Check required top-level fields
@@ -211,7 +213,7 @@ export function validateLoanConfigurationSchema(data: any): ValidationResult {
     errors.push('Extra payments must be an array');
   } else {
     const termMonths = data.loan?.termYears ? Math.round(Number(data.loan.termYears) * 12) : 360;
-    data.extraPayments.forEach((extra: any, index: number) => {
+    data.extraPayments.forEach((extra: ExtraItem, index: number) => {
       const result = validateExtraItem(extra, termMonths);
       if (!result.isValid) {
         errors.push(`Extra payment ${index + 1}: ${result.errors.join(', ')}`);

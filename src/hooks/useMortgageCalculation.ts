@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import { buildSchedule, parseMonthInput } from '../utils/calculations';
 import { round2 } from '../utils/formatters';
-import type { ExtraItem, ExtraMap, ScheduleParams, CachedInputs, RecurringFrequency } from '../types';
+import type { ExtraItem, ExtraMap, ScheduleParams, CachedInputs, RecurringFrequency, DownPaymentInput } from '../types';
 import { DEFAULT_HOME_PRICE, DEFAULT_DOWN_PAYMENT, DEFAULT_INTEREST_RATE, DEFAULT_TERM_YEARS, DEFAULT_PROPERTY_TAX_ANNUAL, DEFAULT_INSURANCE_ANNUAL, DEFAULT_EXTRA_PAYMENTS } from '../constants';
 import { useLocalStorage } from './useLocalStorage';
 
@@ -90,7 +90,7 @@ export const useMortgageCalculation = () => {
     setCachedInputs((prev: CachedInputs) => ({ ...prev, homePrice: value }));
   };
 
-  const setDownPayment = (value: any) => {
+  const setDownPayment = (value: DownPaymentInput) => {
     setCachedInputs((prev: CachedInputs) => ({ ...prev, downPayment: value }));
   };
 

@@ -30,7 +30,7 @@ export const BalanceChart: React.FC<BalanceChartProps> = ({ chartData }) => {
               domain={[0, 'dataMax']} 
             />
             <Tooltip 
-              formatter={(v: any) => fmtUSD(v as number)} 
+              formatter={(v: number | string) => fmtUSD(Number(v))} 
               labelFormatter={(l) => `Month ${l.split("\n")[0]}`} 
             />
             <Line 

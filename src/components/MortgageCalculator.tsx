@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useMortgageCalculation } from '../hooks/useMortgageCalculation';
-import { useConfigurations } from '../contexts/ConfigurationsContext';
+import { useConfigurations } from '../hooks/useConfigurations';
+import { SavedConfiguration } from '../types';
 import { LoanInputs } from './LoanInputs';
 import { ExtraPayments } from './ExtraPayments';
 import { SummarySection } from './SummarySection';
@@ -62,7 +63,7 @@ export default function MortgageCalculator() {
     downloadCSV(csvFor(result.rows), CSV_FILENAME);
   };
 
-  const handleLoadConfiguration = async (config: any) => {
+  const handleLoadConfiguration = async (config: SavedConfiguration) => {
     try {
       // Convert SavedConfiguration to CachedInputs format
       const cachedInputs = config.inputs;
