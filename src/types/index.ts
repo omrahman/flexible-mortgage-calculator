@@ -28,6 +28,7 @@ export interface Row {
   total: number; // total cash out this month
   balance: number; // ending balance after this month
   cumulativeInterest: number; // cumulative interest paid up to this month
+  cumulativePrincipal: number; // cumulative principal paid up to this month
   recast?: boolean; // did a recast trigger at end of this month
   newPayment?: number; // if recast, new scheduled P&I
 }
@@ -38,7 +39,7 @@ export interface ScheduleResult {
   totalPaid: number;
   payoffMonth: number; // 1-based index of final month
   segments: { start: number; payment: number }[]; // payment changes over time
-  chart: { name: string; balance: number; cumulativeInterest: number }[];
+  chart: { name: string; balance: number; cumulativeInterest: number; cumulativePrincipal: number }[];
 }
 
 export interface ScheduleParams {

@@ -47,7 +47,8 @@ export const BalanceChart: React.FC<BalanceChartProps> = ({ chartData }) => {
                       <p className="font-medium">{formatTooltipLabel(label)}</p>
                       {payload.map((entry, index) => (
                         <p key={index} style={{ color: entry.color }}>
-                          {entry.dataKey === 'balance' ? 'Remaining Balance' : 'Interest Paid'}: {fmtUSD(Number(entry.value))}
+                          {entry.dataKey === 'balance' ? 'Remaining Balance' : 
+                           entry.dataKey === 'cumulativeInterest' ? 'Interest Paid' : 'Principal Paid'}: {fmtUSD(Number(entry.value))}
                         </p>
                       ))}
                     </div>
@@ -72,6 +73,14 @@ export const BalanceChart: React.FC<BalanceChartProps> = ({ chartData }) => {
               strokeWidth={2} 
               stroke="#ef4444"
               name="Interest Paid"
+            />
+            <Line 
+              type="monotone" 
+              dataKey="cumulativePrincipal" 
+              dot={false} 
+              strokeWidth={2} 
+              stroke="#10b981"
+              name="Principal Paid"
             />
           </LineChart>
         </ResponsiveContainer>

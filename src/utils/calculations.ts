@@ -75,6 +75,7 @@ export const buildSchedule = ({
   let totalInterest = 0;
   let totalPaid = 0;
   let cumulativeInterest = 0;
+  let cumulativePrincipal = 0;
 
   // Safety: guard against pathological loops.
   const maxIters = termMonths + MAX_ITERATIONS; // allows for recasts/rounding edge cases
@@ -98,6 +99,7 @@ export const buildSchedule = ({
     totalInterest = round2(totalInterest + interest);
     totalPaid = round2(totalPaid + cashThisMonth);
     cumulativeInterest = round2(cumulativeInterest + interest);
+    cumulativePrincipal = round2(cumulativePrincipal + principalPart + extra);
 
     // Calculate new balance, ensuring it doesn't go negative
     const newBalance = round2(bal - principalPart - extra);
@@ -129,6 +131,7 @@ export const buildSchedule = ({
       total: cashThisMonth,
       balance: bal,
       cumulativeInterest,
+      cumulativePrincipal,
       recast: didRecast || undefined,
       newPayment,
     });
@@ -144,20 +147,23 @@ export const buildSchedule = ({
       if (!isRoundingError) {
         const payoffInterest = round2(bal * r);
         const payoffTotal = round2(bal + payoffInterest);
+        const payoffPrincipal = round2(payoffTotal - payoffInterest);
         totalInterest = round2(totalInterest + payoffInterest);
         totalPaid = round2(totalPaid + payoffTotal);
         cumulativeInterest = round2(cumulativeInterest + payoffInterest);
+        cumulativePrincipal = round2(cumulativePrincipal + payoffPrincipal);
         bal = 0;
         rows.push({
           idx: m + 1,
           date: addMonths(startYM, m),
           payment: payoffTotal,
           interest: payoffInterest,
-          principal: round2(payoffTotal - payoffInterest),
+          principal: payoffPrincipal,
           extra: 0,
           total: payoffTotal,
           balance: 0,
           cumulativeInterest,
+          cumulativePrincipal,
         });
         break;
       } else {
@@ -171,7 +177,8 @@ export const buildSchedule = ({
   const chart = rows.map((r) => ({ 
     name: `${r.idx}\n${r.date}`, 
     balance: r.balance,
-    cumulativeInterest: r.cumulativeInterest
+    cumulativeInterest: r.cumulativeInterest,
+    cumulativePrincipal: r.cumulativePrincipal
   }));
 
   return {

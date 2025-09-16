@@ -30,6 +30,7 @@ describe('csvFor', () => {
       total: 599.55,
       balance: 99900.45,
       cumulativeInterest: 500.00,
+      cumulativePrincipal: 99.55,
     },
     {
       idx: 2,
@@ -41,6 +42,7 @@ describe('csvFor', () => {
       total: 1599.55,
       balance: 98800.40,
       cumulativeInterest: 999.50,
+      cumulativePrincipal: 1199.60,
       recast: true,
       newPayment: 650.00,
     },
@@ -53,20 +55,20 @@ describe('csvFor', () => {
     const lines = csvContent.split('\n');
     
     // Check header
-    expect(lines[0]).toBe('Month,Date,Scheduled Payment,Interest,Principal,Extra,Total Paid,Ending Balance,Cumulative Interest,Recast?,New Payment');
+    expect(lines[0]).toBe('Month,Date,Scheduled Payment,Interest,Principal,Extra,Total Paid,Ending Balance,Cumulative Interest,Cumulative Principal,Recast?,New Payment');
     
     // Check first data row
-    expect(lines[1]).toBe('1,2024-01,599.55,500.00,99.55,0.00,599.55,99900.45,500.00,,');
+    expect(lines[1]).toBe('1,2024-01,599.55,500.00,99.55,0.00,599.55,99900.45,500.00,99.55,,');
     
     // Check second data row with recast
-    expect(lines[2]).toBe('2,2024-02,599.55,499.50,100.05,1000.00,1599.55,98800.40,999.50,YES,650.00');
+    expect(lines[2]).toBe('2,2024-02,599.55,499.50,100.05,1000.00,1599.55,98800.40,999.50,1199.60,YES,650.00');
   });
 
   it('should handle empty rows array', () => {
     const csvContent = csvFor([]);
     const lines = csvContent.split('\n');
     
-    expect(lines[0]).toBe('Month,Date,Scheduled Payment,Interest,Principal,Extra,Total Paid,Ending Balance,Cumulative Interest,Recast?,New Payment');
+    expect(lines[0]).toBe('Month,Date,Scheduled Payment,Interest,Principal,Extra,Total Paid,Ending Balance,Cumulative Interest,Cumulative Principal,Recast?,New Payment');
     expect(lines[1]).toBe('');
   });
 
@@ -82,13 +84,14 @@ describe('csvFor', () => {
         total: 599.55,
         balance: 99900.45,
         cumulativeInterest: 500.00,
+        cumulativePrincipal: 99.55,
       },
     ];
 
     const csvContent = csvFor(rows);
     const lines = csvContent.split('\n');
     
-    expect(lines[1]).toBe('1,2024-01,599.55,500.00,99.55,0.00,599.55,99900.45,500.00,,');
+    expect(lines[1]).toBe('1,2024-01,599.55,500.00,99.55,0.00,599.55,99900.45,500.00,99.55,,');
   });
 
   it('should handle rows with recast but no new payment', () => {
@@ -103,6 +106,7 @@ describe('csvFor', () => {
         total: 599.55,
         balance: 99900.45,
         cumulativeInterest: 500.00,
+        cumulativePrincipal: 99.55,
         recast: true,
       },
     ];
@@ -110,7 +114,7 @@ describe('csvFor', () => {
     const csvContent = csvFor(rows);
     const lines = csvContent.split('\n');
     
-    expect(lines[1]).toBe('1,2024-01,599.55,500.00,99.55,0.00,599.55,99900.45,500.00,YES,');
+    expect(lines[1]).toBe('1,2024-01,599.55,500.00,99.55,0.00,599.55,99900.45,500.00,99.55,YES,');
   });
 
   it('should format numbers correctly', () => {
@@ -125,13 +129,14 @@ describe('csvFor', () => {
         total: 2235.566,
         balance: 99900.123,
         cumulativeInterest: 500.123,
+        cumulativePrincipal: 734.444,
       },
     ];
 
     const csvContent = csvFor(rows);
     const lines = csvContent.split('\n');
     
-    expect(lines[1]).toBe('1,2024-01,1234.57,500.12,734.44,1001.00,2235.57,99900.12,500.12,,');
+    expect(lines[1]).toBe('1,2024-01,1234.57,500.12,734.44,1001.00,2235.57,99900.12,500.12,734.44,,');
   });
 
   it('should handle large datasets', () => {
@@ -147,6 +152,7 @@ describe('csvFor', () => {
         total: 599.55,
         balance: 100000 - (i * 100),
         cumulativeInterest: i * 500.00,
+        cumulativePrincipal: i * 99.55,
       });
     }
 
@@ -154,9 +160,9 @@ describe('csvFor', () => {
     const lines = csvContent.split('\n');
     
     expect(lines).toHaveLength(1002); // Header + 1000 data rows + empty line
-    expect(lines[0]).toBe('Month,Date,Scheduled Payment,Interest,Principal,Extra,Total Paid,Ending Balance,Cumulative Interest,Recast?,New Payment');
-    expect(lines[1]).toBe('1,2024-01,599.55,500.00,99.55,0.00,599.55,99900.00,500.00,,');
-    expect(lines[1000]).toBe('1000,2024-1000,599.55,500.00,99.55,0.00,599.55,0.00,500000.00,,');
+    expect(lines[0]).toBe('Month,Date,Scheduled Payment,Interest,Principal,Extra,Total Paid,Ending Balance,Cumulative Interest,Cumulative Principal,Recast?,New Payment');
+    expect(lines[1]).toBe('1,2024-01,599.55,500.00,99.55,0.00,599.55,99900.00,500.00,99.55,,');
+    expect(lines[1000]).toBe('1000,2024-1000,599.55,500.00,99.55,0.00,599.55,0.00,500000.00,99550.00,,');
   });
 });
 
