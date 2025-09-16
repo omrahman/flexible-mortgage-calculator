@@ -3,6 +3,7 @@ export { default as MortgageRecastCalculator } from './MortgageRecastCalculator'
 export { LoanInputs } from './LoanInputs';
 export { ExtraPayments } from './ExtraPayments';
 export { SummarySection } from './SummarySection';
+export { PaymentSegments } from './PaymentSegments';
 export { BalanceChart } from './BalanceChart';
 export { AmortizationTable } from './AmortizationTable';
 export { SummaryCard } from './SummaryCard';

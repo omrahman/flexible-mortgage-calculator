@@ -4,6 +4,7 @@ import { useConfigurations } from '../contexts/ConfigurationsContext';
 import { LoanInputs } from './LoanInputs';
 import { ExtraPayments } from './ExtraPayments';
 import { SummarySection } from './SummarySection';
+import { PaymentSegments } from './PaymentSegments';
 import { BalanceChart } from './BalanceChart';
 import { AmortizationTable } from './AmortizationTable';
 import { SavedConfigurations } from './SavedConfigurations';
@@ -108,7 +109,7 @@ export default function MortgageRecastCalculator() {
 
   return (
     <div className="min-h-screen w-full bg-gray-50 p-6">
-      <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-5 gap-6">
+      <div className="mx-auto max-w-8xl grid grid-cols-1 lg:grid-cols-6 gap-6">
         {/* Inputs */}
         <div className="lg:col-span-2 space-y-6">
           <LoanInputs
@@ -126,8 +127,6 @@ export default function MortgageRecastCalculator() {
             setPropertyTaxAnnual={setPropertyTaxAnnual}
             insuranceAnnual={insuranceAnnual}
             setInsuranceAnnual={setInsuranceAnnual}
-            monthlyPITI={monthlyPITI}
-            result={result}
             onReset={clearAllInputs}
           />
 
@@ -153,7 +152,7 @@ export default function MortgageRecastCalculator() {
         </div>
 
         {/* Results */}
-        <div className="lg:col-span-3 space-y-6">
+        <div className="lg:col-span-2 space-y-6">
           <SummarySection
             baseline={baseline}
             result={result}
@@ -169,6 +168,15 @@ export default function MortgageRecastCalculator() {
             showAll={showAll}
             onToggleShowAll={() => setShowAll(!showAll)}
             onDownloadCSV={handleDownloadCSV}
+          />
+        </div>
+
+        {/* Payment Segments */}
+        <div className="lg:col-span-2">
+          <PaymentSegments
+            baseline={baseline}
+            result={result}
+            monthlyPITI={monthlyPITI}
           />
         </div>
       </div>

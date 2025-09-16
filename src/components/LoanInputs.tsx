@@ -17,8 +17,6 @@ interface LoanInputsProps {
   setPropertyTaxAnnual: (value: string) => void;
   insuranceAnnual: string;
   setInsuranceAnnual: (value: string) => void;
-  monthlyPITI: { propertyTax: number; insurance: number; total: number };
-  result?: { rows: Array<{ payment: number }> };
   onReset?: () => void;
 }
 
@@ -37,8 +35,6 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
   setPropertyTaxAnnual,
   insuranceAnnual,
   setInsuranceAnnual,
-  monthlyPITI,
-  result,
   onReset,
 }) => {
   // Calculate loan amount based on home price and down payment
@@ -173,28 +169,6 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
           </div>
         </div>
 
-        <div className="col-span-2 p-3 bg-blue-50 rounded-lg">
-          <div className="text-sm text-gray-600 space-y-1">
-            <div className="flex justify-between">
-              <span>Monthly P&I Payment:</span>
-              <span className="font-medium">${result?.rows[0]?.payment?.toLocaleString() || '0'}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Monthly Property Tax:</span>
-              <span className="font-medium">${monthlyPITI.propertyTax.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Monthly Insurance:</span>
-              <span className="font-medium">${monthlyPITI.insurance.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between border-t pt-1">
-              <span className="font-semibold">Total Monthly Payment (PITI):</span>
-              <span className="font-semibold text-green-600">
-                ${((result?.rows[0]?.payment || 0) + monthlyPITI.total).toLocaleString()}
-              </span>
-            </div>
-          </div>
-        </div>
 
         <label>
           <span className="text-sm text-gray-600">Rate (APR %)</span>
