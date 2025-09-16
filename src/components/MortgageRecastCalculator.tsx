@@ -159,6 +159,7 @@ export default function MortgageRecastCalculator() {
             result={result}
             interestSaved={interestSaved}
             monthsSaved={monthsSaved}
+            monthlyPITI={monthlyPITI}
           />
 
           <BalanceChart chartData={result.chart} />
