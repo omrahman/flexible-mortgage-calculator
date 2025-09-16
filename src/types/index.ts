@@ -10,11 +10,11 @@ export interface ExtraItem {
   id: string;
   month: number;
   amount: number;
+  monthInput?: MonthInput; // UI state for month input type and value
   
   // Recurrence information
   isRecurring?: boolean;
   recurringQuantity?: number; // number of payments
-  recurringEndMonth?: number; // end month for recurring payments
   recurringFrequency?: RecurringFrequency; // frequency of recurring payments
 }
 
@@ -67,6 +67,14 @@ export type DownPaymentType = 'percentage' | 'dollar';
 export interface DownPaymentInput {
   type: DownPaymentType;
   value: string; // percentage (0-100) or dollar amount
+}
+
+// Month input types for extra payments
+export type MonthInputType = 'number' | 'yearmonth';
+
+export interface MonthInput {
+  type: MonthInputType;
+  value: string; // month number (1-based) or YYYY-MM format
 }
 
 // Interface for cached user inputs in localStorage

@@ -9,3 +9,4 @@ export { AmortizationTable } from './AmortizationTable';
 export { SummaryCard } from './SummaryCard';
 export { Th, Td } from './TableComponents';
 export { SegmentedControl } from './SegmentedControl';
+export { MonthInput } from './MonthInput';

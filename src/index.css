@@ -1,3 +1,55 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Mobile-specific improvements */
+@layer base {
+  /* Improve touch targets on mobile */
+  @media (max-width: 640px) {
+    input[type="tel"], input[type="number"], input[type="text"], input[type="month"] {
+      min-height: 44px; /* iOS recommended minimum touch target */
+      font-size: 16px; /* Prevent zoom on iOS */
+    }
+    
+    button {
+      min-height: 44px; /* iOS recommended minimum touch target */
+    }
+    
+    /* Improve focus states for mobile */
+    input:focus {
+      outline: 2px solid #3b82f6;
+      outline-offset: 2px;
+    }
+    
+    /* Improve scrolling on mobile */
+    body {
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Better touch feedback */
+    button:active {
+      transform: scale(0.98);
+      transition: transform 0.1s ease;
+    }
+  }
+  
+  /* Prevent zoom on input focus for iOS */
+  @media screen and (-webkit-min-device-pixel-ratio: 0) {
+    select, textarea, input[type="text"], input[type="password"], 
+    input[type="datetime"], input[type="datetime-local"], 
+    input[type="date"], input[type="month"], input[type="time"], 
+    input[type="week"], input[type="number"], input[type="email"], 
+    input[type="url"], input[type="search"], input[type="tel"], 
+    input[type="color"] {
+      font-size: 16px;
+    }
+  }
+  
+  /* Improve mobile table scrolling */
+  @media (max-width: 768px) {
+    .table-container {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+}

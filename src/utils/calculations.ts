@@ -42,6 +42,22 @@ export const parseMonthInput = (txt: string): number[] => {
   return Array.from(new Set(months)).sort((a, b) => a - b);
 };
 
+// Convert month number (1-based) to Year/Month string based on loan start date
+export const monthNumberToYearMonth = (monthNumber: number, startYM: string): string => {
+  return addMonths(startYM, monthNumber - 1);
+};
+
+// Convert Year/Month string to month number (1-based) based on loan start date
+export const yearMonthToMonthNumber = (yearMonth: string, startYM: string): number => {
+  const startDate = new Date(startYM + '-01');
+  const targetDate = new Date(yearMonth + '-01');
+  
+  const yearDiff = targetDate.getFullYear() - startDate.getFullYear();
+  const monthDiff = targetDate.getMonth() - startDate.getMonth();
+  
+  return yearDiff * 12 + monthDiff + 1;
+};
+
 export const buildSchedule = ({
   principal,
   annualRatePct,

@@ -39,7 +39,7 @@ export const AmortizationTable: React.FC<AmortizationTableProps> = ({
         </div>
       </div>
 
-      <div className="overflow-auto rounded-xl border">
+      <div className="overflow-auto rounded-xl border table-container">
         <table className="min-w-full text-xs sm:text-sm">
           <thead className="bg-gray-100 sticky top-0">
             <tr>

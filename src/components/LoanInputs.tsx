@@ -134,7 +134,7 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
     });
   };
   return (
-    <div className="rounded-2xl bg-white p-4 sm:p-5 shadow">
+    <div className="rounded-2xl bg-white p-3 sm:p-4 lg:p-5 shadow">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg sm:text-xl font-semibold">Loan</h2>
         {onReset && (
@@ -147,12 +147,14 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
           </button>
         )}
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         <label className="col-span-1 sm:col-span-2">
           <span className="text-sm text-gray-600">Home Price</span>
           <input
             className="mt-1 w-full rounded-xl border p-2 text-sm sm:text-base"
-            type="number"
+            type="tel"
+            inputMode="numeric"
+            pattern="[0-9]*"
             min={0}
             step="1000"
             value={homePriceField.value}
@@ -177,7 +179,9 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
             <div className="relative">
               <input
                 className="w-full rounded-xl border p-2 pr-8 text-sm sm:text-base"
-                type="number"
+                type="tel"
+                inputMode="decimal"
+                pattern={downPayment.type === 'percentage' ? '[0-9]*\\.?[0-9]*' : '[0-9]*'}
                 min={0}
                 step={downPayment.type === 'percentage' ? '0.1' : '1000'}
                 value={downPaymentField.value}
@@ -219,7 +223,9 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
           <span className="text-sm text-gray-600">Rate (APR %)</span>
           <input
             className="mt-1 w-full rounded-xl border p-2 text-sm sm:text-base"
-            type="number"
+            type="tel"
+            inputMode="decimal"
+            pattern="[0-9]*\\.?[0-9]*"
             min={0}
             step="0.01"
             value={rateField.value}
@@ -232,7 +238,9 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
           <span className="text-sm text-gray-600">Term (years)</span>
           <input
             className="mt-1 w-full rounded-xl border p-2 text-sm sm:text-base"
-            type="number"
+            type="tel"
+            inputMode="numeric"
+            pattern="[0-9]*"
             min={1}
             step="1"
             value={termYearsField.value}
@@ -245,7 +253,9 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
           <span className="text-sm text-gray-600">Property Tax (annual)</span>
           <input
             className="mt-1 w-full rounded-xl border p-2 text-sm sm:text-base"
-            type="number"
+            type="tel"
+            inputMode="numeric"
+            pattern="[0-9]*"
             min={0}
             step="100"
             value={propertyTaxField.value}
@@ -258,7 +268,9 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
           <span className="text-sm text-gray-600">Insurance (annual)</span>
           <input
             className="mt-1 w-full rounded-xl border p-2 text-sm sm:text-base"
-            type="number"
+            type="tel"
+            inputMode="numeric"
+            pattern="[0-9]*"
             min={0}
             step="100"
             value={insuranceField.value}

@@ -19,7 +19,7 @@ export const SegmentedControl: React.FC<SegmentedControlProps> = ({
         <button
           key={option.value}
           onClick={() => onChange(option.value)}
-          className={`flex-1 px-3 py-1 text-sm font-medium rounded-md transition-all duration-200 ${
+          className={`flex-1 px-3 py-2 sm:py-1 text-sm font-medium rounded-md transition-all duration-200 min-h-[44px] sm:min-h-0 ${
             value === option.value
               ? 'bg-white text-gray-900 shadow-sm border border-gray-200'
               : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'

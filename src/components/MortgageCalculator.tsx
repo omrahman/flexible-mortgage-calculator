@@ -117,10 +117,10 @@ export default function MortgageCalculator() {
 
 
   return (
-    <div className="min-h-screen w-full bg-gray-50 p-4 sm:p-6">
-      <div className="mx-auto max-w-8xl grid grid-cols-1 lg:grid-cols-7 gap-4 sm:gap-6">
+    <div className="min-h-screen w-full bg-gray-50 p-2 sm:p-4 lg:p-6">
+      <div className="mx-auto max-w-8xl grid grid-cols-1 lg:grid-cols-7 gap-3 sm:gap-4 lg:gap-6">
         {/* Inputs */}
-        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+        <div className="lg:col-span-2 space-y-3 sm:space-y-4 lg:space-y-6">
           <LoanInputs
             homePrice={homePrice}
             setHomePrice={setHomePrice}
@@ -142,6 +142,7 @@ export default function MortgageCalculator() {
           <ExtraPayments
             extras={extras}
             termMonths={Math.round(Number(termYears) * 12)}
+            startYM={startYM}
             autoRecast={autoRecast}
             setAutoRecast={setAutoRecast}
             recastMonthsText={recastMonthsText}
@@ -161,7 +162,7 @@ export default function MortgageCalculator() {
         </div>
 
         {/* Results */}
-        <div className="lg:col-span-3 space-y-4 sm:space-y-6">
+        <div className="lg:col-span-3 space-y-3 sm:space-y-4 lg:space-y-6">
           <SummarySection
             baseline={baseline}
             result={result}

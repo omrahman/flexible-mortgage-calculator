@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useInputField, useNumberField } from '../hooks';
-import type { ExtraItem, RecurringFrequency } from '../types';
+import { MonthInput } from './MonthInput';
+import { yearMonthToMonthNumber } from '../utils/calculations';
+import type { ExtraItem, RecurringFrequency, MonthInput as MonthInputType } from '../types';
 
 interface ExtraPaymentsProps {
   extras: ExtraItem[];
   termMonths: number;
+  startYM: string;
   autoRecast: boolean;
   setAutoRecast: (value: boolean) => void;
   recastMonthsText: string;
@@ -17,20 +20,40 @@ interface ExtraPaymentsProps {
 interface ExtraPaymentItemProps {
   extra: ExtraItem;
   termMonths: number;
+  startYM: string;
   onUpdateExtra: (id: string, fieldOrUpdates: keyof ExtraItem | Partial<ExtraItem>, value?: number | boolean | RecurringFrequency) => void;
   onRemoveExtra: (id: string) => void;
 }
 
-const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, onUpdateExtra, onRemoveExtra }) => {
-  // Month field hook
-  const monthField = useNumberField({
-    initialValue: extra.month,
-    defaultValue: 1,
-    onValueChange: (value) => onUpdateExtra(extra.id, 'month', value),
-    validate: (value) => value >= 1 && value <= termMonths,
-    min: 1,
-    max: termMonths
-  });
+const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, startYM, onUpdateExtra, onRemoveExtra }) => {
+  // Initialize monthInput state - use existing or create default
+  const [monthInput, setMonthInput] = useState<MonthInputType>(() => 
+    extra.monthInput || {
+      type: 'number',
+      value: extra.month.toString()
+    }
+  );
+
+  const handleMonthInputChange = (newMonthInput: MonthInputType) => {
+    // Update local state
+    setMonthInput(newMonthInput);
+    
+    // Update the stored monthInput
+    onUpdateExtra(extra.id, { monthInput: newMonthInput });
+    
+    // Convert to month number and update the actual month value
+    let monthNumber: number;
+    if (newMonthInput.type === 'number') {
+      monthNumber = parseInt(newMonthInput.value, 10) || 1;
+    } else {
+      monthNumber = yearMonthToMonthNumber(newMonthInput.value, startYM);
+    }
+    
+    // Ensure month number is within valid range
+    monthNumber = Math.max(1, Math.min(monthNumber, termMonths));
+    
+    onUpdateExtra(extra.id, 'month', monthNumber);
+  };
 
   // Amount field hook
   const amountField = useNumberField({
@@ -55,24 +78,22 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
     <div className="border rounded-xl p-3 sm:p-4 space-y-3">
       <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-3 items-end">
         <div className="min-w-0">
-          <span className="text-xs text-gray-500">Start Month #</span>
-          <input
-            className="mt-1 w-full rounded-xl border p-2 text-sm sm:text-base"
-            type="number"
-            min={1}
-            max={termMonths}
-            step="1"
-            value={monthField.value}
-            onChange={(e) => monthField.onChange(e.target.value)}
-            onFocus={monthField.onFocus}
-            onBlur={monthField.onBlur}
+          <span className="text-xs text-gray-500">Start</span>
+          <MonthInput
+            monthInput={monthInput}
+            setMonthInput={handleMonthInputChange}
+            startYM={startYM}
+            termMonths={termMonths}
+            className="mt-1"
           />
         </div>
         <div className="min-w-0">
           <span className="text-xs text-gray-500">Amount</span>
           <input
             className="mt-1 w-full rounded-xl border p-2 text-sm sm:text-base"
-            type="number"
+            type="tel"
+            inputMode="numeric"
+            pattern="[0-9]*"
             min={0}
             step="100"
             value={amountField.value}
@@ -157,7 +178,9 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
                 </span>
                 <input
                   className="w-full rounded-xl border p-2"
-                  type="number"
+                  type="tel"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   min={1}
                   max={extra.recurringFrequency === 'annually' ? Math.ceil(termMonths / 12) : termMonths}
                   step="1"
@@ -178,6 +201,7 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
 export const ExtraPayments: React.FC<ExtraPaymentsProps> = ({
   extras,
   termMonths,
+  startYM,
   autoRecast,
   setAutoRecast,
   recastMonthsText,
@@ -199,7 +223,7 @@ export const ExtraPayments: React.FC<ExtraPaymentsProps> = ({
     <div className="rounded-2xl bg-white p-4 sm:p-5 shadow space-y-4">
       <h2 className="text-lg sm:text-xl font-semibold">Extra Payments</h2>
       <p className="text-sm text-gray-600 leading-relaxed">
-        Add lump sums by month number (1 = first month). You can make payments recurring with a quantity and/or end date. If multiple extras land on the same month, they aggregate.
+        Add lump sums by month number or year/month. You can make payments recurring with a quantity and/or end date. If multiple extras land on the same month, they aggregate.
       </p>
       <div className="space-y-4">
         {extras.map((extra) => (
@@ -207,6 +231,7 @@ export const ExtraPayments: React.FC<ExtraPaymentsProps> = ({
             key={extra.id}
             extra={extra}
             termMonths={termMonths}
+            startYM={startYM}
             onUpdateExtra={onUpdateExtra}
             onRemoveExtra={onRemoveExtra}
           />
