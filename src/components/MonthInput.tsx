@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { SegmentedControl } from './SegmentedControl';
 import { monthNumberToYearMonth, yearMonthToMonthNumber } from '../utils/calculations';
-import type { MonthInput } from '../types';
+import type { MonthInput as MonthInputType } from '../types';
 
 interface MonthInputProps {
-  monthInput: MonthInput;
-  setMonthInput: (value: MonthInput) => void;
+  monthInput: MonthInputType;
+  setMonthInput: (value: MonthInputType) => void;
   startYM: string;
   termMonths: number;
   className?: string;
@@ -77,8 +77,8 @@ export const MonthInput: React.FC<MonthInputProps> = ({
     <div className={`space-y-3 ${className}`}>
       <SegmentedControl
         options={[
-          { value: 'number', label: 'Month #' },
           { value: 'yearmonth', label: 'Year/Month' },
+          { value: 'number', label: 'Month #' },
         ]}
         value={monthInput.type}
         onChange={handleTypeChange}

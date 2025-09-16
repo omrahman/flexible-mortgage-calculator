@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useInputField, useNumberField } from '../hooks';
 import { MonthInput } from './MonthInput';
-import { yearMonthToMonthNumber } from '../utils/calculations';
+import { yearMonthToMonthNumber, monthNumberToYearMonth } from '../utils/calculations';
 import type { ExtraItem, RecurringFrequency, MonthInput as MonthInputType } from '../types';
 
 interface ExtraPaymentsProps {
@@ -29,8 +29,8 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
   // Initialize monthInput state - use existing or create default
   const [monthInput, setMonthInput] = useState<MonthInputType>(() => 
     extra.monthInput || {
-      type: 'number',
-      value: extra.month.toString()
+      type: 'yearmonth',
+      value: monthNumberToYearMonth(extra.month, startYM)
     }
   );
 
