@@ -56,12 +56,18 @@ Object.defineProperty(URL, 'revokeObjectURL', {
 });
 
 // Mock document.createElement
+const mockAnchor = {
+  href: '',
+  download: '',
+  click: jest.fn(),
+  remove: jest.fn(),
+};
+
+const mockCreateElement = jest.fn(() => mockAnchor);
+
+// Override document.createElement
 Object.defineProperty(document, 'createElement', {
   writable: true,
-  value: jest.fn(() => ({
-    href: '',
-    download: '',
-    click: jest.fn(),
-    remove: jest.fn(),
-  })),
+  configurable: true,
+  value: mockCreateElement,
 });

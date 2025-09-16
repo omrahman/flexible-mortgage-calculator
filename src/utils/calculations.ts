@@ -81,7 +81,9 @@ export const buildSchedule = ({
     totalInterest = round2(totalInterest + interest);
     totalPaid = round2(totalPaid + cashThisMonth);
 
-    bal = round2(bal - principalPart - extra);
+    // Calculate new balance, ensuring it doesn't go negative
+    const newBalance = round2(bal - principalPart - extra);
+    bal = Math.max(0, newBalance);
 
     let didRecast = false;
     let newPayment: number | undefined;

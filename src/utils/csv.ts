@@ -32,13 +32,21 @@ export const csvFor = (rows: Row[]): string => {
       ].join(",")
     );
   }
-  return lines.join("\n");
+  return lines.join("\n") + "\n";
 };
 
 export const downloadCSV = (data: string, filename: string): void => {
   const blob = new Blob([data], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
+  
+  // Check if we're in a test environment
+  if (typeof a === 'undefined' || a === null) {
+    console.warn('downloadCSV: document.createElement returned undefined, likely in test environment');
+    URL.revokeObjectURL(url);
+    return;
+  }
+  
   a.href = url;
   a.download = filename;
   document.body.appendChild(a);
