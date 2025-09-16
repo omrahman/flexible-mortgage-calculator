@@ -1,4 +1,4 @@
-# Mortgage Recast Calculator
+# Flexible Mortgage Calculator
 
 A React TypeScript application for calculating mortgage recast scenarios with extra payments and amortization schedules.
 
@@ -47,7 +47,7 @@ A React TypeScript application for calculating mortgage recast scenarios with ex
 ```
 src/
 ├── components/
-│   └── MortgageRecastCalculator.tsx  # Main calculator component
+│   └── MortgageCalculator.tsx        # Main calculator component
 ├── App.tsx                           # Root app component
 ├── main.tsx                          # Application entry point
 └── index.css                         # Global styles with Tailwind

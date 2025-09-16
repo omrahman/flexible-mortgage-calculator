@@ -11,7 +11,7 @@ import { SavedConfigurations } from './SavedConfigurations';
 import { csvFor, downloadCSV } from '../utils/csv';
 import { CSV_FILENAME } from '../constants';
 
-export default function MortgageRecastCalculator() {
+export default function MortgageCalculator() {
   const {
     // State
     homePrice,

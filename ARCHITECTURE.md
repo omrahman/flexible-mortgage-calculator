@@ -1,6 +1,6 @@
 # Architecture Overview
 
-This document outlines the current architecture of the Mortgage Recast Calculator application, a React-based web application for calculating mortgage payments with recasting and extra payment scenarios.
+This document outlines the current architecture of the Mortgage Calculator application, a React-based web application for calculating mortgage payments with recasting and extra payment scenarios.
 
 ## Technology Stack
 
@@ -17,7 +17,7 @@ This document outlines the current architecture of the Mortgage Recast Calculato
 ```
 src/
 ├── components/                    # React components
-│   ├── MortgageRecastCalculator.tsx  # Main orchestrating component
+│   ├── MortgageCalculator.tsx  # Main orchestrating component
 │   ├── LoanInputs.tsx               # Loan parameter inputs (home price, down payment, rate, etc.)
 │   ├── ExtraPayments.tsx            # Extra payments management with recurring support
 │   ├── SummarySection.tsx           # Summary cards display
@@ -67,7 +67,7 @@ The application uses React Context API combined with custom hooks for state mana
 The main component orchestrates smaller, focused components:
 
 ```typescript
-MortgageRecastCalculator (Main)
+MortgageCalculator (Main)
 ├── LoanInputs                    # Input form for loan parameters
 ├── ExtraPayments                 # Extra payment management
 ├── SavedConfigurations           # Configuration save/load interface
