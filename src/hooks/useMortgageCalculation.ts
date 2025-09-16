@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { buildSchedule, parseMonthInput } from '../utils/calculations';
 import { round2 } from '../utils/formatters';
 import type { ExtraItem, ExtraMap, ScheduleParams, CachedInputs } from '../types';
-import { DEFAULT_HOME_PRICE, DEFAULT_DOWN_PAYMENT, DEFAULT_INTEREST_RATE, DEFAULT_TERM_YEARS, DEFAULT_EXTRA_PAYMENTS } from '../constants';
+import { DEFAULT_HOME_PRICE, DEFAULT_DOWN_PAYMENT, DEFAULT_INTEREST_RATE, DEFAULT_TERM_YEARS, DEFAULT_PROPERTY_TAX_ANNUAL, DEFAULT_INSURANCE_ANNUAL, DEFAULT_EXTRA_PAYMENTS } from '../constants';
 import { useLocalStorage } from './useLocalStorage';
 
 export const useMortgageCalculation = () => {
@@ -20,6 +20,8 @@ export const useMortgageCalculation = () => {
       const m = (d.getMonth() + 1).toString().padStart(2, "0");
       return `${y}-${m}`;
     })(),
+    propertyTaxAnnual: DEFAULT_PROPERTY_TAX_ANNUAL,
+    insuranceAnnual: DEFAULT_INSURANCE_ANNUAL,
     extras: DEFAULT_EXTRA_PAYMENTS,
     autoRecast: true,
     // recastMonthsText is optional - only set when user specifies recast months
@@ -30,7 +32,11 @@ export const useMortgageCalculation = () => {
   const migrateCachedInputs = (inputs: any): CachedInputs => {
     // If it's already the new structure, return as is
     if (inputs.homePrice && inputs.downPayment) {
-      return inputs;
+      return {
+        ...inputs,
+        propertyTaxAnnual: inputs.propertyTaxAnnual || DEFAULT_PROPERTY_TAX_ANNUAL,
+        insuranceAnnual: inputs.insuranceAnnual || DEFAULT_INSURANCE_ANNUAL,
+      };
     }
     
     // Migrate from old structure
@@ -45,6 +51,8 @@ export const useMortgageCalculation = () => {
         const m = (d.getMonth() + 1).toString().padStart(2, "0");
         return `${y}-${m}`;
       })(),
+      propertyTaxAnnual: inputs.propertyTaxAnnual || DEFAULT_PROPERTY_TAX_ANNUAL,
+      insuranceAnnual: inputs.insuranceAnnual || DEFAULT_INSURANCE_ANNUAL,
       extras: inputs.extras || DEFAULT_EXTRA_PAYMENTS,
       autoRecast: inputs.autoRecast !== undefined ? inputs.autoRecast : true,
       recastMonthsText: inputs.recastMonthsText,
@@ -91,6 +99,8 @@ export const useMortgageCalculation = () => {
   const rate = cachedInputs.rate;
   const termYears = cachedInputs.termYears;
   const startYM = cachedInputs.startYM;
+  const propertyTaxAnnual = cachedInputs.propertyTaxAnnual;
+  const insuranceAnnual = cachedInputs.insuranceAnnual;
   const extras = cachedInputs.extras;
   const autoRecast = cachedInputs.autoRecast;
   const recastMonthsText = cachedInputs.recastMonthsText || '';
@@ -106,6 +116,19 @@ export const useMortgageCalculation = () => {
       return Math.max(0, homePriceNum - downPaymentValue);
     }
   }, [homePrice, downPayment]);
+
+  // Calculate monthly PITI payment components
+  const monthlyPITI = useMemo(() => {
+    const propertyTaxMonthly = (parseFloat(propertyTaxAnnual) || 0) / 12;
+    const insuranceMonthly = (parseFloat(insuranceAnnual) || 0) / 12;
+    
+    return {
+      propertyTax: round2(propertyTaxMonthly),
+      insurance: round2(insuranceMonthly),
+      total: round2(propertyTaxMonthly + insuranceMonthly),
+    };
+  }, [propertyTaxAnnual, insuranceAnnual]);
+
   const showAll = cachedInputs.showAll;
 
   // Individual setters that update the cached inputs
@@ -115,6 +138,14 @@ export const useMortgageCalculation = () => {
 
   const setDownPayment = (value: any) => {
     setCachedInputs((prev: CachedInputs) => ({ ...prev, downPayment: value }));
+  };
+
+  const setPropertyTaxAnnual = (value: string) => {
+    setCachedInputs((prev: CachedInputs) => ({ ...prev, propertyTaxAnnual: value }));
+  };
+
+  const setInsuranceAnnual = (value: string) => {
+    setCachedInputs((prev: CachedInputs) => ({ ...prev, insuranceAnnual: value }));
   };
 
   const setRate = (value: string) => {
@@ -268,6 +299,8 @@ export const useMortgageCalculation = () => {
       cachedInputs.rate !== originalInputs.rate ||
       cachedInputs.termYears !== originalInputs.termYears ||
       cachedInputs.startYM !== originalInputs.startYM ||
+      cachedInputs.propertyTaxAnnual !== originalInputs.propertyTaxAnnual ||
+      cachedInputs.insuranceAnnual !== originalInputs.insuranceAnnual ||
       cachedInputs.autoRecast !== originalInputs.autoRecast ||
       (cachedInputs.recastMonthsText || '') !== (originalInputs.recastMonthsText || '') ||
       cachedInputs.showAll !== originalInputs.showAll ||
@@ -288,6 +321,10 @@ export const useMortgageCalculation = () => {
     setTermYears,
     startYM,
     setStartYM,
+    propertyTaxAnnual,
+    setPropertyTaxAnnual,
+    insuranceAnnual,
+    setInsuranceAnnual,
     extras,
     autoRecast,
     setAutoRecast,
@@ -298,6 +335,7 @@ export const useMortgageCalculation = () => {
     
     // Computed values
     termMonths,
+    monthlyPITI,
     result,
     baseline,
     interestSaved,

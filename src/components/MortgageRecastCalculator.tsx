@@ -23,6 +23,10 @@ export default function MortgageRecastCalculator() {
     setTermYears,
     startYM,
     setStartYM,
+    propertyTaxAnnual,
+    setPropertyTaxAnnual,
+    insuranceAnnual,
+    setInsuranceAnnual,
     extras,
     autoRecast,
     setAutoRecast,
@@ -32,6 +36,7 @@ export default function MortgageRecastCalculator() {
     setShowAll,
     
     // Computed values
+    monthlyPITI,
     result,
     baseline,
     interestSaved,
@@ -92,11 +97,13 @@ export default function MortgageRecastCalculator() {
     rate,
     termYears,
     startYM,
+    propertyTaxAnnual,
+    insuranceAnnual,
     extras,
     autoRecast,
     recastMonthsText,
     showAll,
-  }), [homePrice, downPayment, rate, termYears, startYM, extras, autoRecast, recastMonthsText, showAll]);
+  }), [homePrice, downPayment, rate, termYears, startYM, propertyTaxAnnual, insuranceAnnual, extras, autoRecast, recastMonthsText, showAll]);
 
 
   return (
@@ -115,6 +122,12 @@ export default function MortgageRecastCalculator() {
             setTermYears={setTermYears}
             startYM={startYM}
             setStartYM={setStartYM}
+            propertyTaxAnnual={propertyTaxAnnual}
+            setPropertyTaxAnnual={setPropertyTaxAnnual}
+            insuranceAnnual={insuranceAnnual}
+            setInsuranceAnnual={setInsuranceAnnual}
+            monthlyPITI={monthlyPITI}
+            result={result}
             onReset={clearAllInputs}
           />
 

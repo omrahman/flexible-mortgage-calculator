@@ -71,6 +71,8 @@ export interface CachedInputs {
   rate: string;
   termYears: string;
   startYM: string;
+  propertyTaxAnnual: string; // Annual property tax amount
+  insuranceAnnual: string; // Annual insurance amount
   extras: ExtraItem[];
   autoRecast: boolean;
   recastMonthsText?: string; // Optional - only used when user specifies recast months

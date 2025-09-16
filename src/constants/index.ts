@@ -4,6 +4,8 @@ export const DEFAULT_HOME_PRICE = "1000000";
 export const DEFAULT_DOWN_PAYMENT = { type: 'percentage' as const, value: "20" };
 export const DEFAULT_INTEREST_RATE = "4.85";
 export const DEFAULT_TERM_YEARS = "30";
+export const DEFAULT_PROPERTY_TAX_ANNUAL = "12000"; // $12,000 annual property tax
+export const DEFAULT_INSURANCE_ANNUAL = "2400"; // $2,400 annual insurance
 export const DEFAULT_EXTRA_PAYMENTS = [
   { id: 'default-1', month: 6, amount: 10000 },
   { id: 'default-2', month: 12, amount: 5000 },
