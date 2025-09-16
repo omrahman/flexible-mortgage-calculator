@@ -9,6 +9,7 @@ interface LoanInputsProps {
   setTermYears: (value: string) => void;
   startYM: string;
   setStartYM: (value: string) => void;
+  onReset?: () => void;
 }
 
 export const LoanInputs: React.FC<LoanInputsProps> = ({
@@ -20,10 +21,22 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
   setTermYears,
   startYM,
   setStartYM,
+  onReset,
 }) => {
   return (
     <div className="rounded-2xl bg-white p-5 shadow">
-      <h2 className="text-xl font-semibold mb-4">Loan</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">Loan</h2>
+        {onReset && (
+          <button
+            onClick={onReset}
+            className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            title="Reset all inputs to defaults"
+          >
+            Reset
+          </button>
+        )}
+      </div>
       <div className="grid grid-cols-2 gap-4">
         <label className="col-span-2">
           <span className="text-sm text-gray-600">Principal</span>

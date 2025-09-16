@@ -36,6 +36,7 @@ export default function MortgageRecastCalculator() {
     handleAddExtra,
     handleRemoveExtra,
     handleUpdateExtra,
+    clearAllInputs,
   } = useMortgageCalculation();
 
   const handleDownloadCSV = () => {
@@ -56,6 +57,7 @@ export default function MortgageRecastCalculator() {
             setTermYears={setTermYears}
             startYM={startYM}
             setStartYM={setStartYM}
+            onReset={clearAllInputs}
           />
 
           <ExtraPayments

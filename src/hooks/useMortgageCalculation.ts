@@ -1,26 +1,81 @@
 // Custom hook for mortgage calculation logic
 
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { buildSchedule, parseMonthInput } from '../utils/calculations';
 import { round2 } from '../utils/formatters';
-import type { ExtraItem, ExtraMap, ScheduleParams } from '../types';
+import type { ExtraItem, ExtraMap, ScheduleParams, CachedInputs } from '../types';
 import { DEFAULT_LOAN_AMOUNT, DEFAULT_INTEREST_RATE, DEFAULT_TERM_YEARS, DEFAULT_EXTRA_PAYMENTS } from '../constants';
+import { useLocalStorage } from './useLocalStorage';
 
 export const useMortgageCalculation = () => {
-  const [principal, setPrincipal] = useState(DEFAULT_LOAN_AMOUNT);
-  const [rate, setRate] = useState(DEFAULT_INTEREST_RATE);
-  const [termYears, setTermYears] = useState(DEFAULT_TERM_YEARS);
-  const [startYM, setStartYM] = useState(() => {
-    const d = new Date();
-    const y = d.getFullYear();
-    const m = (d.getMonth() + 1).toString().padStart(2, "0");
-    return `${y}-${m}`;
-  });
+  // Default values for cached inputs
+  const defaultCachedInputs: CachedInputs = {
+    principal: DEFAULT_LOAN_AMOUNT,
+    rate: DEFAULT_INTEREST_RATE,
+    termYears: DEFAULT_TERM_YEARS,
+    startYM: (() => {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = (d.getMonth() + 1).toString().padStart(2, "0");
+      return `${y}-${m}`;
+    })(),
+    extras: DEFAULT_EXTRA_PAYMENTS,
+    autoRecast: true,
+    recastMonthsText: "",
+    showAll: false,
+  };
 
-  const [extras, setExtras] = useState<ExtraItem[]>(DEFAULT_EXTRA_PAYMENTS);
-  const [autoRecast, setAutoRecast] = useState(true);
-  const [recastMonthsText, setRecastMonthsText] = useState("");
-  const [showAll, setShowAll] = useState(false);
+  // Use localStorage to persist all user inputs
+  const [cachedInputs, setCachedInputs, clearCachedInputs] = useLocalStorage<CachedInputs>(
+    'mortgage-calculator-inputs',
+    defaultCachedInputs
+  );
+
+  // Extract individual values from cached inputs
+  const principal = cachedInputs.principal;
+  const rate = cachedInputs.rate;
+  const termYears = cachedInputs.termYears;
+  const startYM = cachedInputs.startYM;
+  const extras = cachedInputs.extras;
+  const autoRecast = cachedInputs.autoRecast;
+  const recastMonthsText = cachedInputs.recastMonthsText;
+  const showAll = cachedInputs.showAll;
+
+  // Individual setters that update the cached inputs
+  const setPrincipal = (value: string) => {
+    setCachedInputs(prev => ({ ...prev, principal: value }));
+  };
+
+  const setRate = (value: string) => {
+    setCachedInputs(prev => ({ ...prev, rate: value }));
+  };
+
+  const setTermYears = (value: string) => {
+    setCachedInputs(prev => ({ ...prev, termYears: value }));
+  };
+
+  const setStartYM = (value: string) => {
+    setCachedInputs(prev => ({ ...prev, startYM: value }));
+  };
+
+  const setExtras = (value: ExtraItem[] | ((prev: ExtraItem[]) => ExtraItem[])) => {
+    setCachedInputs(prev => ({ 
+      ...prev, 
+      extras: typeof value === 'function' ? value(prev.extras) : value 
+    }));
+  };
+
+  const setAutoRecast = (value: boolean) => {
+    setCachedInputs(prev => ({ ...prev, autoRecast: value }));
+  };
+
+  const setRecastMonthsText = (value: string) => {
+    setCachedInputs(prev => ({ ...prev, recastMonthsText: value }));
+  };
+
+  const setShowAll = (value: boolean) => {
+    setCachedInputs(prev => ({ ...prev, showAll: value }));
+  };
 
   const termMonths = Math.max(1, Math.round(Number(termYears) * 12));
 
@@ -105,6 +160,11 @@ export const useMortgageCalculation = () => {
     setExtras((xs) => xs.map((x) => (x.id === id ? { ...x, [field]: value } : x)));
   };
 
+  // Function to clear all cached inputs (useful for reset functionality)
+  const clearAllInputs = () => {
+    clearCachedInputs();
+  };
+
   return {
     // State
     principal,
@@ -134,5 +194,6 @@ export const useMortgageCalculation = () => {
     handleAddExtra,
     handleRemoveExtra,
     handleUpdateExtra,
+    clearAllInputs,
   };
 };

@@ -55,3 +55,15 @@ export interface TableCellProps {
   children: React.ReactNode;
   className?: string;
 }
+
+// Interface for cached user inputs in localStorage
+export interface CachedInputs {
+  principal: string;
+  rate: string;
+  termYears: string;
+  startYM: string;
+  extras: ExtraItem[];
+  autoRecast: boolean;
+  recastMonthsText: string;
+  showAll: boolean;
+}
