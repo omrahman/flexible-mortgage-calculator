@@ -14,12 +14,12 @@ export const SegmentedControl: React.FC<SegmentedControlProps> = ({
   className = '',
 }) => {
   return (
-    <div className={`inline-flex rounded-lg border border-gray-300 bg-gray-50 p-1 ${className}`}>
+    <div className={`flex rounded-lg border border-gray-300 bg-gray-50 p-1 ${className}`}>
       {options.map((option) => (
         <button
           key={option.value}
           onClick={() => onChange(option.value)}
-          className={`px-3 py-1 text-sm font-medium rounded-md transition-all duration-200 ${
+          className={`flex-1 px-3 py-1 text-sm font-medium rounded-md transition-all duration-200 ${
             value === option.value
               ? 'bg-white text-gray-900 shadow-sm border border-gray-200'
               : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'

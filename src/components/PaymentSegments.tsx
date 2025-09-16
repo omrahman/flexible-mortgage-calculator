@@ -28,9 +28,9 @@ export const PaymentSegments: React.FC<PaymentSegmentsProps> = ({
           
           return (
             <div key={i} className="border rounded-xl p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 transition-colors">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+              <div className="space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 min-w-0">
                     <span className="text-sm font-medium text-gray-700 break-words">
                       Month {s.start}
                       {endMonth && endMonth !== s.start && ` - ${endMonth}`}
@@ -41,35 +41,35 @@ export const PaymentSegments: React.FC<PaymentSegmentsProps> = ({
                     </span>
                   </div>
                   
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                    <div className="space-y-1 min-w-0">
-                      <div className="flex justify-between gap-2">
-                        <span className="text-gray-600 flex-shrink-0">P&I Payment:</span>
-                        <span className="font-medium text-right break-words">{fmtUSD(s.payment)}</span>
-                      </div>
-                      <div className="flex justify-between gap-2">
-                        <span className="text-gray-600 flex-shrink-0">Property Tax:</span>
-                        <span className="font-medium text-right break-words">{fmtUSD(monthlyPITI.propertyTax)}</span>
-                      </div>
-                      <div className="flex justify-between gap-2">
-                        <span className="text-gray-600 flex-shrink-0">Insurance:</span>
-                        <span className="font-medium text-right break-words">{fmtUSD(monthlyPITI.insurance)}</span>
-                      </div>
-                      <div className="flex justify-between border-t pt-1 gap-2">
-                        <span className="font-semibold text-gray-800 flex-shrink-0 sm:text-lg">Total PITI:</span>
-                        <span className="font-semibold text-green-600 text-sm sm:text-lg text-right break-words">{fmtUSD(totalPITI)}</span>
-                      </div>
+                  {s.payment !== baseline.segments[0]?.payment && (
+                    <div className="flex-shrink-0">
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        Recast
+                      </span>
                     </div>
-                  </div>
+                  )}
                 </div>
                 
-                {s.payment !== baseline.segments[0]?.payment && (
-                  <div className="flex-shrink-0">
-                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      Recast
-                    </span>
+                <div className="border-t border-gray-200"></div>
+                
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between gap-2">
+                    <span className="text-gray-600 flex-shrink-0">P&I Payment:</span>
+                    <span className="font-medium text-right break-words">{fmtUSD(s.payment)}</span>
                   </div>
-                )}
+                  <div className="flex justify-between gap-2">
+                    <span className="text-gray-600 flex-shrink-0">Property Tax:</span>
+                    <span className="font-medium text-right break-words">{fmtUSD(monthlyPITI.propertyTax)}</span>
+                  </div>
+                  <div className="flex justify-between gap-2">
+                    <span className="text-gray-600 flex-shrink-0">Insurance:</span>
+                    <span className="font-medium text-right break-words">{fmtUSD(monthlyPITI.insurance)}</span>
+                  </div>
+                  <div className="flex justify-between border-t pt-1 gap-2">
+                    <span className="font-semibold text-gray-800 flex-shrink-0 sm:text-lg">Total PITI:</span>
+                    <span className="font-semibold text-green-600 text-sm sm:text-lg text-right break-words">{fmtUSD(totalPITI)}</span>
+                  </div>
+                </div>
               </div>
             </div>
           );

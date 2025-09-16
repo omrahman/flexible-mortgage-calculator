@@ -63,8 +63,8 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
 
   return (
     <div className="border rounded-xl p-3 sm:p-4 space-y-3">
-      <div className="grid grid-cols-1 sm:grid-cols-7 gap-3 items-end">
-        <div className="col-span-1 sm:col-span-2">
+      <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-3 items-end">
+        <div className="min-w-0">
           <span className="text-xs text-gray-500">Start Month #</span>
           <input
             className="mt-1 w-full rounded-xl border p-2 text-sm sm:text-base"
@@ -78,7 +78,7 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
             onBlur={monthField.onBlur}
           />
         </div>
-        <div className="col-span-1 sm:col-span-3">
+        <div className="min-w-0">
           <span className="text-xs text-gray-500">Amount</span>
           <input
             className="mt-1 w-full rounded-xl border p-2 text-sm sm:text-base"
@@ -91,39 +91,39 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
             onBlur={amountField.onBlur}
           />
         </div>
-        <div className="col-span-1 sm:col-span-2 flex justify-end">
+      </div>
+      
+      {/* Recurring Payment Options */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={Boolean(extra.isRecurring)}
+              onChange={(ev) => {
+                const isChecked = ev.target.checked;
+                if (isChecked) {
+                  onUpdateExtra(extra.id, 'isRecurring', true);
+                } else {
+                  // Reset all recurring fields when unchecked in a single update
+                  onUpdateExtra(extra.id, {
+                    isRecurring: false,
+                    recurringQuantity: 1,
+                    recurringEndMonth: 0,
+                    recurringFrequency: 'monthly'
+                  });
+                }
+              }}
+            />
+            <span className="text-sm font-medium">Make this a recurring payment</span>
+          </label>
           <button
-            className="rounded-xl border px-3 sm:px-4 py-2 text-xs sm:text-sm hover:bg-gray-50 whitespace-nowrap"
+            className="rounded-xl bg-red-600 text-white px-3 py-2 text-xs sm:text-sm hover:bg-red-700 whitespace-nowrap transition-colors"
             onClick={() => onRemoveExtra(extra.id)}
           >
             Remove
           </button>
         </div>
-      </div>
-      
-      {/* Recurring Payment Options */}
-      <div className="space-y-3">
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={Boolean(extra.isRecurring)}
-            onChange={(ev) => {
-              const isChecked = ev.target.checked;
-              if (isChecked) {
-                onUpdateExtra(extra.id, 'isRecurring', true);
-              } else {
-                // Reset all recurring fields when unchecked in a single update
-                onUpdateExtra(extra.id, {
-                  isRecurring: false,
-                  recurringQuantity: 1,
-                  recurringEndMonth: 0,
-                  recurringFrequency: 'monthly'
-                });
-              }
-            }}
-          />
-          <span className="text-sm font-medium">Make this a recurring payment</span>
-        </label>
         
         {Boolean(extra.isRecurring) && (
           <div className="space-y-4">
@@ -159,8 +159,8 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
             </div>
             
             {/* Payment Details */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
+            <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
+              <div className="min-w-0">
                 <span className="text-xs text-gray-500">
                   Number of payments
                   {extra.recurringFrequency === 'annually' && (
@@ -179,7 +179,7 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
                   onBlur={quantityField.onBlur}
                 />
               </div>
-              <div>
+              <div className="min-w-0">
                 <span className="text-xs text-gray-500">
                   End month (optional)
                   {extra.recurringFrequency === 'annually' && (
@@ -244,10 +244,10 @@ export const ExtraPayments: React.FC<ExtraPaymentsProps> = ({
         ))}
         <div>
           <button
-            className="rounded-xl bg-black text-white px-4 py-2"
+            className="w-full rounded-xl bg-black text-white px-4 py-2"
             onClick={onAddExtra}
           >
-            + Add Extra
+            Add Extra Payment
           </button>
         </div>
       </div>

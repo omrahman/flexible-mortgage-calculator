@@ -172,6 +172,7 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
               ]}
               value={downPayment.type}
               onChange={handleDownPaymentTypeChange}
+              className="w-full"
             />
             <div className="relative">
               <input

@@ -68,20 +68,20 @@ export function SavedConfigurations({
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">Saved Configurations</h3>
-        <div className="flex items-center space-x-2">
+      <div className="mb-4">
+        <h3 className="text-lg font-semibold text-gray-900 mb-3">Saved Configurations</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-2">
           {hasUnsavedChanges && loadedConfigurationId && (
             <button
               onClick={handleSaveChanges}
-              className="px-3 py-1 text-sm bg-orange-600 text-white rounded-md hover:bg-orange-700 transition-colors"
+              className="px-3 py-1 text-sm bg-orange-600 text-white rounded-md hover:bg-orange-700 transition-colors whitespace-nowrap"
             >
               Save Changes
             </button>
           )}
           <button
             onClick={() => setIsModalOpen(true)}
-            className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors whitespace-nowrap"
           >
             Save Current
           </button>
@@ -123,22 +123,22 @@ export function SavedConfigurations({
                 </p>
               </div>
               
-              <div className="flex items-center space-x-2 ml-3">
+              <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(60px,1fr))] gap-2 ml-3 min-w-0">
                 <button
                   onClick={() => handleLoad(config)}
-                  className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                  className="text-blue-600 hover:text-blue-800 text-sm font-medium whitespace-nowrap"
                 >
                   Load
                 </button>
                 <button
                   onClick={() => handleEdit(config)}
-                  className="text-gray-600 hover:text-gray-800 text-sm"
+                  className="text-gray-600 hover:text-gray-800 text-sm whitespace-nowrap"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => handleDelete(config.id)}
-                  className="text-red-600 hover:text-red-800 text-sm"
+                  className="text-red-600 hover:text-red-800 text-sm whitespace-nowrap"
                 >
                   Delete
                 </button>
