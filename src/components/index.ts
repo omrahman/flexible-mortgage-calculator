@@ -7,3 +7,6 @@ export { BalanceChart } from './BalanceChart';
 export { AmortizationTable } from './AmortizationTable';
 export { SummaryCard } from './SummaryCard';
 export { Th, Td } from './TableComponents';
+export { ConfigurationModal } from './ConfigurationModal';
+export { ErrorBoundary } from './ErrorBoundary';
+export { SavedConfigurations } from './SavedConfigurations';

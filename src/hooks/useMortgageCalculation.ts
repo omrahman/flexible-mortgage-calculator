@@ -21,7 +21,7 @@ export const useMortgageCalculation = () => {
     })(),
     extras: DEFAULT_EXTRA_PAYMENTS,
     autoRecast: true,
-    recastMonthsText: "",
+    // recastMonthsText is optional - only set when user specifies recast months
     showAll: false,
   };
 
@@ -31,6 +31,12 @@ export const useMortgageCalculation = () => {
     defaultCachedInputs
   );
 
+  // Track which configuration is currently loaded (if any)
+  const [loadedConfigurationId, setLoadedConfigurationId] = useLocalStorage<string | null>(
+    'mortgage-calculator-loaded-config-id',
+    null
+  );
+
   // Extract individual values from cached inputs
   const principal = cachedInputs.principal;
   const rate = cachedInputs.rate;
@@ -38,7 +44,7 @@ export const useMortgageCalculation = () => {
   const startYM = cachedInputs.startYM;
   const extras = cachedInputs.extras;
   const autoRecast = cachedInputs.autoRecast;
-  const recastMonthsText = cachedInputs.recastMonthsText;
+  const recastMonthsText = cachedInputs.recastMonthsText || '';
   const showAll = cachedInputs.showAll;
 
   // Individual setters that update the cached inputs
@@ -165,6 +171,17 @@ export const useMortgageCalculation = () => {
     clearCachedInputs();
   };
 
+  // Function to load a configuration
+  const loadConfiguration = (configInputs: CachedInputs, configId?: string) => {
+    setCachedInputs(configInputs);
+    setLoadedConfigurationId(configId || null);
+  };
+
+  // Function to clear loaded configuration tracking
+  const clearLoadedConfiguration = () => {
+    setLoadedConfigurationId(null);
+  };
+
   return {
     // State
     principal,
@@ -195,5 +212,10 @@ export const useMortgageCalculation = () => {
     handleRemoveExtra,
     handleUpdateExtra,
     clearAllInputs,
+    loadConfiguration,
+    clearLoadedConfiguration,
+    
+    // State
+    loadedConfigurationId,
   };
 };

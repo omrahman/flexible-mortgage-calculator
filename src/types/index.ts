@@ -64,6 +64,38 @@ export interface CachedInputs {
   startYM: string;
   extras: ExtraItem[];
   autoRecast: boolean;
-  recastMonthsText: string;
+  recastMonthsText?: string; // Optional - only used when user specifies recast months
   showAll: boolean;
+}
+
+// Interface for saved loan configurations
+export interface SavedConfiguration {
+  id: string;
+  name: string;
+  description?: string;
+  createdAt: string;
+  lastModified: string;
+  inputs: CachedInputs;
+}
+
+// Interface for configuration management component props
+export interface SavedConfigurationsProps {
+  configurations: SavedConfiguration[];
+  onLoadConfiguration: (config: SavedConfiguration) => void;
+  onSaveConfiguration: (name: string, description?: string) => void;
+  onDeleteConfiguration: (id: string) => void;
+  onUpdateConfiguration: (id: string, name: string, description: string, inputs: CachedInputs) => void;
+  currentInputs: CachedInputs;
+  loadedConfiguration?: SavedConfiguration | null;
+  onClearLoadedConfiguration: () => void;
+}
+
+// Interface for configuration modal props
+export interface ConfigurationModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (name: string, description?: string) => void;
+  onUpdate?: (id: string, name: string, description?: string) => void;
+  editingConfig?: SavedConfiguration | null;
+  currentInputs: CachedInputs;
 }
