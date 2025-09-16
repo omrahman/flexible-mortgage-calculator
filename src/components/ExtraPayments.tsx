@@ -10,7 +10,7 @@ interface ExtraPaymentsProps {
   setRecastMonthsText: (value: string) => void;
   onAddExtra: () => void;
   onRemoveExtra: (id: string) => void;
-  onUpdateExtra: (id: string, field: keyof ExtraItem, value: number) => void;
+  onUpdateExtra: (id: string, field: keyof ExtraItem, value: number | boolean) => void;
 }
 
 export const ExtraPayments: React.FC<ExtraPaymentsProps> = ({
@@ -28,47 +28,103 @@ export const ExtraPayments: React.FC<ExtraPaymentsProps> = ({
     <div className="rounded-2xl bg-white p-5 shadow space-y-4">
       <h2 className="text-xl font-semibold">Extra Payments</h2>
       <p className="text-sm text-gray-600">
-        Add lump sums by month number (1 = first month). If multiple extras land on the same month, they aggregate.
+        Add lump sums by month number (1 = first month). You can make payments recurring with a quantity and/or end date. If multiple extras land on the same month, they aggregate.
       </p>
-      <div className="space-y-2">
+      <div className="space-y-4">
         {extras.map((e) => (
-          <div key={e.id} className="grid grid-cols-7 gap-2 items-end">
-            <div className="col-span-2">
-              <span className="text-xs text-gray-500">Month #</span>
-              <input
-                className="mt-1 w-full rounded-xl border p-2"
-                type="number"
-                min={1}
-                max={termMonths}
-                step="1"
-                value={e.month}
-                onChange={(ev) => {
-                  const v = parseInt(ev.target.value || "0", 10);
-                  onUpdateExtra(e.id, 'month', v);
-                }}
-              />
+          <div key={e.id} className="border rounded-xl p-4 space-y-3">
+            <div className="grid grid-cols-7 gap-2 items-end">
+              <div className="col-span-2">
+                <span className="text-xs text-gray-500">Start Month #</span>
+                <input
+                  className="mt-1 w-full rounded-xl border p-2"
+                  type="number"
+                  min={1}
+                  max={termMonths}
+                  step="1"
+                  value={e.month}
+                  onChange={(ev) => {
+                    const v = parseInt(ev.target.value || "0", 10);
+                    onUpdateExtra(e.id, 'month', v);
+                  }}
+                />
+              </div>
+              <div className="col-span-3">
+                <span className="text-xs text-gray-500">Amount</span>
+                <input
+                  className="mt-1 w-full rounded-xl border p-2"
+                  type="number"
+                  min={0}
+                  step="100"
+                  value={e.amount}
+                  onChange={(ev) => {
+                    const v = parseFloat(ev.target.value || "0");
+                    onUpdateExtra(e.id, 'amount', v);
+                  }}
+                />
+              </div>
+              <div className="col-span-2 flex gap-2">
+                <button
+                  className="mt-6 flex-1 rounded-xl border px-3 py-2 hover:bg-gray-50"
+                  onClick={() => onRemoveExtra(e.id)}
+                >
+                  Remove
+                </button>
+              </div>
             </div>
-            <div className="col-span-3">
-              <span className="text-xs text-gray-500">Amount</span>
-              <input
-                className="mt-1 w-full rounded-xl border p-2"
-                type="number"
-                min={0}
-                step="100"
-                value={e.amount}
-                onChange={(ev) => {
-                  const v = parseFloat(ev.target.value || "0");
-                  onUpdateExtra(e.id, 'amount', v);
-                }}
-              />
-            </div>
-            <div className="col-span-2 flex gap-2">
-              <button
-                className="mt-6 flex-1 rounded-xl border px-3 py-2 hover:bg-gray-50"
-                onClick={() => onRemoveExtra(e.id)}
-              >
-                Remove
-              </button>
+            
+            {/* Recurring Payment Options */}
+            <div className="space-y-3">
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={e.isRecurring || false}
+                  onChange={(ev) => {
+                    onUpdateExtra(e.id, 'isRecurring', ev.target.checked);
+                    // Reset recurring fields when unchecked
+                    if (!ev.target.checked) {
+                      onUpdateExtra(e.id, 'recurringQuantity', 0);
+                      onUpdateExtra(e.id, 'recurringEndMonth', 0);
+                    }
+                  }}
+                />
+                <span className="text-sm font-medium">Make this a recurring payment</span>
+              </label>
+              
+              {e.isRecurring && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <span className="text-xs text-gray-500">Number of payments</span>
+                    <input
+                      className="mt-1 w-full rounded-xl border p-2"
+                      type="number"
+                      min={1}
+                      max={termMonths}
+                      step="1"
+                      value={e.recurringQuantity || 1}
+                      onChange={(ev) => {
+                        const v = parseInt(ev.target.value || "1", 10);
+                        onUpdateExtra(e.id, 'recurringQuantity', v);
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <span className="text-xs text-gray-500">End month (optional)</span>
+                    <input
+                      className="mt-1 w-full rounded-xl border p-2"
+                      type="number"
+                      min={e.month + 1}
+                      max={termMonths}
+                      step="1"
+                      value={e.recurringEndMonth || ''}
+                      onChange={(ev) => {
+                        const v = parseInt(ev.target.value || "0", 10);
+                        onUpdateExtra(e.id, 'recurringEndMonth', v || 0);
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         ))}

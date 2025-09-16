@@ -28,8 +28,26 @@ export const useMortgageCalculation = () => {
     const map: ExtraMap = {};
     for (const e of extras) {
       if (!Number.isFinite(e.month) || e.month < 1) continue;
-      const m = Math.min(termMonths, Math.round(e.month));
-      map[m] = round2((map[m] || 0) + Math.max(0, e.amount));
+      const startMonth = Math.min(termMonths, Math.round(e.month));
+      const amount = Math.max(0, e.amount);
+      
+      if (e.isRecurring) {
+        // Handle recurring payments
+        const quantity = e.recurringQuantity || 1;
+        const endMonth = e.recurringEndMonth || (startMonth + quantity - 1);
+        const actualEndMonth = Math.min(termMonths, endMonth);
+        const actualQuantity = Math.min(quantity, actualEndMonth - startMonth + 1);
+        
+        for (let i = 0; i < actualQuantity; i++) {
+          const month = startMonth + i;
+          if (month <= termMonths) {
+            map[month] = round2((map[month] || 0) + amount);
+          }
+        }
+      } else {
+        // Handle single payment
+        map[startMonth] = round2((map[startMonth] || 0) + amount);
+      }
     }
     return map;
   }, [extras, termMonths]);
@@ -83,7 +101,7 @@ export const useMortgageCalculation = () => {
     setExtras((xs) => xs.filter((x) => x.id !== id));
   };
 
-  const handleUpdateExtra = (id: string, field: keyof ExtraItem, value: number) => {
+  const handleUpdateExtra = (id: string, field: keyof ExtraItem, value: number | boolean) => {
     setExtras((xs) => xs.map((x) => (x.id === id ? { ...x, [field]: value } : x)));
   };
 

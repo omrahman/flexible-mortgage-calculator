@@ -8,6 +8,9 @@ export interface ExtraItem {
   id: string;
   month: number;
   amount: number;
+  isRecurring?: boolean;
+  recurringQuantity?: number; // number of payments
+  recurringEndMonth?: number; // end month for recurring payments
 }
 
 export interface Row {
