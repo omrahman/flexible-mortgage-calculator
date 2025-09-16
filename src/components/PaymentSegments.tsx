@@ -62,9 +62,6 @@ export const PaymentSegments: React.FC<PaymentSegmentsProps> = ({
                         <span className="font-semibold text-gray-800">Total PITI:</span>
                         <span className="font-semibold text-green-600 text-lg">{fmtUSD(totalPITI)}</span>
                       </div>
-                      <div className="text-xs text-gray-500">
-                        Monthly housing payment
-                      </div>
                     </div>
                   </div>
                 </div>

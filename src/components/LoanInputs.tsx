@@ -215,7 +215,7 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
           />
         </label>
         <label className="col-span-2">
-          <span className="text-sm text-gray-600">Start (YYYY-MM)</span>
+          <span className="text-sm text-gray-600">Start</span>
           <input
             className="mt-1 w-full rounded-xl border p-2"
             type="month"
