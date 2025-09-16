@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ExtraItem } from '../types';
+import type { ExtraItem, RecurringFrequency } from '../types';
 
 interface ExtraPaymentsProps {
   extras: ExtraItem[];
@@ -10,7 +10,7 @@ interface ExtraPaymentsProps {
   setRecastMonthsText: (value: string) => void;
   onAddExtra: () => void;
   onRemoveExtra: (id: string) => void;
-  onUpdateExtra: (id: string, field: keyof ExtraItem, value: number | boolean) => void;
+  onUpdateExtra: (id: string, fieldOrUpdates: keyof ExtraItem | Partial<ExtraItem>, value?: number | boolean | RecurringFrequency) => void;
 }
 
 export const ExtraPayments: React.FC<ExtraPaymentsProps> = ({
@@ -78,50 +78,100 @@ export const ExtraPayments: React.FC<ExtraPaymentsProps> = ({
               <label className="flex items-center gap-2">
                 <input
                   type="checkbox"
-                  checked={e.isRecurring || false}
+                  checked={Boolean(e.isRecurring)}
                   onChange={(ev) => {
-                    onUpdateExtra(e.id, 'isRecurring', ev.target.checked);
-                    // Reset recurring fields when unchecked
-                    if (!ev.target.checked) {
-                      onUpdateExtra(e.id, 'recurringQuantity', 0);
-                      onUpdateExtra(e.id, 'recurringEndMonth', 0);
+                    const isChecked = ev.target.checked;
+                    if (isChecked) {
+                      onUpdateExtra(e.id, 'isRecurring', true);
+                    } else {
+                      // Reset all recurring fields when unchecked in a single update
+                      onUpdateExtra(e.id, {
+                        isRecurring: false,
+                        recurringQuantity: 1,
+                        recurringEndMonth: 0,
+                        recurringFrequency: 'monthly'
+                      });
                     }
                   }}
                 />
                 <span className="text-sm font-medium">Make this a recurring payment</span>
               </label>
               
-              {e.isRecurring && (
-                <div className="grid grid-cols-2 gap-4">
+              {Boolean(e.isRecurring) && (
+                <div className="space-y-4">
+                  {/* Frequency Selection */}
                   <div>
-                    <span className="text-xs text-gray-500">Number of payments</span>
-                    <input
-                      className="mt-1 w-full rounded-xl border p-2"
-                      type="number"
-                      min={1}
-                      max={termMonths}
-                      step="1"
-                      value={e.recurringQuantity || 1}
-                      onChange={(ev) => {
-                        const v = parseInt(ev.target.value || "1", 10);
-                        onUpdateExtra(e.id, 'recurringQuantity', v);
-                      }}
-                    />
+                    <span className="text-xs text-gray-500 block mb-2">Payment frequency</span>
+                    <div className="flex gap-4">
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          name={`frequency-${e.id}`}
+                          value="monthly"
+                          checked={(e.recurringFrequency || 'monthly') === 'monthly'}
+                          onChange={(ev) => {
+                            onUpdateExtra(e.id, 'recurringFrequency', ev.target.value as RecurringFrequency);
+                          }}
+                        />
+                        <span className="text-sm">Monthly</span>
+                      </label>
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          name={`frequency-${e.id}`}
+                          value="annually"
+                          checked={e.recurringFrequency === 'annually'}
+                          onChange={(ev) => {
+                            onUpdateExtra(e.id, 'recurringFrequency', ev.target.value as RecurringFrequency);
+                          }}
+                        />
+                        <span className="text-sm">Annually</span>
+                      </label>
+                    </div>
                   </div>
-                  <div>
-                    <span className="text-xs text-gray-500">End month (optional)</span>
-                    <input
-                      className="mt-1 w-full rounded-xl border p-2"
-                      type="number"
-                      min={e.month + 1}
-                      max={termMonths}
-                      step="1"
-                      value={e.recurringEndMonth || ''}
-                      onChange={(ev) => {
-                        const v = parseInt(ev.target.value || "0", 10);
-                        onUpdateExtra(e.id, 'recurringEndMonth', v || 0);
-                      }}
-                    />
+                  
+                  {/* Payment Details */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <span className="text-xs text-gray-500">
+                        Number of payments
+                        {e.recurringFrequency === 'annually' && (
+                          <span className="text-gray-400 ml-1">(years)</span>
+                        )}
+                      </span>
+                      <input
+                        className="mt-1 w-full rounded-xl border p-2"
+                        type="number"
+                        min={1}
+                        max={e.recurringFrequency === 'annually' ? Math.ceil(termMonths / 12) : termMonths}
+                        step="1"
+                        value={e.recurringQuantity || 1}
+                        onChange={(ev) => {
+                          const v = parseInt(ev.target.value || "1", 10);
+                          onUpdateExtra(e.id, 'recurringQuantity', v);
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <span className="text-xs text-gray-500">
+                        End month (optional)
+                        {e.recurringFrequency === 'annually' && (
+                          <span className="text-gray-400 ml-1">(will be adjusted to year boundaries)</span>
+                        )}
+                      </span>
+                      <input
+                        className="mt-1 w-full rounded-xl border p-2"
+                        type="number"
+                        min={e.month + (e.recurringFrequency === 'annually' ? 12 : 1)}
+                        max={termMonths}
+                        step={e.recurringFrequency === 'annually' ? "12" : "1"}
+                        value={e.recurringEndMonth || ''}
+                        onChange={(ev) => {
+                          const v = parseInt(ev.target.value || "0", 10);
+                          onUpdateExtra(e.id, 'recurringEndMonth', v || 0);
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
               )}

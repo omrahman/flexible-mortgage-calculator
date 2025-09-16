@@ -4,6 +4,8 @@ export interface ExtraMap {
   [monthIndex: number]: number; // 1-based month index -> extra amount
 }
 
+export type RecurringFrequency = 'monthly' | 'annually';
+
 export interface ExtraItem {
   id: string;
   month: number;
@@ -11,6 +13,7 @@ export interface ExtraItem {
   isRecurring?: boolean;
   recurringQuantity?: number; // number of payments
   recurringEndMonth?: number; // end month for recurring payments
+  recurringFrequency?: RecurringFrequency; // frequency of recurring payments
 }
 
 export interface Row {

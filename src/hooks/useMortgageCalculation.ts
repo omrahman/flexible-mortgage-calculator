@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import { buildSchedule, parseMonthInput } from '../utils/calculations';
 import { round2 } from '../utils/formatters';
-import type { ExtraItem, ExtraMap, ScheduleParams, CachedInputs } from '../types';
+import type { ExtraItem, ExtraMap, ScheduleParams, CachedInputs, RecurringFrequency } from '../types';
 import { DEFAULT_HOME_PRICE, DEFAULT_DOWN_PAYMENT, DEFAULT_INTEREST_RATE, DEFAULT_TERM_YEARS, DEFAULT_PROPERTY_TAX_ANNUAL, DEFAULT_INSURANCE_ANNUAL, DEFAULT_EXTRA_PAYMENTS } from '../constants';
 import { useLocalStorage } from './useLocalStorage';
 
@@ -191,13 +191,14 @@ export const useMortgageCalculation = () => {
       if (e.isRecurring) {
         // Handle recurring payments
         const quantity = e.recurringQuantity || 1;
-        const endMonth = e.recurringEndMonth || (startMonth + quantity - 1);
+        const frequency = e.recurringFrequency || 'monthly';
+        const interval = frequency === 'annually' ? 12 : 1;
+        const endMonth = e.recurringEndMonth || (startMonth + (quantity - 1) * interval);
         const actualEndMonth = Math.min(termMonths, endMonth);
-        const actualQuantity = Math.min(quantity, actualEndMonth - startMonth + 1);
         
-        for (let i = 0; i < actualQuantity; i++) {
-          const month = startMonth + i;
-          if (month <= termMonths) {
+        for (let i = 0; i < quantity; i++) {
+          const month = startMonth + (i * interval);
+          if (month <= termMonths && month <= actualEndMonth) {
             map[month] = round2((map[month] || 0) + amount);
           }
         }
@@ -258,8 +259,19 @@ export const useMortgageCalculation = () => {
     setExtras((xs) => xs.filter((x) => x.id !== id));
   };
 
-  const handleUpdateExtra = (id: string, field: keyof ExtraItem, value: number | boolean) => {
-    setExtras((xs) => xs.map((x) => (x.id === id ? { ...x, [field]: value } : x)));
+  const handleUpdateExtra = (id: string, fieldOrUpdates: keyof ExtraItem | Partial<ExtraItem>, value?: number | boolean | RecurringFrequency) => {
+    setExtras((xs) => xs.map((x) => {
+      if (x.id === id) {
+        if (typeof fieldOrUpdates === 'string') {
+          // Single field update
+          return { ...x, [fieldOrUpdates]: value };
+        } else {
+          // Multiple field update
+          return { ...x, ...fieldOrUpdates };
+        }
+      }
+      return x;
+    }));
   };
 
   // Function to clear all cached inputs (useful for reset functionality)
