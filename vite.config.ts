@@ -10,6 +10,35 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true
+    sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // React vendor chunk
+          'react-vendor': ['react', 'react-dom'],
+          
+          // Recharts vendor chunk (likely the largest dependency)
+          'recharts-vendor': ['recharts'],
+          
+          // Utility chunks
+          'utils-calculations': ['./src/utils/calculations'],
+          'utils-serialization': ['./src/utils/serialization', './src/utils/validation'],
+          'utils-formatters': ['./src/utils/formatters', './src/utils/csv'],
+          
+          // Component chunks
+          'components-charts': ['./src/components/BalanceChart'],
+          'components-tables': ['./src/components/AmortizationTable', './src/components/TableComponents'],
+          'components-forms': ['./src/components/LoanInputs', './src/components/ExtraPayments'],
+          'components-summary': ['./src/components/SummarySection', './src/components/SummaryCard'],
+          'components-saved': ['./src/components/SavedConfigurations', './src/components/ConfigurationModal'],
+          
+          // Hook chunks
+          'hooks-mortgage': ['./src/hooks/useMortgageCalculation'],
+          'hooks-config': ['./src/hooks/useConfigurations', './src/hooks/useSavedConfigurations'],
+          'hooks-fields': ['./src/hooks/useField', './src/hooks/useInputField', './src/hooks/useNumberField'],
+          'hooks-storage': ['./src/hooks/useLocalStorage']
+        }
+      }
+    }
   }
 })

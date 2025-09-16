@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, lazy, Suspense } from 'react';
 import { useMortgageCalculation } from '../hooks/useMortgageCalculation';
 import { useConfigurations } from '../hooks/useConfigurations';
 import { SavedConfiguration } from '../types';
@@ -6,11 +6,18 @@ import { LoanInputs } from './LoanInputs';
 import { ExtraPayments } from './ExtraPayments';
 import { SummarySection } from './SummarySection';
 import { PaymentSegments } from './PaymentSegments';
-import { BalanceChart } from './BalanceChart';
-import { AmortizationTable } from './AmortizationTable';
 import { SavedConfigurations } from './SavedConfigurations';
-import { csvFor, downloadCSV } from '../utils/csv';
 import { CSV_FILENAME } from '../constants';
+
+// Lazy load heavy components
+const BalanceChart = lazy(() => import('./BalanceChart').then(module => ({ default: module.BalanceChart })));
+const AmortizationTable = lazy(() => import('./AmortizationTable').then(module => ({ default: module.AmortizationTable })));
+
+// Lazy load CSV utilities
+const loadCSVUtils = () => import('../utils/csv').then(module => ({
+  csvFor: module.csvFor,
+  downloadCSV: module.downloadCSV
+}));
 
 export default function MortgageCalculator() {
   const {
@@ -59,7 +66,8 @@ export default function MortgageCalculator() {
 
   const { updateConfiguration, getConfiguration } = useConfigurations();
 
-  const handleDownloadCSV = () => {
+  const handleDownloadCSV = async () => {
+    const { csvFor, downloadCSV } = await loadCSVUtils();
     downloadCSV(csvFor(result.rows), CSV_FILENAME);
   };
 
@@ -162,14 +170,18 @@ export default function MortgageCalculator() {
             monthlyPITI={monthlyPITI}
           />
 
-          <BalanceChart chartData={result.chart} />
+          <Suspense fallback={<div className="rounded-2xl bg-white p-5 shadow animate-pulse"><div className="h-64 bg-gray-200 rounded"></div></div>}>
+            <BalanceChart chartData={result.chart} />
+          </Suspense>
 
-          <AmortizationTable
-            rows={result.rows}
-            showAll={showAll}
-            onToggleShowAll={() => setShowAll(!showAll)}
-            onDownloadCSV={handleDownloadCSV}
-          />
+          <Suspense fallback={<div className="rounded-2xl bg-white p-5 shadow animate-pulse"><div className="h-64 bg-gray-200 rounded"></div></div>}>
+            <AmortizationTable
+              rows={result.rows}
+              showAll={showAll}
+              onToggleShowAll={() => setShowAll(!showAll)}
+              onDownloadCSV={handleDownloadCSV}
+            />
+          </Suspense>
         </div>
 
         {/* Payment Segments */}
