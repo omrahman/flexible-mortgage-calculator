@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useConfigurations } from '../contexts/ConfigurationsContext';
 import { ConfigurationModal } from './ConfigurationModal';
 import { SavedConfiguration, CachedInputs } from '../types';
@@ -116,7 +116,7 @@ export function SavedConfigurations({
                   </p>
                 )}
                 <p className="text-xs text-gray-500">
-                  ${config.inputs.principal} • {config.inputs.rate}% • {config.inputs.termYears} years
+                  ${config.inputs.homePrice} • {config.inputs.rate}% • {config.inputs.termYears} years
                 </p>
                 <p className="text-xs text-gray-400">
                   {new Date(config.createdAt).toLocaleDateString()}

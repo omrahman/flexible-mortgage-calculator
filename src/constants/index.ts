@@ -1,7 +1,8 @@
 // Application constants and configuration
 
-export const DEFAULT_LOAN_AMOUNT = "550000";
-export const DEFAULT_INTEREST_RATE = "6.75";
+export const DEFAULT_HOME_PRICE = "1000000";
+export const DEFAULT_DOWN_PAYMENT = { type: 'percentage' as const, value: "20" };
+export const DEFAULT_INTEREST_RATE = "4.85";
 export const DEFAULT_TERM_YEARS = "30";
 export const DEFAULT_EXTRA_PAYMENTS = [
   { id: 'default-1', month: 6, amount: 10000 },

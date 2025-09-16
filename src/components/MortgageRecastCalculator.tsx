@@ -13,8 +13,10 @@ import { CSV_FILENAME } from '../constants';
 export default function MortgageRecastCalculator() {
   const {
     // State
-    principal,
-    setPrincipal,
+    homePrice,
+    setHomePrice,
+    downPayment,
+    setDownPayment,
     rate,
     setRate,
     termYears,
@@ -48,7 +50,7 @@ export default function MortgageRecastCalculator() {
     hasUnsavedChanges,
   } = useMortgageCalculation();
 
-  const { updateConfiguration, getConfiguration, configurations } = useConfigurations();
+  const { updateConfiguration, getConfiguration } = useConfigurations();
 
   const handleDownloadCSV = () => {
     downloadCSV(csvFor(result.rows), CSV_FILENAME);
@@ -85,7 +87,8 @@ export default function MortgageRecastCalculator() {
 
   // Get current inputs for saving
   const currentInputs = useMemo(() => ({
-    principal,
+    homePrice,
+    downPayment,
     rate,
     termYears,
     startYM,
@@ -93,7 +96,7 @@ export default function MortgageRecastCalculator() {
     autoRecast,
     recastMonthsText,
     showAll,
-  }), [principal, rate, termYears, startYM, extras, autoRecast, recastMonthsText, showAll]);
+  }), [homePrice, downPayment, rate, termYears, startYM, extras, autoRecast, recastMonthsText, showAll]);
 
 
   return (
@@ -102,8 +105,10 @@ export default function MortgageRecastCalculator() {
         {/* Inputs */}
         <div className="lg:col-span-2 space-y-6">
           <LoanInputs
-            principal={principal}
-            setPrincipal={setPrincipal}
+            homePrice={homePrice}
+            setHomePrice={setHomePrice}
+            downPayment={downPayment}
+            setDownPayment={setDownPayment}
             rate={rate}
             setRate={setRate}
             termYears={termYears}

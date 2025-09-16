@@ -56,9 +56,18 @@ export interface TableCellProps {
   className?: string;
 }
 
+// Down payment input types
+export type DownPaymentType = 'percentage' | 'dollar';
+
+export interface DownPaymentInput {
+  type: DownPaymentType;
+  value: string; // percentage (0-100) or dollar amount
+}
+
 // Interface for cached user inputs in localStorage
 export interface CachedInputs {
-  principal: string;
+  homePrice: string; // Total home price
+  downPayment: DownPaymentInput;
   rate: string;
   termYears: string;
   startYM: string;

@@ -4,13 +4,14 @@ import { useMemo } from 'react';
 import { buildSchedule, parseMonthInput } from '../utils/calculations';
 import { round2 } from '../utils/formatters';
 import type { ExtraItem, ExtraMap, ScheduleParams, CachedInputs } from '../types';
-import { DEFAULT_LOAN_AMOUNT, DEFAULT_INTEREST_RATE, DEFAULT_TERM_YEARS, DEFAULT_EXTRA_PAYMENTS } from '../constants';
+import { DEFAULT_HOME_PRICE, DEFAULT_DOWN_PAYMENT, DEFAULT_INTEREST_RATE, DEFAULT_TERM_YEARS, DEFAULT_EXTRA_PAYMENTS } from '../constants';
 import { useLocalStorage } from './useLocalStorage';
 
 export const useMortgageCalculation = () => {
   // Default values for cached inputs
   const defaultCachedInputs: CachedInputs = {
-    principal: DEFAULT_LOAN_AMOUNT,
+    homePrice: DEFAULT_HOME_PRICE,
+    downPayment: DEFAULT_DOWN_PAYMENT,
     rate: DEFAULT_INTEREST_RATE,
     termYears: DEFAULT_TERM_YEARS,
     startYM: (() => {
@@ -25,11 +26,52 @@ export const useMortgageCalculation = () => {
     showAll: false,
   };
 
-  // Use localStorage to persist all user inputs
-  const [cachedInputs, setCachedInputs, clearCachedInputs] = useLocalStorage<CachedInputs>(
+  // Migration function to handle old data structure
+  const migrateCachedInputs = (inputs: any): CachedInputs => {
+    // If it's already the new structure, return as is
+    if (inputs.homePrice && inputs.downPayment) {
+      return inputs;
+    }
+    
+    // Migrate from old structure
+    return {
+      homePrice: inputs.principal || DEFAULT_HOME_PRICE,
+      downPayment: DEFAULT_DOWN_PAYMENT,
+      rate: inputs.rate || DEFAULT_INTEREST_RATE,
+      termYears: inputs.termYears || DEFAULT_TERM_YEARS,
+      startYM: inputs.startYM || (() => {
+        const d = new Date();
+        const y = d.getFullYear();
+        const m = (d.getMonth() + 1).toString().padStart(2, "0");
+        return `${y}-${m}`;
+      })(),
+      extras: inputs.extras || DEFAULT_EXTRA_PAYMENTS,
+      autoRecast: inputs.autoRecast !== undefined ? inputs.autoRecast : true,
+      recastMonthsText: inputs.recastMonthsText,
+      showAll: inputs.showAll || false,
+    };
+  };
+
+  // Use localStorage to persist all user inputs with migration
+  const [rawCachedInputs, setRawCachedInputs, clearCachedInputs] = useLocalStorage<any>(
     'mortgage-calculator-inputs',
     defaultCachedInputs
   );
+  
+  // Migrate the cached inputs to the new structure
+  const cachedInputs = useMemo(() => migrateCachedInputs(rawCachedInputs), [rawCachedInputs]);
+  
+  // Wrapper for setCachedInputs that ensures the new structure
+  const setCachedInputs = (value: CachedInputs | ((prev: CachedInputs) => CachedInputs)) => {
+    if (typeof value === 'function') {
+      setRawCachedInputs((prev: any) => {
+        const migrated = migrateCachedInputs(prev);
+        return value(migrated);
+      });
+    } else {
+      setRawCachedInputs(value);
+    }
+  };
 
   // Track which configuration is currently loaded (if any)
   const [loadedConfigurationId, setLoadedConfigurationId] = useLocalStorage<string | null>(
@@ -43,19 +85,36 @@ export const useMortgageCalculation = () => {
     null
   );
 
-  // Extract individual values from cached inputs
-  const principal = cachedInputs.principal;
+  // Extract individual values from cached inputs (now guaranteed to be in new structure)
+  const homePrice = cachedInputs.homePrice;
+  const downPayment = cachedInputs.downPayment;
   const rate = cachedInputs.rate;
   const termYears = cachedInputs.termYears;
   const startYM = cachedInputs.startYM;
   const extras = cachedInputs.extras;
   const autoRecast = cachedInputs.autoRecast;
   const recastMonthsText = cachedInputs.recastMonthsText || '';
+
+  // Calculate principal (loan amount) from home price and down payment
+  const principal = useMemo(() => {
+    const homePriceNum = parseFloat(homePrice) || 0;
+    const downPaymentValue = parseFloat(downPayment.value) || 0;
+    
+    if (downPayment.type === 'percentage') {
+      return homePriceNum * (1 - downPaymentValue / 100);
+    } else {
+      return Math.max(0, homePriceNum - downPaymentValue);
+    }
+  }, [homePrice, downPayment]);
   const showAll = cachedInputs.showAll;
 
   // Individual setters that update the cached inputs
-  const setPrincipal = (value: string) => {
-    setCachedInputs((prev: CachedInputs) => ({ ...prev, principal: value }));
+  const setHomePrice = (value: string) => {
+    setCachedInputs((prev: CachedInputs) => ({ ...prev, homePrice: value }));
+  };
+
+  const setDownPayment = (value: any) => {
+    setCachedInputs((prev: CachedInputs) => ({ ...prev, downPayment: value }));
   };
 
   const setRate = (value: string) => {
@@ -204,7 +263,8 @@ export const useMortgageCalculation = () => {
     }
     
     return (
-      cachedInputs.principal !== originalInputs.principal ||
+      cachedInputs.homePrice !== originalInputs.homePrice ||
+      JSON.stringify(cachedInputs.downPayment) !== JSON.stringify(originalInputs.downPayment) ||
       cachedInputs.rate !== originalInputs.rate ||
       cachedInputs.termYears !== originalInputs.termYears ||
       cachedInputs.startYM !== originalInputs.startYM ||
@@ -217,8 +277,11 @@ export const useMortgageCalculation = () => {
 
   return {
     // State
-    principal,
-    setPrincipal,
+    homePrice,
+    setHomePrice,
+    downPayment,
+    setDownPayment,
+    principal, // calculated from home price and down payment
     rate,
     setRate,
     termYears,
