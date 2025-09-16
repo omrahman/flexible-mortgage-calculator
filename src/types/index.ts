@@ -4,9 +4,25 @@ export interface ExtraMap {
   [monthIndex: number]: number; // 1-based month index -> extra amount
 }
 
+export interface ForgivenessMap {
+  [monthIndex: number]: number; // 1-based month index -> forgiveness amount
+}
+
 export type RecurringFrequency = 'monthly' | 'annually';
 
 export interface ExtraItem {
+  id: string;
+  month: number;
+  amount: number;
+  monthInput?: MonthInput; // UI state for month input type and value
+  
+  // Recurrence information
+  isRecurring?: boolean;
+  recurringQuantity?: number; // number of payments
+  recurringFrequency?: RecurringFrequency; // frequency of recurring payments
+}
+
+export interface ForgivenessItem {
   id: string;
   month: number;
   amount: number;
@@ -25,10 +41,12 @@ export interface Row {
   interest: number;
   principal: number;
   extra: number; // extra paid this month
+  forgiveness: number; // forgiveness amount this month
   total: number; // total cash out this month
   balance: number; // ending balance after this month
   cumulativeInterest: number; // cumulative interest paid up to this month
   cumulativePrincipal: number; // cumulative principal paid up to this month
+  cumulativeForgiveness: number; // cumulative forgiveness up to this month
   recast?: boolean; // did a recast trigger at end of this month
   newPayment?: number; // if recast, new scheduled P&I
 }
@@ -37,9 +55,10 @@ export interface ScheduleResult {
   rows: Row[];
   totalInterest: number;
   totalPaid: number;
+  totalForgiveness: number; // total forgiveness amount
   payoffMonth: number; // 1-based index of final month
   segments: { start: number; payment: number }[]; // payment changes over time
-  chart: { name: string; balance: number; cumulativeInterest: number; cumulativePrincipal: number }[];
+  chart: { name: string; balance: number; cumulativeInterest: number; cumulativePrincipal: number; cumulativeForgiveness: number }[];
 }
 
 export interface ScheduleParams {
@@ -48,6 +67,7 @@ export interface ScheduleParams {
   termMonths: number;
   startYM: string;
   extras: ExtraMap;
+  forgiveness: ForgivenessMap;
   recastMonths: Set<number>;
   autoRecastOnExtra: boolean;
 }
@@ -89,6 +109,7 @@ export interface CachedInputs {
   propertyTaxAnnual: string; // Annual property tax amount
   insuranceAnnual: string; // Annual insurance amount
   extras: ExtraItem[];
+  forgiveness: ForgivenessItem[];
   autoRecast: boolean;
   recastMonthsText?: string; // Optional - only used when user specifies recast months
   showAll: boolean;
@@ -144,6 +165,7 @@ export interface LoanConfigurationSchema {
     insuranceAnnual: string;
   };
   extraPayments: ExtraItem[];
+  forgivenessPayments: ForgivenessItem[];
   recastSettings: {
     autoRecast: boolean;
     recastMonths: number[]; // Array of month numbers for manual recast

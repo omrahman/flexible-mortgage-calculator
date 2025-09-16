@@ -59,6 +59,7 @@ export const completeLoanConfigurationExample: LoanConfigurationSchema = {
     insuranceAnnual: '1800'
   },
   extraPayments: allExtraPaymentExamples,
+  forgivenessPayments: [],
   recastSettings: {
     autoRecast: true,
     recastMonths: [12, 24, 36, 48, 60]

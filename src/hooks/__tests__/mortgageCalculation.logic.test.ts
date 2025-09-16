@@ -16,6 +16,7 @@ describe('Mortgage Calculation Business Logic', () => {
     propertyTaxAnnual: '12000',
     insuranceAnnual: '2400',
     extras: [],
+    forgiveness: [],
     autoRecast: true,
     showAll: false,
   });
@@ -225,6 +226,7 @@ describe('Mortgage Calculation Business Logic', () => {
         termMonths,
         startYM,
         extras: {},
+        forgiveness: {},
         recastMonths: new Set(),
         autoRecastOnExtra: false,
       });
@@ -248,6 +250,7 @@ describe('Mortgage Calculation Business Logic', () => {
         termMonths,
         startYM,
         extras,
+        forgiveness: {},
         recastMonths: new Set(),
         autoRecastOnExtra: false,
       });
@@ -273,6 +276,7 @@ describe('Mortgage Calculation Business Logic', () => {
         termMonths,
         startYM,
         extras: {},
+        forgiveness: {},
         recastMonths: new Set(),
         autoRecastOnExtra: false,
       });
@@ -284,6 +288,7 @@ describe('Mortgage Calculation Business Logic', () => {
         termMonths,
         startYM,
         extras: { 1: 1000, 12: 5000 },
+        forgiveness: {},
         recastMonths: new Set(),
         autoRecastOnExtra: false,
       });

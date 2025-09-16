@@ -10,6 +10,7 @@ describe('Mortgage Calculator Integration Tests', () => {
         termMonths: 360,
         startYM: '2024-01',
         extras: {},
+        forgiveness: {},
         recastMonths: new Set(),
         autoRecastOnExtra: false,
       };
@@ -42,6 +43,7 @@ describe('Mortgage Calculator Integration Tests', () => {
         termMonths: 360,
         startYM: '2024-01',
         extras: {},
+        forgiveness: {},
         recastMonths: new Set(),
         autoRecastOnExtra: false,
       };
@@ -62,6 +64,7 @@ describe('Mortgage Calculator Integration Tests', () => {
         termMonths: 360,
         startYM: '2024-01',
         extras: { 12: 10000 },
+        forgiveness: {},
         recastMonths: new Set(),
         autoRecastOnExtra: false,
       };
@@ -89,6 +92,7 @@ describe('Mortgage Calculator Integration Tests', () => {
           24: 15000, 
           36: 20000 
         },
+        forgiveness: {},
         recastMonths: new Set(),
         autoRecastOnExtra: false,
       };
@@ -111,6 +115,7 @@ describe('Mortgage Calculator Integration Tests', () => {
         termMonths: 360,
         startYM: '2024-01',
         extras: { 1: 100000 }, // Pay off entire loan in first month
+        forgiveness: {},
         recastMonths: new Set(),
         autoRecastOnExtra: false,
       };
@@ -132,6 +137,7 @@ describe('Mortgage Calculator Integration Tests', () => {
         termMonths: 360,
         startYM: '2024-01',
         extras: { 12: 50000, 24: 50000 }, // Large extra payments
+        forgiveness: {},
         recastMonths: new Set([12, 24]),
         autoRecastOnExtra: false,
       };
@@ -156,6 +162,7 @@ describe('Mortgage Calculator Integration Tests', () => {
         termMonths: 360,
         startYM: '2024-01',
         extras: { 6: 25000, 18: 25000 },
+        forgiveness: {},
         recastMonths: new Set(),
         autoRecastOnExtra: true,
       };
@@ -181,6 +188,7 @@ describe('Mortgage Calculator Integration Tests', () => {
         termMonths: 360,
         startYM: '2024-01',
         extras: {},
+        forgiveness: {},
         recastMonths: new Set(),
         autoRecastOnExtra: false,
       };
@@ -200,6 +208,7 @@ describe('Mortgage Calculator Integration Tests', () => {
         termMonths: 12,
         startYM: '2024-01',
         extras: {},
+        forgiveness: {},
         recastMonths: new Set(),
         autoRecastOnExtra: false,
       };
@@ -218,6 +227,7 @@ describe('Mortgage Calculator Integration Tests', () => {
         termMonths: 360,
         startYM: '2024-01',
         extras: {},
+        forgiveness: {},
         recastMonths: new Set(),
         autoRecastOnExtra: false,
       };
@@ -235,6 +245,7 @@ describe('Mortgage Calculator Integration Tests', () => {
         termMonths: 360,
         startYM: '2024-01',
         extras: {},
+        forgiveness: {},
         recastMonths: new Set(),
         autoRecastOnExtra: false,
       };
@@ -254,6 +265,7 @@ describe('Mortgage Calculator Integration Tests', () => {
         termMonths: 360,
         startYM: '2024-01',
         extras: { 12: 10000, 24: 15000 },
+        forgiveness: {},
         recastMonths: new Set([12, 24]),
         autoRecastOnExtra: false,
       };
@@ -281,6 +293,7 @@ describe('Mortgage Calculator Integration Tests', () => {
         termMonths: 360,
         startYM: '2024-01',
         extras: {},
+        forgiveness: {},
         recastMonths: new Set(),
         autoRecastOnExtra: false,
       };
@@ -302,6 +315,7 @@ describe('Mortgage Calculator Integration Tests', () => {
         termMonths: 360,
         startYM: '2024-01',
         extras: {},
+        forgiveness: {},
         recastMonths: new Set(),
         autoRecastOnExtra: false,
       };
@@ -326,6 +340,7 @@ describe('Mortgage Calculator Integration Tests', () => {
         termMonths: 360,
         startYM: '2024-01',
         extras: { 1: 1000, 12: 5000 },
+        forgiveness: {},
         recastMonths: new Set(),
         autoRecastOnExtra: false,
       };
@@ -356,6 +371,7 @@ describe('Mortgage Calculator Integration Tests', () => {
         termMonths: 360,
         startYM: '2024-01',
         extras,
+        forgiveness: {},
         recastMonths: new Set(),
         autoRecastOnExtra: true,
       };
@@ -380,6 +396,7 @@ describe('Mortgage Calculator Integration Tests', () => {
         termMonths: 360,
         startYM: '2024-01',
         extras: { 12: 10000, 24: 15000, 36: 20000 },
+        forgiveness: {},
         recastMonths,
         autoRecastOnExtra: false,
       };

@@ -167,6 +167,7 @@ describe('buildSchedule', () => {
     termMonths: 360,
     startYM: '2024-01',
     extras: {},
+    forgiveness: {},
     recastMonths: new Set(),
     autoRecastOnExtra: false,
     ...overrides,

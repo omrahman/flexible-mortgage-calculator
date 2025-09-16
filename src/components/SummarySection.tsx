@@ -30,6 +30,9 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
         <SummaryCard label="Total Interest (this plan)" value={fmtUSD(result.totalInterest)} />
         <SummaryCard label="Interest Saved" value={fmtUSD(interestSaved)} highlight={interestSaved > 0} />
         <SummaryCard label="Months Saved" value={`${monthsSaved}`} highlight={monthsSaved > 0} />
+        <SummaryCard label="Total Paid" value={fmtUSD(result.totalPaid)} />
+        <SummaryCard label="Total Forgiveness" value={fmtUSD(result.totalForgiveness)} highlight={result.totalForgiveness > 0} />
+        <SummaryCard label="Net Cost" value={fmtUSD(result.totalPaid - result.totalForgiveness)} />
       </div>
 
     </div>

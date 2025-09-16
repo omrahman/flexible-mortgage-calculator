@@ -64,6 +64,7 @@ export const buildSchedule = ({
   termMonths,
   startYM,
   extras,
+  forgiveness,
   recastMonths,
   autoRecastOnExtra,
 }: ScheduleParams): ScheduleResult => {
@@ -74,8 +75,10 @@ export const buildSchedule = ({
   const segments: { start: number; payment: number }[] = [{ start: 1, payment }];
   let totalInterest = 0;
   let totalPaid = 0;
+  let totalForgiveness = 0;
   let cumulativeInterest = 0;
   let cumulativePrincipal = 0;
+  let cumulativeForgiveness = 0;
 
   // Safety: guard against pathological loops.
   const maxIters = termMonths + MAX_ITERATIONS; // allows for recasts/rounding edge cases
@@ -94,22 +97,29 @@ export const buildSchedule = ({
     const maxExtra = round2(bal); // Maximum extra payment is the entire remaining balance
     const extra = Math.max(0, Math.min(plannedExtra, maxExtra));
     
+    const plannedForgiveness = round2(forgiveness[m] || 0);
+    const maxForgiveness = round2(bal); // Maximum forgiveness is the entire remaining balance
+    const forgivenessAmount = Math.max(0, Math.min(plannedForgiveness, maxForgiveness));
+    
     const cashThisMonth = round2(scheduled + extra);
 
     totalInterest = round2(totalInterest + interest);
     totalPaid = round2(totalPaid + cashThisMonth);
+    totalForgiveness = round2(totalForgiveness + forgivenessAmount);
     cumulativeInterest = round2(cumulativeInterest + interest);
     cumulativePrincipal = round2(cumulativePrincipal + principalPart + extra);
+    cumulativeForgiveness = round2(cumulativeForgiveness + forgivenessAmount);
 
     // Calculate new balance, ensuring it doesn't go negative
-    const newBalance = round2(bal - principalPart - extra);
+    // Forgiveness reduces balance but doesn't count as principal paid
+    const newBalance = round2(bal - principalPart - extra - forgivenessAmount);
     bal = Math.max(0, newBalance);
 
     let didRecast = false;
     let newPayment: number | undefined;
 
     const shouldRecast =
-      (recastMonths.has(m) || (autoRecastOnExtra && extra > 0)) && monthsRemaining > 0 && bal > 0;
+      (recastMonths.has(m) || (autoRecastOnExtra && (extra > 0 || forgivenessAmount > 0))) && monthsRemaining > 0 && bal > 0;
 
     if (shouldRecast) {
       didRecast = true;
@@ -128,10 +138,12 @@ export const buildSchedule = ({
       interest,
       principal: principalPart,
       extra,
+      forgiveness: forgivenessAmount,
       total: cashThisMonth,
       balance: bal,
       cumulativeInterest,
       cumulativePrincipal,
+      cumulativeForgiveness,
       recast: didRecast || undefined,
       newPayment,
     });
@@ -160,10 +172,12 @@ export const buildSchedule = ({
           interest: payoffInterest,
           principal: payoffPrincipal,
           extra: 0,
+          forgiveness: 0,
           total: payoffTotal,
           balance: 0,
           cumulativeInterest,
           cumulativePrincipal,
+          cumulativeForgiveness,
         });
         break;
       } else {
@@ -178,13 +192,15 @@ export const buildSchedule = ({
     name: `${r.idx}\n${r.date}`, 
     balance: r.balance,
     cumulativeInterest: r.cumulativeInterest,
-    cumulativePrincipal: r.cumulativePrincipal
+    cumulativePrincipal: r.cumulativePrincipal,
+    cumulativeForgiveness: r.cumulativeForgiveness
   }));
 
   return {
     rows,
     totalInterest,
     totalPaid,
+    totalForgiveness,
     payoffMonth: rows[rows.length - 1]?.idx ?? 0,
     segments,
     chart,

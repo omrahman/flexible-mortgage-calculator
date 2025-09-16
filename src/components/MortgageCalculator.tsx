@@ -4,6 +4,7 @@ import { useConfigurations } from '../hooks/useConfigurations';
 import { SavedConfiguration } from '../types';
 import { LoanInputs } from './LoanInputs';
 import { ExtraPayments } from './ExtraPayments';
+import { ForgivenessPayments } from './ForgivenessPayments';
 import { SummarySection } from './SummarySection';
 import { PaymentSegments } from './PaymentSegments';
 import { SavedConfigurations } from './SavedConfigurations';
@@ -37,6 +38,7 @@ export default function MortgageCalculator() {
     insuranceAnnual,
     setInsuranceAnnual,
     extras,
+    forgiveness,
     autoRecast,
     setAutoRecast,
     recastMonthsText,
@@ -55,6 +57,9 @@ export default function MortgageCalculator() {
     handleAddExtra,
     handleRemoveExtra,
     handleUpdateExtra,
+    handleAddForgiveness,
+    handleRemoveForgiveness,
+    handleUpdateForgiveness,
     clearAllInputs,
     loadConfiguration,
     markChangesAsSaved,
@@ -110,10 +115,11 @@ export default function MortgageCalculator() {
     propertyTaxAnnual,
     insuranceAnnual,
     extras,
+    forgiveness,
     autoRecast,
     recastMonthsText,
     showAll,
-  }), [homePrice, downPayment, rate, termYears, startYM, propertyTaxAnnual, insuranceAnnual, extras, autoRecast, recastMonthsText, showAll]);
+  }), [homePrice, downPayment, rate, termYears, startYM, propertyTaxAnnual, insuranceAnnual, extras, forgiveness, autoRecast, recastMonthsText, showAll]);
 
 
   return (
@@ -150,6 +156,19 @@ export default function MortgageCalculator() {
             onAddExtra={handleAddExtra}
             onRemoveExtra={handleRemoveExtra}
             onUpdateExtra={handleUpdateExtra}
+          />
+
+          <ForgivenessPayments
+            forgiveness={forgiveness}
+            termMonths={Math.round(Number(termYears) * 12)}
+            startYM={startYM}
+            autoRecast={autoRecast}
+            setAutoRecast={setAutoRecast}
+            recastMonthsText={recastMonthsText}
+            setRecastMonthsText={setRecastMonthsText}
+            onAddForgiveness={handleAddForgiveness}
+            onRemoveForgiveness={handleRemoveForgiveness}
+            onUpdateForgiveness={handleUpdateForgiveness}
           />
 
           <SavedConfigurations

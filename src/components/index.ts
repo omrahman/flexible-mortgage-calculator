@@ -2,6 +2,7 @@
 export { default as MortgageCalculator } from './MortgageCalculator';
 export { LoanInputs } from './LoanInputs';
 export { ExtraPayments } from './ExtraPayments';
+export { ForgivenessPayments } from './ForgivenessPayments';
 export { SummarySection } from './SummarySection';
 export { PaymentSegments } from './PaymentSegments';
 export { BalanceChart } from './BalanceChart';

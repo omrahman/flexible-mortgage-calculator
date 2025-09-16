@@ -49,10 +49,12 @@ export const AmortizationTable: React.FC<AmortizationTableProps> = ({
               <Th className="text-right">Interest</Th>
               <Th className="text-right">Principal</Th>
               <Th className="text-right">Extra</Th>
+              <Th className="text-right">Forgiveness</Th>
               <Th className="text-right">Total</Th>
               <Th className="text-right">Balance</Th>
               <Th className="text-right">Cum. Interest</Th>
               <Th className="text-right">Cum. Principal</Th>
+              <Th className="text-right">Cum. Forgiveness</Th>
               <Th>Recast</Th>
               <Th className="text-right">New Pmt</Th>
             </tr>
@@ -66,10 +68,12 @@ export const AmortizationTable: React.FC<AmortizationTableProps> = ({
                 <Td className="text-right whitespace-nowrap">{fmtUSD(r.interest)}</Td>
                 <Td className="text-right whitespace-nowrap">{fmtUSD(r.principal)}</Td>
                 <Td className="text-right whitespace-nowrap">{fmtUSD(r.extra)}</Td>
+                <Td className="text-right whitespace-nowrap">{fmtUSD(r.forgiveness)}</Td>
                 <Td className="text-right whitespace-nowrap">{fmtUSD(r.total)}</Td>
                 <Td className="text-right whitespace-nowrap">{fmtUSD(r.balance)}</Td>
                 <Td className="text-right whitespace-nowrap">{fmtUSD(r.cumulativeInterest)}</Td>
                 <Td className="text-right whitespace-nowrap">{fmtUSD(r.cumulativePrincipal)}</Td>
+                <Td className="text-right whitespace-nowrap">{fmtUSD(r.cumulativeForgiveness)}</Td>
                 <Td className="text-center">
                   {r.recast ? (
                     <span className="text-green-700 font-medium">Yes</span>
