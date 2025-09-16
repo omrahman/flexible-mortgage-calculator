@@ -76,33 +76,32 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
 
   return (
     <div className="border rounded-xl p-3 sm:p-4 space-y-3">
-      <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-3 items-end">
-        <div className="min-w-0">
-          <span className="text-xs text-gray-500">Start</span>
-          <MonthInput
-            monthInput={monthInput}
-            setMonthInput={handleMonthInputChange}
-            startYM={startYM}
-            termMonths={termMonths}
-            className="mt-1"
-          />
-        </div>
-        <div className="min-w-0">
-          <span className="text-xs text-gray-500">Amount</span>
-          <input
-            className="mt-1 w-full rounded-xl border p-2 text-sm sm:text-base"
-            type="tel"
-            inputMode="numeric"
-            pattern="[0-9]*"
-            min={0}
-            step="100"
-            value={amountField.value}
-            onChange={(e) => amountField.onChange(e.target.value)}
-            onFocus={amountField.onFocus}
-            onBlur={amountField.onBlur}
-          />
-        </div>
-      </div>
+       <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-3">
+         <div className="min-w-0">
+           <span className="text-xs text-gray-500 block mb-2">Start</span>
+           <MonthInput
+             monthInput={monthInput}
+             setMonthInput={handleMonthInputChange}
+             startYM={startYM}
+             termMonths={termMonths}
+           />
+         </div>
+         <div className="min-w-0">
+           <span className="text-xs text-gray-500 block mb-2">Amount</span>
+           <input
+             className="w-full rounded-xl border p-2 text-sm sm:text-base"
+             type="tel"
+             inputMode="numeric"
+             pattern="[0-9]*"
+             min={0}
+             step="100"
+             value={amountField.value}
+             onChange={(e) => amountField.onChange(e.target.value)}
+             onFocus={amountField.onFocus}
+             onBlur={amountField.onBlur}
+           />
+         </div>
+       </div>
       
       {/* Recurring Payment Options */}
       <div className="space-y-3">
