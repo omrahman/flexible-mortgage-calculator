@@ -6,14 +6,41 @@ export interface ExtraMap {
 
 export type RecurringFrequency = 'monthly' | 'annually';
 
+export type ExtraPaymentType = 'single' | 'recurring' | 'escalating';
+
 export interface ExtraItem {
   id: string;
   month: number;
   amount: number;
+  type: ExtraPaymentType;
+  
+  // Recurrence information
   isRecurring?: boolean;
   recurringQuantity?: number; // number of payments
   recurringEndMonth?: number; // end month for recurring payments
   recurringFrequency?: RecurringFrequency; // frequency of recurring payments
+  
+  // Escalation information (for escalating payments)
+  escalationRate?: number; // annual escalation rate as percentage (e.g., 3.5 for 3.5%)
+  escalationFrequency?: RecurringFrequency; // how often escalation applies
+  
+  // Metadata
+  description?: string; // user-friendly description
+  category?: string; // category for grouping (e.g., 'bonus', 'tax_refund', 'regular_extra')
+  tags?: string[]; // flexible tagging system
+  
+  // Validation and constraints
+  minAmount?: number; // minimum amount for this payment
+  maxAmount?: number; // maximum amount for this payment
+  
+  // Date information (for more precise scheduling)
+  startDate?: string; // YYYY-MM-DD format for precise start date
+  endDate?: string; // YYYY-MM-DD format for precise end date
+  
+  // Status and tracking
+  isActive?: boolean; // whether this payment is currently active
+  createdAt?: string; // ISO timestamp when created
+  lastModified?: string; // ISO timestamp when last modified
 }
 
 export interface Row {
@@ -112,4 +139,52 @@ export interface ConfigurationModalProps {
   onUpdate?: (id: string, name: string, description?: string) => void;
   editingConfig?: SavedConfiguration | null;
   currentInputs: CachedInputs;
+}
+
+// JSON Schema for loan configuration export/import
+export interface LoanConfigurationSchema {
+  version: string; // Schema version for future compatibility
+  metadata: {
+    exportedAt: string; // ISO timestamp
+    exportedBy: string; // Application name and version
+    description?: string;
+  };
+  loan: {
+    homePrice: string;
+    downPayment: DownPaymentInput;
+    interestRate: string;
+    termYears: string;
+    startDate: string; // YYYY-MM format
+    propertyTaxAnnual: string;
+    insuranceAnnual: string;
+  };
+  extraPayments: ExtraItem[];
+  recastSettings: {
+    autoRecast: boolean;
+    recastMonths: number[]; // Array of month numbers for manual recast
+  };
+  displaySettings: {
+    showAll: boolean;
+  };
+}
+
+// Validation result for configuration import
+export interface ConfigurationValidationResult {
+  isValid: boolean;
+  errors: string[];
+  warnings: string[];
+  data?: LoanConfigurationSchema;
+}
+
+// Export/Import utility types
+export interface ExportOptions {
+  includeMetadata?: boolean;
+  includeDisplaySettings?: boolean;
+  format?: 'json' | 'yaml';
+}
+
+export interface ImportOptions {
+  validateSchema?: boolean;
+  mergeWithExisting?: boolean;
+  preserveIds?: boolean;
 }
