@@ -1,5 +1,4 @@
 import { useMortgageCalculation } from '../hooks/useMortgageCalculation';
-import { useSavedConfigurations } from '../hooks/useSavedConfigurations';
 import { LoanInputs } from './LoanInputs';
 import { ExtraPayments } from './ExtraPayments';
 import { SummarySection } from './SummarySection';
@@ -8,7 +7,6 @@ import { AmortizationTable } from './AmortizationTable';
 import { SavedConfigurations } from './SavedConfigurations';
 import { csvFor, downloadCSV } from '../utils/csv';
 import { CSV_FILENAME } from '../constants';
-import type { CachedInputs } from '../types';
 
 export default function MortgageRecastCalculator() {
   const {
@@ -41,75 +39,25 @@ export default function MortgageRecastCalculator() {
     handleUpdateExtra,
     clearAllInputs,
     loadConfiguration,
-    clearLoadedConfiguration,
     
     // State
     loadedConfigurationId,
   } = useMortgageCalculation();
 
-  const {
-    configurations,
-    saveConfiguration,
-    updateConfiguration,
-    deleteConfiguration,
-  } = useSavedConfigurations();
 
   const handleDownloadCSV = () => {
     downloadCSV(csvFor(result.rows), CSV_FILENAME);
   };
 
-  // Current inputs for saving/loading configurations
-  const currentInputs: CachedInputs = {
-    principal,
-    rate,
-    termYears,
-    startYM,
-    extras,
-    autoRecast,
-    recastMonthsText,
-    showAll,
-  };
-
-  const handleSaveConfiguration = async (name: string, description?: string) => {
-    try {
-      await saveConfiguration(name, description || '', currentInputs);
-    } catch (error) {
-      console.error('Error saving configuration:', error);
-      throw error; // Re-throw to let the UI handle it
-    }
-  };
-
   const handleLoadConfiguration = async (config: any) => {
     try {
-      await loadConfiguration(config.inputs, config.id);
+      await loadConfiguration(config, config.id);
     } catch (error) {
       console.error('Error loading configuration:', error);
       throw error; // Re-throw to let the UI handle it
     }
   };
 
-  const handleUpdateConfiguration = async (id: string, name: string, description: string, inputs: CachedInputs) => {
-    try {
-      await updateConfiguration(id, name, description, inputs);
-    } catch (error) {
-      console.error('Error updating configuration:', error);
-      throw error; // Re-throw to let the UI handle it
-    }
-  };
-
-  const handleDeleteConfiguration = async (id: string) => {
-    try {
-      await deleteConfiguration(id);
-    } catch (error) {
-      console.error('Error deleting configuration:', error);
-      throw error; // Re-throw to let the UI handle it
-    }
-  };
-
-  // Get the currently loaded configuration
-  const loadedConfiguration = loadedConfigurationId 
-    ? configurations.find(config => config.id === loadedConfigurationId)
-    : null;
 
   return (
     <div className="min-h-screen w-full bg-gray-50 p-6">
@@ -130,7 +78,7 @@ export default function MortgageRecastCalculator() {
 
           <ExtraPayments
             extras={extras}
-            termMonths={result.rows.length > 0 ? Math.max(...result.rows.map(r => r.idx)) : 360}
+            termMonths={Math.round(Number(termYears) * 12)}
             autoRecast={autoRecast}
             setAutoRecast={setAutoRecast}
             recastMonthsText={recastMonthsText}
@@ -141,14 +89,8 @@ export default function MortgageRecastCalculator() {
           />
 
           <SavedConfigurations
-            configurations={configurations}
             onLoadConfiguration={handleLoadConfiguration}
-            onSaveConfiguration={handleSaveConfiguration}
-            onDeleteConfiguration={handleDeleteConfiguration}
-            onUpdateConfiguration={handleUpdateConfiguration}
-            currentInputs={currentInputs}
-            loadedConfiguration={loadedConfiguration}
-            onClearLoadedConfiguration={clearLoadedConfiguration}
+            loadedConfigurationId={loadedConfigurationId}
           />
         </div>
 

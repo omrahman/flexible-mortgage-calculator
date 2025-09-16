@@ -49,38 +49,38 @@ export const useMortgageCalculation = () => {
 
   // Individual setters that update the cached inputs
   const setPrincipal = (value: string) => {
-    setCachedInputs(prev => ({ ...prev, principal: value }));
+    setCachedInputs((prev: CachedInputs) => ({ ...prev, principal: value }));
   };
 
   const setRate = (value: string) => {
-    setCachedInputs(prev => ({ ...prev, rate: value }));
+    setCachedInputs((prev: CachedInputs) => ({ ...prev, rate: value }));
   };
 
   const setTermYears = (value: string) => {
-    setCachedInputs(prev => ({ ...prev, termYears: value }));
+    setCachedInputs((prev: CachedInputs) => ({ ...prev, termYears: value }));
   };
 
   const setStartYM = (value: string) => {
-    setCachedInputs(prev => ({ ...prev, startYM: value }));
+    setCachedInputs((prev: CachedInputs) => ({ ...prev, startYM: value }));
   };
 
   const setExtras = (value: ExtraItem[] | ((prev: ExtraItem[]) => ExtraItem[])) => {
-    setCachedInputs(prev => ({ 
+    setCachedInputs((prev: CachedInputs) => ({ 
       ...prev, 
       extras: typeof value === 'function' ? value(prev.extras) : value 
     }));
   };
 
   const setAutoRecast = (value: boolean) => {
-    setCachedInputs(prev => ({ ...prev, autoRecast: value }));
+    setCachedInputs((prev: CachedInputs) => ({ ...prev, autoRecast: value }));
   };
 
   const setRecastMonthsText = (value: string) => {
-    setCachedInputs(prev => ({ ...prev, recastMonthsText: value }));
+    setCachedInputs((prev: CachedInputs) => ({ ...prev, recastMonthsText: value }));
   };
 
   const setShowAll = (value: boolean) => {
-    setCachedInputs(prev => ({ ...prev, showAll: value }));
+    setCachedInputs((prev: CachedInputs) => ({ ...prev, showAll: value }));
   };
 
   const termMonths = Math.max(1, Math.round(Number(termYears) * 12));
