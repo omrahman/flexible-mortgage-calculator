@@ -98,9 +98,9 @@ export default function MortgageRecastCalculator() {
 
   return (
     <div className="min-h-screen w-full bg-gray-50 p-6">
-      <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Inputs */}
-        <div className="lg:col-span-1 space-y-6">
+        <div className="lg:col-span-2 space-y-6">
           <LoanInputs
             principal={principal}
             setPrincipal={setPrincipal}

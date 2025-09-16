@@ -33,7 +33,7 @@ export const ExtraPayments: React.FC<ExtraPaymentsProps> = ({
       <div className="space-y-4">
         {extras.map((e) => (
           <div key={e.id} className="border rounded-xl p-4 space-y-3">
-            <div className="grid grid-cols-7 gap-2 items-end">
+            <div className="grid grid-cols-7 gap-3 items-end">
               <div className="col-span-2">
                 <span className="text-xs text-gray-500">Start Month #</span>
                 <input
@@ -63,9 +63,9 @@ export const ExtraPayments: React.FC<ExtraPaymentsProps> = ({
                   }}
                 />
               </div>
-              <div className="col-span-2 flex gap-2">
+              <div className="col-span-2 flex justify-end">
                 <button
-                  className="mt-6 flex-1 rounded-xl border px-3 py-2 hover:bg-gray-50"
+                  className="rounded-xl border px-4 py-2 text-sm hover:bg-gray-50"
                   onClick={() => onRemoveExtra(e.id)}
                 >
                   Remove
