@@ -1,5 +1,6 @@
 import MortgageRecastCalculator from "./components/MortgageRecastCalculator";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { ConfigurationsProvider } from "./contexts/ConfigurationsContext";
 
 function App() {
   return (
@@ -9,7 +10,9 @@ function App() {
         // In a real app, you might want to send this to an error reporting service
       }}
     >
-      <MortgageRecastCalculator />
+      <ConfigurationsProvider>
+        <MortgageRecastCalculator />
+      </ConfigurationsProvider>
     </ErrorBoundary>
   );
 }

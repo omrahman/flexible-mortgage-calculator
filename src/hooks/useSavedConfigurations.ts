@@ -1,42 +1,35 @@
 import { useCallback } from 'react';
 import { useLocalStorage } from './useLocalStorage';
-
-export interface SavedConfiguration {
-  id: string;
-  name: string;
-  principal: number;
-  rate: number;
-  termYears: number;
-  startYM: string;
-  extraPayments: Array<{
-    month: number;
-    amount: number;
-  }>;
-  autoRecast: boolean;
-  recastMonthsText: string;
-  showAll: boolean;
-  createdAt: Date;
-}
+import { SavedConfiguration, CachedInputs } from '../types';
 
 export function useSavedConfigurations() {
   const [configurations, setConfigurations] = useLocalStorage<SavedConfiguration[]>('mortgage-configurations', []);
 
-  const saveConfiguration = useCallback((config: Omit<SavedConfiguration, 'id' | 'createdAt'>) => {
+  const saveConfiguration = useCallback((name: string, description: string, inputs: CachedInputs) => {
     const newConfig: SavedConfiguration = {
-      ...config,
-      id: Date.now().toString(),
-      createdAt: new Date(),
+      id: crypto.randomUUID(),
+      name,
+      description,
+      createdAt: new Date().toISOString(),
+      lastModified: new Date().toISOString(),
+      inputs,
     };
     
     setConfigurations(prev => [...prev, newConfig]);
     return newConfig.id;
   }, [setConfigurations]);
 
-  const updateConfiguration = useCallback((id: string, updates: Partial<Omit<SavedConfiguration, 'id' | 'createdAt'>>) => {
+  const updateConfiguration = useCallback((id: string, name: string, description: string, inputs: CachedInputs) => {
     setConfigurations(prev => 
       prev.map(config => 
         config.id === id 
-          ? { ...config, ...updates }
+          ? { 
+              ...config, 
+              name, 
+              description, 
+              inputs,
+              lastModified: new Date().toISOString()
+            }
           : config
       )
     );

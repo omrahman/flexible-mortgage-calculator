@@ -1,4 +1,6 @@
+import { useMemo } from 'react';
 import { useMortgageCalculation } from '../hooks/useMortgageCalculation';
+import { useConfigurations } from '../contexts/ConfigurationsContext';
 import { LoanInputs } from './LoanInputs';
 import { ExtraPayments } from './ExtraPayments';
 import { SummarySection } from './SummarySection';
@@ -39,11 +41,14 @@ export default function MortgageRecastCalculator() {
     handleUpdateExtra,
     clearAllInputs,
     loadConfiguration,
+    markChangesAsSaved,
     
     // State
     loadedConfigurationId,
+    hasUnsavedChanges,
   } = useMortgageCalculation();
 
+  const { updateConfiguration, getConfiguration, configurations } = useConfigurations();
 
   const handleDownloadCSV = () => {
     downloadCSV(csvFor(result.rows), CSV_FILENAME);
@@ -51,12 +56,44 @@ export default function MortgageRecastCalculator() {
 
   const handleLoadConfiguration = async (config: any) => {
     try {
-      await loadConfiguration(config, config.id);
+      // Convert SavedConfiguration to CachedInputs format
+      const cachedInputs = config.inputs;
+      await loadConfiguration(cachedInputs, config.id);
     } catch (error) {
       console.error('Error loading configuration:', error);
       throw error; // Re-throw to let the UI handle it
     }
   };
+
+  const handleSaveChanges = (configId: string) => {
+    // Get the current configuration to preserve name and description
+    const currentConfig = getConfiguration(configId);
+    
+    if (currentConfig) {
+      // Update the configuration with current inputs while preserving name and description
+      updateConfiguration(
+        configId,
+        currentConfig.name,
+        currentConfig.description || '',
+        currentInputs
+      );
+      
+      // Mark changes as saved to reset the unsaved changes indicator
+      markChangesAsSaved();
+    }
+  };
+
+  // Get current inputs for saving
+  const currentInputs = useMemo(() => ({
+    principal,
+    rate,
+    termYears,
+    startYM,
+    extras,
+    autoRecast,
+    recastMonthsText,
+    showAll,
+  }), [principal, rate, termYears, startYM, extras, autoRecast, recastMonthsText, showAll]);
 
 
   return (
@@ -91,6 +128,9 @@ export default function MortgageRecastCalculator() {
           <SavedConfigurations
             onLoadConfiguration={handleLoadConfiguration}
             loadedConfigurationId={loadedConfigurationId}
+            currentInputs={currentInputs}
+            hasUnsavedChanges={hasUnsavedChanges}
+            onSaveChanges={handleSaveChanges}
           />
         </div>
 

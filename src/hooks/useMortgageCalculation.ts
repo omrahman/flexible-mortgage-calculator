@@ -37,6 +37,12 @@ export const useMortgageCalculation = () => {
     null
   );
 
+  // Track the original inputs when a configuration is loaded
+  const [originalInputs, setOriginalInputs] = useLocalStorage<CachedInputs | null>(
+    'mortgage-calculator-original-inputs',
+    null
+  );
+
   // Extract individual values from cached inputs
   const principal = cachedInputs.principal;
   const rate = cachedInputs.rate;
@@ -175,12 +181,39 @@ export const useMortgageCalculation = () => {
   const loadConfiguration = (configInputs: CachedInputs, configId?: string) => {
     setCachedInputs(configInputs);
     setLoadedConfigurationId(configId || null);
+    setOriginalInputs(configInputs); // Store original inputs for comparison
   };
 
   // Function to clear loaded configuration tracking
   const clearLoadedConfiguration = () => {
     setLoadedConfigurationId(null);
+    setOriginalInputs(null);
   };
+
+  // Function to mark changes as saved (reset original inputs to current)
+  const markChangesAsSaved = () => {
+    if (loadedConfigurationId) {
+      setOriginalInputs(cachedInputs);
+    }
+  };
+
+  // Function to check if current inputs have been modified from the loaded configuration
+  const hasUnsavedChanges = useMemo(() => {
+    if (!loadedConfigurationId || !originalInputs) {
+      return false;
+    }
+    
+    return (
+      cachedInputs.principal !== originalInputs.principal ||
+      cachedInputs.rate !== originalInputs.rate ||
+      cachedInputs.termYears !== originalInputs.termYears ||
+      cachedInputs.startYM !== originalInputs.startYM ||
+      cachedInputs.autoRecast !== originalInputs.autoRecast ||
+      (cachedInputs.recastMonthsText || '') !== (originalInputs.recastMonthsText || '') ||
+      cachedInputs.showAll !== originalInputs.showAll ||
+      JSON.stringify(cachedInputs.extras) !== JSON.stringify(originalInputs.extras)
+    );
+  }, [loadedConfigurationId, originalInputs, cachedInputs]);
 
   return {
     // State
@@ -214,8 +247,10 @@ export const useMortgageCalculation = () => {
     clearAllInputs,
     loadConfiguration,
     clearLoadedConfiguration,
+    markChangesAsSaved,
     
     // State
     loadedConfigurationId,
+    hasUnsavedChanges,
   };
 };

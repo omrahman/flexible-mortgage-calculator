@@ -1,29 +1,44 @@
 import React, { useState } from 'react';
-import { SavedConfiguration } from '../hooks/useSavedConfigurations';
+import { SavedConfiguration } from '../types';
 
 interface ConfigurationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (name: string) => void;
+  onSave: (name: string, description?: string) => void;
+  onUpdate?: (id: string, name: string, description?: string) => void;
   configuration?: SavedConfiguration | null;
 }
 
-export function ConfigurationModal({ isOpen, onClose, onSave, configuration }: ConfigurationModalProps) {
+export function ConfigurationModal({ 
+  isOpen, 
+  onClose, 
+  onSave, 
+  onUpdate, 
+  configuration
+}: ConfigurationModalProps) {
   const [name, setName] = useState(configuration?.name || '');
+  const [description, setDescription] = useState(configuration?.description || '');
 
   React.useEffect(() => {
     if (configuration) {
       setName(configuration.name);
+      setDescription(configuration.description || '');
     } else {
       setName('');
+      setDescription('');
     }
   }, [configuration]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (name.trim()) {
-      onSave(name.trim());
+      if (configuration && onUpdate) {
+        onUpdate(configuration.id, name.trim(), description.trim() || undefined);
+      } else {
+        onSave(name.trim(), description.trim() || undefined);
+      }
       setName('');
+      setDescription('');
       onClose();
     }
   };
@@ -50,6 +65,20 @@ export function ConfigurationModal({ isOpen, onClose, onSave, configuration }: C
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter a name for this configuration"
               autoFocus
+            />
+          </div>
+          
+          <div className="mb-4">
+            <label htmlFor="config-description" className="block text-sm font-medium text-gray-700 mb-2">
+              Description (Optional)
+            </label>
+            <textarea
+              id="config-description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter a description for this configuration"
+              rows={3}
             />
           </div>
           
