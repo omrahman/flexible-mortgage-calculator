@@ -14,9 +14,9 @@ export const PaymentSegments: React.FC<PaymentSegmentsProps> = ({
   monthlyPITI,
 }) => {
   return (
-    <div className="rounded-2xl bg-white p-5 shadow">
-      <h2 className="text-xl font-semibold mb-4">Payment Segments</h2>
-      <p className="text-sm text-gray-600 mb-6">
+    <div className="rounded-2xl bg-white p-4 sm:p-5 shadow">
+      <h2 className="text-lg sm:text-xl font-semibold mb-4">Payment Segments</h2>
+      <p className="text-sm text-gray-600 mb-6 leading-relaxed">
         Track how your monthly payment changes over time with recasting and extra payments.
       </p>
       
@@ -27,40 +27,40 @@ export const PaymentSegments: React.FC<PaymentSegmentsProps> = ({
           const endMonth = isLast ? result.payoffMonth : result.segments[i + 1]?.start - 1;
           
           return (
-            <div key={i} className="border rounded-xl p-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 transition-colors">
+            <div key={i} className="border rounded-xl p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 transition-colors">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-sm font-medium text-gray-700">
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+                    <span className="text-sm font-medium text-gray-700 break-words">
                       Month {s.start}
                       {endMonth && endMonth !== s.start && ` - ${endMonth}`}
                       {isLast && ' (final)'}
                     </span>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-500 whitespace-nowrap">
                       ({endMonth ? endMonth - s.start + 1 : 1} month{endMonth ? 's' : ''})
                     </span>
                   </div>
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                    <div className="space-y-1">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">P&I Payment:</span>
-                        <span className="font-medium">{fmtUSD(s.payment)}</span>
+                    <div className="space-y-1 min-w-0">
+                      <div className="flex justify-between gap-2">
+                        <span className="text-gray-600 flex-shrink-0">P&I Payment:</span>
+                        <span className="font-medium text-right break-words">{fmtUSD(s.payment)}</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Property Tax:</span>
-                        <span className="font-medium">{fmtUSD(monthlyPITI.propertyTax)}</span>
+                      <div className="flex justify-between gap-2">
+                        <span className="text-gray-600 flex-shrink-0">Property Tax:</span>
+                        <span className="font-medium text-right break-words">{fmtUSD(monthlyPITI.propertyTax)}</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Insurance:</span>
-                        <span className="font-medium">{fmtUSD(monthlyPITI.insurance)}</span>
+                      <div className="flex justify-between gap-2">
+                        <span className="text-gray-600 flex-shrink-0">Insurance:</span>
+                        <span className="font-medium text-right break-words">{fmtUSD(monthlyPITI.insurance)}</span>
                       </div>
                     </div>
                     
-                    <div className="space-y-1">
-                      <div className="flex justify-between border-t pt-1">
-                        <span className="font-semibold text-gray-800">Total PITI:</span>
-                        <span className="font-semibold text-green-600 text-lg">{fmtUSD(totalPITI)}</span>
+                    <div className="space-y-1 min-w-0">
+                      <div className="flex justify-between border-t pt-1 gap-2">
+                        <span className="font-semibold text-gray-800 flex-shrink-0">Total PITI:</span>
+                        <span className="font-semibold text-green-600 text-sm sm:text-lg text-right break-words">{fmtUSD(totalPITI)}</span>
                       </div>
                     </div>
                   </div>

@@ -108,10 +108,10 @@ export default function MortgageRecastCalculator() {
 
 
   return (
-    <div className="min-h-screen w-full bg-gray-50 p-6">
-      <div className="mx-auto max-w-8xl grid grid-cols-1 lg:grid-cols-6 gap-6">
+    <div className="min-h-screen w-full bg-gray-50 p-4 sm:p-6">
+      <div className="mx-auto max-w-8xl grid grid-cols-1 lg:grid-cols-7 gap-4 sm:gap-6">
         {/* Inputs */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
           <LoanInputs
             homePrice={homePrice}
             setHomePrice={setHomePrice}
@@ -152,7 +152,7 @@ export default function MortgageRecastCalculator() {
         </div>
 
         {/* Results */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-3 space-y-4 sm:space-y-6">
           <SummarySection
             baseline={baseline}
             result={result}
@@ -172,7 +172,7 @@ export default function MortgageRecastCalculator() {
         </div>
 
         {/* Payment Segments */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 min-w-0">
           <PaymentSegments
             baseline={baseline}
             result={result}

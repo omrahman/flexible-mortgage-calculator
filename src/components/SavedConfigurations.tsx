@@ -104,18 +104,18 @@ export function SavedConfigurations({
               }`}
             >
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate flex items-center">
-                  {config.name}
+                <p className="text-sm font-medium text-gray-900 break-words flex items-center gap-2">
+                  <span className="truncate">{config.name}</span>
                   {loadedConfigurationId === config.id && hasUnsavedChanges && (
-                    <span className="ml-2 text-orange-600 text-xs font-bold">●</span>
+                    <span className="text-orange-600 text-xs font-bold flex-shrink-0">●</span>
                   )}
                 </p>
                 {config.description && (
-                  <p className="text-xs text-gray-600 truncate">
+                  <p className="text-xs text-gray-600 break-words leading-relaxed">
                     {config.description}
                   </p>
                 )}
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-500 break-words">
                   ${config.inputs.homePrice} • {config.inputs.rate}% • {config.inputs.termYears} years
                 </p>
                 <p className="text-xs text-gray-400">

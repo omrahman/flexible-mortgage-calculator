@@ -25,19 +25,19 @@ export const ExtraPayments: React.FC<ExtraPaymentsProps> = ({
   onUpdateExtra,
 }) => {
   return (
-    <div className="rounded-2xl bg-white p-5 shadow space-y-4">
-      <h2 className="text-xl font-semibold">Extra Payments</h2>
-      <p className="text-sm text-gray-600">
+    <div className="rounded-2xl bg-white p-4 sm:p-5 shadow space-y-4">
+      <h2 className="text-lg sm:text-xl font-semibold">Extra Payments</h2>
+      <p className="text-sm text-gray-600 leading-relaxed">
         Add lump sums by month number (1 = first month). You can make payments recurring with a quantity and/or end date. If multiple extras land on the same month, they aggregate.
       </p>
       <div className="space-y-4">
         {extras.map((e) => (
-          <div key={e.id} className="border rounded-xl p-4 space-y-3">
-            <div className="grid grid-cols-7 gap-3 items-end">
-              <div className="col-span-2">
+          <div key={e.id} className="border rounded-xl p-3 sm:p-4 space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-7 gap-3 items-end">
+              <div className="col-span-1 sm:col-span-2">
                 <span className="text-xs text-gray-500">Start Month #</span>
                 <input
-                  className="mt-1 w-full rounded-xl border p-2"
+                  className="mt-1 w-full rounded-xl border p-2 text-sm sm:text-base"
                   type="number"
                   min={1}
                   max={termMonths}
@@ -49,10 +49,10 @@ export const ExtraPayments: React.FC<ExtraPaymentsProps> = ({
                   }}
                 />
               </div>
-              <div className="col-span-3">
+              <div className="col-span-1 sm:col-span-3">
                 <span className="text-xs text-gray-500">Amount</span>
                 <input
-                  className="mt-1 w-full rounded-xl border p-2"
+                  className="mt-1 w-full rounded-xl border p-2 text-sm sm:text-base"
                   type="number"
                   min={0}
                   step="100"
@@ -63,9 +63,9 @@ export const ExtraPayments: React.FC<ExtraPaymentsProps> = ({
                   }}
                 />
               </div>
-              <div className="col-span-2 flex justify-end">
+              <div className="col-span-1 sm:col-span-2 flex justify-end">
                 <button
-                  className="rounded-xl border px-4 py-2 text-sm hover:bg-gray-50"
+                  className="rounded-xl border px-3 sm:px-4 py-2 text-xs sm:text-sm hover:bg-gray-50 whitespace-nowrap"
                   onClick={() => onRemoveExtra(e.id)}
                 >
                   Remove

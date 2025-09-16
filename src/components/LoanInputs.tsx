@@ -94,9 +94,9 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
     });
   };
   return (
-    <div className="rounded-2xl bg-white p-5 shadow">
+    <div className="rounded-2xl bg-white p-4 sm:p-5 shadow">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">Loan</h2>
+        <h2 className="text-lg sm:text-xl font-semibold">Loan</h2>
         {onReset && (
           <button
             onClick={onReset}
@@ -107,11 +107,11 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
           </button>
         )}
       </div>
-      <div className="grid grid-cols-2 gap-4">
-        <label className="col-span-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <label className="col-span-1 sm:col-span-2">
           <span className="text-sm text-gray-600">Home Price</span>
           <input
-            className="mt-1 w-full rounded-xl border p-2"
+            className="mt-1 w-full rounded-xl border p-2 text-sm sm:text-base"
             type="number"
             min={0}
             step="1000"
@@ -120,7 +120,7 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
           />
         </label>
         
-        <label className="col-span-2">
+        <label className="col-span-1 sm:col-span-2">
           <span className="text-sm text-gray-600 mb-2 block">Down Payment</span>
           <div className="space-y-3">
             <SegmentedControl
@@ -133,7 +133,7 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
             />
             <div className="relative">
               <input
-                className="w-full rounded-xl border p-2 pr-8"
+                className="w-full rounded-xl border p-2 pr-8 text-sm sm:text-base"
                 type="number"
                 min={0}
                 step={downPayment.type === 'percentage' ? '0.1' : '1000'}
@@ -147,24 +147,24 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
           </div>
         </label>
 
-        <div className="col-span-2 p-3 bg-gray-50 rounded-lg">
-          <div className="text-sm text-gray-600 space-y-1">
-            <div className="flex justify-between">
-              <span>Home Price:</span>
-              <span className="font-medium">${parseFloat(homePrice || '0').toLocaleString()}</span>
+        <div className="col-span-1 sm:col-span-2 p-3 bg-gray-50 rounded-lg">
+          <div className="text-xs sm:text-sm text-gray-600 space-y-1">
+            <div className="flex justify-between gap-2">
+              <span className="flex-shrink-0">Home Price:</span>
+              <span className="font-medium text-right break-words">${parseFloat(homePrice || '0').toLocaleString()}</span>
             </div>
-            <div className="flex justify-between">
-              <span>Down Payment:</span>
-              <span className="font-medium">
+            <div className="flex justify-between gap-2">
+              <span className="flex-shrink-0">Down Payment:</span>
+              <span className="font-medium text-right break-words">
                 {downPayment.type === 'percentage' 
                   ? `${downPayment.value}% ($${Math.round((parseFloat(homePrice || '0') * parseFloat(downPayment.value || '0')) / 100).toLocaleString()})`
                   : `$${parseFloat(downPayment.value || '0').toLocaleString()} (${parseFloat(homePrice || '0') > 0 ? ((parseFloat(downPayment.value || '0') / parseFloat(homePrice || '0')) * 100).toFixed(1) : '0'}%)`
                 }
               </span>
             </div>
-            <div className="flex justify-between border-t pt-1">
-              <span className="font-semibold">Loan Amount:</span>
-              <span className="font-semibold text-blue-600">${Math.round(loanAmount).toLocaleString()}</span>
+            <div className="flex justify-between border-t pt-1 gap-2">
+              <span className="font-semibold flex-shrink-0">Loan Amount:</span>
+              <span className="font-semibold text-blue-600 text-right break-words">${Math.round(loanAmount).toLocaleString()}</span>
             </div>
           </div>
         </div>
@@ -173,7 +173,7 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
         <label>
           <span className="text-sm text-gray-600">Rate (APR %)</span>
           <input
-            className="mt-1 w-full rounded-xl border p-2"
+            className="mt-1 w-full rounded-xl border p-2 text-sm sm:text-base"
             type="number"
             min={0}
             step="0.01"
@@ -184,7 +184,7 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
         <label>
           <span className="text-sm text-gray-600">Term (years)</span>
           <input
-            className="mt-1 w-full rounded-xl border p-2"
+            className="mt-1 w-full rounded-xl border p-2 text-sm sm:text-base"
             type="number"
             min={1}
             step="1"
@@ -195,7 +195,7 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
         <label>
           <span className="text-sm text-gray-600">Property Tax (annual)</span>
           <input
-            className="mt-1 w-full rounded-xl border p-2"
+            className="mt-1 w-full rounded-xl border p-2 text-sm sm:text-base"
             type="number"
             min={0}
             step="100"
@@ -206,7 +206,7 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
         <label>
           <span className="text-sm text-gray-600">Insurance (annual)</span>
           <input
-            className="mt-1 w-full rounded-xl border p-2"
+            className="mt-1 w-full rounded-xl border p-2 text-sm sm:text-base"
             type="number"
             min={0}
             step="100"
@@ -214,10 +214,10 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
             onChange={(e) => setInsuranceAnnual(e.target.value)}
           />
         </label>
-        <label className="col-span-2">
+        <label className="col-span-1 sm:col-span-2">
           <span className="text-sm text-gray-600">Start</span>
           <input
-            className="mt-1 w-full rounded-xl border p-2"
+            className="mt-1 w-full rounded-xl border p-2 text-sm sm:text-base"
             type="month"
             value={startYM}
             onChange={(e) => setStartYM(e.target.value)}

@@ -40,7 +40,7 @@ export const AmortizationTable: React.FC<AmortizationTableProps> = ({
       </div>
 
       <div className="overflow-auto rounded-xl border">
-        <table className="min-w-full text-sm">
+        <table className="min-w-full text-xs sm:text-sm">
           <thead className="bg-gray-100 sticky top-0">
             <tr>
               <Th>Mo</Th>
@@ -58,22 +58,22 @@ export const AmortizationTable: React.FC<AmortizationTableProps> = ({
           <tbody>
             {displayRows.map((r) => (
               <tr key={r.idx} className="border-t">
-                <Td>{r.idx}</Td>
-                <Td>{r.date}</Td>
-                <Td className="text-right">{fmtUSD(r.payment)}</Td>
-                <Td className="text-right">{fmtUSD(r.interest)}</Td>
-                <Td className="text-right">{fmtUSD(r.principal)}</Td>
-                <Td className="text-right">{fmtUSD(r.extra)}</Td>
-                <Td className="text-right">{fmtUSD(r.total)}</Td>
-                <Td className="text-right">{fmtUSD(r.balance)}</Td>
-                <Td>
+                <Td className="whitespace-nowrap">{r.idx}</Td>
+                <Td className="whitespace-nowrap">{r.date}</Td>
+                <Td className="text-right whitespace-nowrap">{fmtUSD(r.payment)}</Td>
+                <Td className="text-right whitespace-nowrap">{fmtUSD(r.interest)}</Td>
+                <Td className="text-right whitespace-nowrap">{fmtUSD(r.principal)}</Td>
+                <Td className="text-right whitespace-nowrap">{fmtUSD(r.extra)}</Td>
+                <Td className="text-right whitespace-nowrap">{fmtUSD(r.total)}</Td>
+                <Td className="text-right whitespace-nowrap">{fmtUSD(r.balance)}</Td>
+                <Td className="text-center">
                   {r.recast ? (
                     <span className="text-green-700 font-medium">Yes</span>
                   ) : (
                     ""
                   )}
                 </Td>
-                <Td className="text-right">
+                <Td className="text-right whitespace-nowrap">
                   {r.newPayment ? fmtUSD(r.newPayment) : ""}
                 </Td>
               </tr>

@@ -19,9 +19,9 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
   monthlyPITI,
 }) => {
   return (
-    <div className="rounded-2xl bg-white p-5 shadow">
-      <h2 className="text-xl font-semibold mb-4">Summary</h2>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="rounded-2xl bg-white p-4 sm:p-5 shadow">
+      <h2 className="text-lg sm:text-xl font-semibold mb-4">Summary</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <SummaryCard label="Original P&I" value={fmtUSD(baseline.segments[0]?.payment || 0)} />
         <SummaryCard label="Current P&I" value={fmtUSD(result.segments[result.segments.length - 1]?.payment || 0)} />
         <SummaryCard label="Original PITI" value={fmtUSD((baseline.segments[0]?.payment || 0) + monthlyPITI.total)} />
