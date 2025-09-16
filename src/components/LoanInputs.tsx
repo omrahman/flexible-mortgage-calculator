@@ -1,6 +1,6 @@
 import React from 'react';
 import { SegmentedControl } from './SegmentedControl';
-import { useRobustInputField } from '../hooks/useRobustInputField';
+import { useInputField } from '../hooks';
 import type { DownPaymentInput } from '../types';
 
 interface LoanInputsProps {
@@ -38,36 +38,36 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
   setInsuranceAnnual,
   onReset,
 }) => {
-  // Use the robust input field hook for all text inputs
-  const homePriceField = useRobustInputField({
+  // Use the input field hook for all text inputs
+  const homePriceField = useInputField({
     initialValue: homePrice,
     defaultValue: '1000000',
     onValueChange: setHomePrice,
     validate: (value) => value === '' || (!isNaN(Number(value)) && Number(value) >= 0)
   });
 
-  const rateField = useRobustInputField({
+  const rateField = useInputField({
     initialValue: rate,
     defaultValue: '4.85',
     onValueChange: setRate,
     validate: (value) => value === '' || (!isNaN(Number(value)) && Number(value) >= 0)
   });
 
-  const termYearsField = useRobustInputField({
+  const termYearsField = useInputField({
     initialValue: termYears,
     defaultValue: '30',
     onValueChange: setTermYears,
     validate: (value) => value === '' || (!isNaN(Number(value)) && Number(value) >= 1)
   });
 
-  const propertyTaxField = useRobustInputField({
+  const propertyTaxField = useInputField({
     initialValue: propertyTaxAnnual,
     defaultValue: '12000',
     onValueChange: setPropertyTaxAnnual,
     validate: (value) => value === '' || (!isNaN(Number(value)) && Number(value) >= 0)
   });
 
-  const insuranceField = useRobustInputField({
+  const insuranceField = useInputField({
     initialValue: insuranceAnnual,
     defaultValue: '2400',
     onValueChange: setInsuranceAnnual,
@@ -89,7 +89,7 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
   const loanAmount = calculateLoanAmount();
 
   // Down payment field hook
-  const downPaymentField = useRobustInputField({
+  const downPaymentField = useInputField({
     initialValue: downPayment.value,
     defaultValue: downPayment.type === 'percentage' ? '20' : '200000',
     onValueChange: (value) => setDownPayment({ ...downPayment, value }),

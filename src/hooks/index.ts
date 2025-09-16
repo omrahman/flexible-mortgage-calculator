@@ -1,4 +1,5 @@
 // Hook exports
 export { useMortgageCalculation } from './useMortgageCalculation';
-export { useRobustInputField } from './useRobustInputField';
-export { useRobustNumberField } from './useRobustNumberField';
+export { useField } from './useField';
+export { useInputField } from './useInputField';
+export { useNumberField } from './useNumberField';

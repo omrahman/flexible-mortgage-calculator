@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRobustInputField, useRobustNumberField } from '../hooks';
+import { useInputField, useNumberField } from '../hooks';
 import type { ExtraItem, RecurringFrequency } from '../types';
 
 interface ExtraPaymentsProps {
@@ -23,7 +23,7 @@ interface ExtraPaymentItemProps {
 
 const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, onUpdateExtra, onRemoveExtra }) => {
   // Month field hook
-  const monthField = useRobustNumberField({
+  const monthField = useNumberField({
     initialValue: extra.month,
     defaultValue: 1,
     onValueChange: (value) => onUpdateExtra(extra.id, 'month', value),
@@ -33,7 +33,7 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
   });
 
   // Amount field hook
-  const amountField = useRobustNumberField({
+  const amountField = useNumberField({
     initialValue: extra.amount,
     defaultValue: 1000,
     onValueChange: (value) => onUpdateExtra(extra.id, 'amount', value),
@@ -42,7 +42,7 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
   });
 
   // Recurring quantity field hook
-  const quantityField = useRobustNumberField({
+  const quantityField = useNumberField({
     initialValue: extra.recurringQuantity || 1,
     defaultValue: 1,
     onValueChange: (value) => onUpdateExtra(extra.id, 'recurringQuantity', value),
@@ -52,7 +52,7 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
   });
 
   // Recurring end month field hook
-  const endMonthField = useRobustNumberField({
+  const endMonthField = useNumberField({
     initialValue: extra.recurringEndMonth || 0,
     defaultValue: 0,
     onValueChange: (value) => onUpdateExtra(extra.id, 'recurringEndMonth', value),
@@ -218,7 +218,7 @@ export const ExtraPayments: React.FC<ExtraPaymentsProps> = ({
   onUpdateExtra,
 }) => {
   // Recast months text field hook
-  const recastMonthsField = useRobustInputField({
+  const recastMonthsField = useInputField({
     initialValue: recastMonthsText,
     defaultValue: '',
     onValueChange: setRecastMonthsText,
