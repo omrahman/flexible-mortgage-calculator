@@ -116,48 +116,47 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
         
         {Boolean(extra.isRecurring) && (
           <div className="space-y-4">
-            {/* Frequency Selection */}
-            <div>
-              <span className="text-xs text-gray-500 block mb-2">Payment frequency</span>
-              <div className="flex gap-4">
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name={`frequency-${extra.id}`}
-                    value="monthly"
-                    checked={(extra.recurringFrequency || 'monthly') === 'monthly'}
-                    onChange={(ev) => {
-                      onUpdateExtra(extra.id, 'recurringFrequency', ev.target.value as RecurringFrequency);
-                    }}
-                  />
-                  <span className="text-sm">Monthly</span>
-                </label>
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name={`frequency-${extra.id}`}
-                    value="annually"
-                    checked={extra.recurringFrequency === 'annually'}
-                    onChange={(ev) => {
-                      onUpdateExtra(extra.id, 'recurringFrequency', ev.target.value as RecurringFrequency);
-                    }}
-                  />
-                  <span className="text-sm">Annually</span>
-                </label>
+            {/* Frequency Selection and Number of Payments */}
+            <div className="space-y-4">
+              <div>
+                <span className="text-xs text-gray-500 block mb-2">Payment frequency</span>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name={`frequency-${extra.id}`}
+                      value="monthly"
+                      checked={(extra.recurringFrequency || 'monthly') === 'monthly'}
+                      onChange={(ev) => {
+                        onUpdateExtra(extra.id, 'recurringFrequency', ev.target.value as RecurringFrequency);
+                      }}
+                    />
+                    <span className="text-sm">Monthly</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name={`frequency-${extra.id}`}
+                      value="annually"
+                      checked={extra.recurringFrequency === 'annually'}
+                      onChange={(ev) => {
+                        onUpdateExtra(extra.id, 'recurringFrequency', ev.target.value as RecurringFrequency);
+                      }}
+                    />
+                    <span className="text-sm">Annually</span>
+                  </label>
+                </div>
               </div>
-            </div>
-            
-            {/* Payment Details */}
-            <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
-              <div className="min-w-0">
-                <span className="text-xs text-gray-500">
+              
+              <div>
+                <span className="text-xs text-gray-500 block mb-2">
                   Number of payments
                   {extra.recurringFrequency === 'annually' && (
                     <span className="text-gray-400 ml-1">(years)</span>
                   )}
                 </span>
                 <input
-                  className="mt-1 w-full rounded-xl border p-2"
+                  className="w-full rounded-xl border p-2"
                   type="number"
                   min={1}
                   max={extra.recurringFrequency === 'annually' ? Math.ceil(termMonths / 12) : termMonths}
