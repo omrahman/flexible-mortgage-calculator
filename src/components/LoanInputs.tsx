@@ -1,5 +1,6 @@
 import React from 'react';
 import { SegmentedControl } from './SegmentedControl';
+import { useRobustInputField } from '../hooks/useRobustInputField';
 import type { DownPaymentInput } from '../types';
 
 interface LoanInputsProps {
@@ -37,6 +38,42 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
   setInsuranceAnnual,
   onReset,
 }) => {
+  // Use the robust input field hook for all text inputs
+  const homePriceField = useRobustInputField({
+    initialValue: homePrice,
+    defaultValue: '1000000',
+    onValueChange: setHomePrice,
+    validate: (value) => value === '' || (!isNaN(Number(value)) && Number(value) >= 0)
+  });
+
+  const rateField = useRobustInputField({
+    initialValue: rate,
+    defaultValue: '4.85',
+    onValueChange: setRate,
+    validate: (value) => value === '' || (!isNaN(Number(value)) && Number(value) >= 0)
+  });
+
+  const termYearsField = useRobustInputField({
+    initialValue: termYears,
+    defaultValue: '30',
+    onValueChange: setTermYears,
+    validate: (value) => value === '' || (!isNaN(Number(value)) && Number(value) >= 1)
+  });
+
+  const propertyTaxField = useRobustInputField({
+    initialValue: propertyTaxAnnual,
+    defaultValue: '12000',
+    onValueChange: setPropertyTaxAnnual,
+    validate: (value) => value === '' || (!isNaN(Number(value)) && Number(value) >= 0)
+  });
+
+  const insuranceField = useRobustInputField({
+    initialValue: insuranceAnnual,
+    defaultValue: '2400',
+    onValueChange: setInsuranceAnnual,
+    validate: (value) => value === '' || (!isNaN(Number(value)) && Number(value) >= 0)
+  });
+
   // Calculate loan amount based on home price and down payment
   const calculateLoanAmount = () => {
     const homePriceNum = parseFloat(homePrice) || 0;
@@ -51,32 +88,42 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
 
   const loanAmount = calculateLoanAmount();
 
+  // Down payment field hook
+  const downPaymentField = useRobustInputField({
+    initialValue: downPayment.value,
+    defaultValue: downPayment.type === 'percentage' ? '20' : '200000',
+    onValueChange: (value) => setDownPayment({ ...downPayment, value }),
+    validate: (value) => value === '' || (!isNaN(Number(value)) && Number(value) >= 0)
+  });
+
   const handleDownPaymentTypeChange = (type: string) => {
-    const homePriceNum = parseFloat(homePrice) || 0;
-    const currentValue = parseFloat(downPayment.value) || 0;
-    
     // Don't convert if we're already in the target type
     if (type === downPayment.type) {
       return;
     }
     
+    const homePriceNum = parseFloat(homePrice) || 0;
+    const currentValue = parseFloat(downPayment.value) || 0;
+    
     let newValue: string;
     
     if (type === 'percentage') {
       // Converting from dollar amount to percentage
-      if (homePriceNum > 0) {
+      if (homePriceNum > 0 && currentValue > 0) {
         const percentage = (currentValue / homePriceNum) * 100;
         newValue = percentage > 0 ? percentage.toFixed(1) : '0';
       } else {
-        newValue = '20'; // Default percentage
+        // Only set default if we're not in the middle of typing
+        newValue = homePriceField.isFocused ? '0' : '20';
       }
     } else {
       // Converting from percentage to dollar amount
-      if (homePriceNum > 0) {
+      if (homePriceNum > 0 && currentValue > 0) {
         const dollarAmount = homePriceNum * (currentValue / 100);
         newValue = Math.round(dollarAmount).toString();
       } else {
-        newValue = '200000'; // Default dollar amount
+        // Only set default if we're not in the middle of typing
+        newValue = homePriceField.isFocused ? '0' : '200000';
       }
     }
     
@@ -84,13 +131,6 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
       ...downPayment,
       type: type as 'percentage' | 'dollar',
       value: newValue,
-    });
-  };
-
-  const handleDownPaymentValueChange = (value: string) => {
-    setDownPayment({
-      ...downPayment,
-      value,
     });
   };
   return (
@@ -115,8 +155,10 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
             type="number"
             min={0}
             step="1000"
-            value={homePrice}
-            onChange={(e) => setHomePrice(e.target.value)}
+            value={homePriceField.value}
+            onChange={(e) => homePriceField.onChange(e.target.value)}
+            onFocus={homePriceField.onFocus}
+            onBlur={homePriceField.onBlur}
           />
         </label>
         
@@ -137,8 +179,10 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
                 type="number"
                 min={0}
                 step={downPayment.type === 'percentage' ? '0.1' : '1000'}
-                value={downPayment.value}
-                onChange={(e) => handleDownPaymentValueChange(e.target.value)}
+                value={downPaymentField.value}
+                onChange={(e) => downPaymentField.onChange(e.target.value)}
+                onFocus={downPaymentField.onFocus}
+                onBlur={downPaymentField.onBlur}
               />
               <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-500">
                 {downPayment.type === 'percentage' ? '%' : '$'}
@@ -177,8 +221,10 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
             type="number"
             min={0}
             step="0.01"
-            value={rate}
-            onChange={(e) => setRate(e.target.value)}
+            value={rateField.value}
+            onChange={(e) => rateField.onChange(e.target.value)}
+            onFocus={rateField.onFocus}
+            onBlur={rateField.onBlur}
           />
         </label>
         <label>
@@ -188,8 +234,10 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
             type="number"
             min={1}
             step="1"
-            value={termYears}
-            onChange={(e) => setTermYears(e.target.value)}
+            value={termYearsField.value}
+            onChange={(e) => termYearsField.onChange(e.target.value)}
+            onFocus={termYearsField.onFocus}
+            onBlur={termYearsField.onBlur}
           />
         </label>
         <label>
@@ -199,8 +247,10 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
             type="number"
             min={0}
             step="100"
-            value={propertyTaxAnnual}
-            onChange={(e) => setPropertyTaxAnnual(e.target.value)}
+            value={propertyTaxField.value}
+            onChange={(e) => propertyTaxField.onChange(e.target.value)}
+            onFocus={propertyTaxField.onFocus}
+            onBlur={propertyTaxField.onBlur}
           />
         </label>
         <label>
@@ -210,8 +260,10 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
             type="number"
             min={0}
             step="100"
-            value={insuranceAnnual}
-            onChange={(e) => setInsuranceAnnual(e.target.value)}
+            value={insuranceField.value}
+            onChange={(e) => insuranceField.onChange(e.target.value)}
+            onFocus={insuranceField.onFocus}
+            onBlur={insuranceField.onBlur}
           />
         </label>
         <label className="col-span-1 sm:col-span-2">

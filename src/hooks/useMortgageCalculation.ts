@@ -34,29 +34,29 @@ export const useMortgageCalculation = () => {
     if (inputs.homePrice && inputs.downPayment) {
       return {
         ...inputs,
-        propertyTaxAnnual: inputs.propertyTaxAnnual || DEFAULT_PROPERTY_TAX_ANNUAL,
-        insuranceAnnual: inputs.insuranceAnnual || DEFAULT_INSURANCE_ANNUAL,
+        propertyTaxAnnual: inputs.propertyTaxAnnual ?? DEFAULT_PROPERTY_TAX_ANNUAL,
+        insuranceAnnual: inputs.insuranceAnnual ?? DEFAULT_INSURANCE_ANNUAL,
       };
     }
     
     // Migrate from old structure
     return {
-      homePrice: inputs.principal || DEFAULT_HOME_PRICE,
+      homePrice: inputs.principal ?? DEFAULT_HOME_PRICE,
       downPayment: DEFAULT_DOWN_PAYMENT,
-      rate: inputs.rate || DEFAULT_INTEREST_RATE,
-      termYears: inputs.termYears || DEFAULT_TERM_YEARS,
-      startYM: inputs.startYM || (() => {
+      rate: inputs.rate ?? DEFAULT_INTEREST_RATE,
+      termYears: inputs.termYears ?? DEFAULT_TERM_YEARS,
+      startYM: inputs.startYM ?? (() => {
         const d = new Date();
         const y = d.getFullYear();
         const m = (d.getMonth() + 1).toString().padStart(2, "0");
         return `${y}-${m}`;
       })(),
-      propertyTaxAnnual: inputs.propertyTaxAnnual || DEFAULT_PROPERTY_TAX_ANNUAL,
-      insuranceAnnual: inputs.insuranceAnnual || DEFAULT_INSURANCE_ANNUAL,
-      extras: inputs.extras || DEFAULT_EXTRA_PAYMENTS,
+      propertyTaxAnnual: inputs.propertyTaxAnnual ?? DEFAULT_PROPERTY_TAX_ANNUAL,
+      insuranceAnnual: inputs.insuranceAnnual ?? DEFAULT_INSURANCE_ANNUAL,
+      extras: inputs.extras ?? DEFAULT_EXTRA_PAYMENTS,
       autoRecast: inputs.autoRecast !== undefined ? inputs.autoRecast : true,
       recastMonthsText: inputs.recastMonthsText,
-      showAll: inputs.showAll || false,
+      showAll: inputs.showAll ?? false,
     };
   };
 
@@ -103,7 +103,7 @@ export const useMortgageCalculation = () => {
   const insuranceAnnual = cachedInputs.insuranceAnnual;
   const extras = cachedInputs.extras;
   const autoRecast = cachedInputs.autoRecast;
-  const recastMonthsText = cachedInputs.recastMonthsText || '';
+  const recastMonthsText = cachedInputs.recastMonthsText ?? '';
 
   // Calculate principal (loan amount) from home price and down payment
   const principal = useMemo(() => {
@@ -314,7 +314,7 @@ export const useMortgageCalculation = () => {
       cachedInputs.propertyTaxAnnual !== originalInputs.propertyTaxAnnual ||
       cachedInputs.insuranceAnnual !== originalInputs.insuranceAnnual ||
       cachedInputs.autoRecast !== originalInputs.autoRecast ||
-      (cachedInputs.recastMonthsText || '') !== (originalInputs.recastMonthsText || '') ||
+      (cachedInputs.recastMonthsText ?? '') !== (originalInputs.recastMonthsText ?? '') ||
       cachedInputs.showAll !== originalInputs.showAll ||
       JSON.stringify(cachedInputs.extras) !== JSON.stringify(originalInputs.extras)
     );
