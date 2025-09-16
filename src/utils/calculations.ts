@@ -76,20 +76,10 @@ export const buildSchedule = ({
     const maxExtra = round2(bal); // Maximum extra payment is the entire remaining balance
     const extra = Math.max(0, Math.min(plannedExtra, maxExtra));
     
-    // Debug: Log extra payments for first few months
-    if (m <= 5 && plannedExtra > 0) {
-      console.log(`Month ${m}: Extra payment = $${extra} (planned: $${plannedExtra})`);
-    }
-
     const cashThisMonth = round2(scheduled + extra);
 
     totalInterest = round2(totalInterest + interest);
     totalPaid = round2(totalPaid + cashThisMonth);
-
-    // Debug: Log balance calculation for first few months
-    if (m <= 5) {
-      console.log(`Month ${m}: Balance before = $${bal}, Principal = $${principalPart}, Extra = $${extra}, Balance after = $${round2(bal - principalPart - extra)}`);
-    }
 
     bal = round2(bal - principalPart - extra);
 

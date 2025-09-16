@@ -179,7 +179,7 @@ export const useMortgageCalculation = () => {
     setCachedInputs((prev: CachedInputs) => ({ ...prev, showAll: value }));
   };
 
-  const termMonths = Math.max(1, Math.round(Number(termYears) * 12));
+  const termMonths = Math.max(1, Math.round((Number(termYears) || 0) * 12));
 
   const extrasMap = useMemo(() => {
     const map: ExtraMap = {};
