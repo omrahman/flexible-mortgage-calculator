@@ -28,58 +28,12 @@ export const useMortgageCalculation = () => {
     showAll: false,
   };
 
-  // Migration function to handle old data structure
-  const migrateCachedInputs = (inputs: any): CachedInputs => {
-    // If it's already the new structure, return as is
-    if (inputs.homePrice && inputs.downPayment) {
-      return {
-        ...inputs,
-        propertyTaxAnnual: inputs.propertyTaxAnnual ?? DEFAULT_PROPERTY_TAX_ANNUAL,
-        insuranceAnnual: inputs.insuranceAnnual ?? DEFAULT_INSURANCE_ANNUAL,
-      };
-    }
-    
-    // Migrate from old structure
-    return {
-      homePrice: inputs.principal ?? DEFAULT_HOME_PRICE,
-      downPayment: DEFAULT_DOWN_PAYMENT,
-      rate: inputs.rate ?? DEFAULT_INTEREST_RATE,
-      termYears: inputs.termYears ?? DEFAULT_TERM_YEARS,
-      startYM: inputs.startYM ?? (() => {
-        const d = new Date();
-        const y = d.getFullYear();
-        const m = (d.getMonth() + 1).toString().padStart(2, "0");
-        return `${y}-${m}`;
-      })(),
-      propertyTaxAnnual: inputs.propertyTaxAnnual ?? DEFAULT_PROPERTY_TAX_ANNUAL,
-      insuranceAnnual: inputs.insuranceAnnual ?? DEFAULT_INSURANCE_ANNUAL,
-      extras: inputs.extras ?? DEFAULT_EXTRA_PAYMENTS,
-      autoRecast: inputs.autoRecast !== undefined ? inputs.autoRecast : true,
-      recastMonthsText: inputs.recastMonthsText,
-      showAll: inputs.showAll ?? false,
-    };
-  };
 
-  // Use localStorage to persist all user inputs with migration
-  const [rawCachedInputs, setRawCachedInputs, clearCachedInputs] = useLocalStorage<any>(
+  // Use localStorage to persist all user inputs
+  const [cachedInputs, setCachedInputs, clearCachedInputs] = useLocalStorage<CachedInputs>(
     'mortgage-calculator-inputs',
     defaultCachedInputs
   );
-  
-  // Migrate the cached inputs to the new structure
-  const cachedInputs = useMemo(() => migrateCachedInputs(rawCachedInputs), [rawCachedInputs]);
-  
-  // Wrapper for setCachedInputs that ensures the new structure
-  const setCachedInputs = (value: CachedInputs | ((prev: CachedInputs) => CachedInputs)) => {
-    if (typeof value === 'function') {
-      setRawCachedInputs((prev: any) => {
-        const migrated = migrateCachedInputs(prev);
-        return value(migrated);
-      });
-    } else {
-      setRawCachedInputs(value);
-    }
-  };
 
   // Track which configuration is currently loaded (if any)
   const [loadedConfigurationId, setLoadedConfigurationId] = useLocalStorage<string | null>(
@@ -93,7 +47,7 @@ export const useMortgageCalculation = () => {
     null
   );
 
-  // Extract individual values from cached inputs (now guaranteed to be in new structure)
+  // Extract individual values from cached inputs
   const homePrice = cachedInputs.homePrice;
   const downPayment = cachedInputs.downPayment;
   const rate = cachedInputs.rate;
