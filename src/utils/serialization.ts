@@ -173,23 +173,10 @@ function enhanceExtraItem(extra: ExtraItem): ExtraItem {
     id: extra.id,
     month: extra.month,
     amount: extra.amount,
-    type: extra.type || 'single',
     isRecurring: extra.isRecurring || false,
     recurringQuantity: extra.recurringQuantity || 1,
     recurringEndMonth: extra.recurringEndMonth || 0,
-    recurringFrequency: extra.recurringFrequency || 'monthly',
-    escalationRate: extra.escalationRate || 0,
-    escalationFrequency: extra.escalationFrequency || 'annually',
-    description: extra.description || '',
-    category: extra.category || 'other',
-    tags: extra.tags || [],
-    minAmount: extra.minAmount || 0,
-    maxAmount: extra.maxAmount || undefined,
-    startDate: extra.startDate || undefined,
-    endDate: extra.endDate || undefined,
-    isActive: extra.isActive !== undefined ? extra.isActive : true,
-    createdAt: extra.createdAt || new Date().toISOString(),
-    lastModified: extra.lastModified || new Date().toISOString()
+    recurringFrequency: extra.recurringFrequency || 'monthly'
   };
 }
 
@@ -238,46 +225,23 @@ export function createSampleConfiguration(): LoanConfigurationSchema {
       {
         id: 'sample-1',
         month: 6,
-        amount: 5000,
-        type: 'single',
-        description: 'Tax refund payment',
-        category: 'tax_refund',
-        tags: ['windfall', 'annual'],
-        isActive: true,
-        createdAt: new Date().toISOString(),
-        lastModified: new Date().toISOString()
+        amount: 5000
       },
       {
         id: 'sample-2',
         month: 12,
         amount: 1000,
-        type: 'recurring',
         isRecurring: true,
         recurringQuantity: 24,
-        recurringFrequency: 'monthly',
-        description: 'Monthly extra payment',
-        category: 'regular_extra',
-        tags: ['monthly', 'budget'],
-        isActive: true,
-        createdAt: new Date().toISOString(),
-        lastModified: new Date().toISOString()
+        recurringFrequency: 'monthly'
       },
       {
         id: 'sample-3',
         month: 24,
         amount: 2000,
-        type: 'escalating',
         isRecurring: true,
         recurringQuantity: 12,
-        recurringFrequency: 'annually',
-        escalationRate: 3.0,
-        escalationFrequency: 'annually',
-        description: 'Annual bonus payment with 3% escalation',
-        category: 'bonus',
-        tags: ['annual', 'escalating', 'bonus'],
-        isActive: true,
-        createdAt: new Date().toISOString(),
-        lastModified: new Date().toISOString()
+        recurringFrequency: 'annually'
       }
     ],
     recastSettings: {

@@ -1,13 +1,12 @@
 # Enhanced Extra Payment Schema Documentation
 
-This document describes the comprehensive data structure for extra payments in the Flexible Mortgage Calculator, designed to support JSON export/import functionality.
+This document describes the enhanced data structure for extra payments in the Flexible Mortgage Calculator, designed to support JSON export/import functionality.
 
 ## Overview
 
-The enhanced extra payment system supports three main types of payments:
+The enhanced extra payment system supports two main types of payments:
 - **Single**: One-time lump sum payments
 - **Recurring**: Regular payments with specified frequency and quantity
-- **Escalating**: Payments that increase over time at a specified rate
 
 ## Data Structure
 
@@ -19,35 +18,12 @@ interface ExtraItem {
   id: string;
   month: number;
   amount: number;
-  type: ExtraPaymentType; // 'single' | 'recurring' | 'escalating'
   
   // Recurrence information
   isRecurring?: boolean;
   recurringQuantity?: number;
   recurringEndMonth?: number;
   recurringFrequency?: RecurringFrequency; // 'monthly' | 'annually'
-  
-  // Escalation information
-  escalationRate?: number; // Annual escalation rate as percentage
-  escalationFrequency?: RecurringFrequency;
-  
-  // Metadata
-  description?: string;
-  category?: string;
-  tags?: string[];
-  
-  // Validation constraints
-  minAmount?: number;
-  maxAmount?: number;
-  
-  // Date information
-  startDate?: string; // YYYY-MM-DD format
-  endDate?: string; // YYYY-MM-DD format
-  
-  // Status and tracking
-  isActive?: boolean;
-  createdAt?: string; // ISO timestamp
-  lastModified?: string; // ISO timestamp
 }
 ```
 
@@ -60,11 +36,7 @@ One-time lump sum payments made at a specific month.
 {
   "id": "lump-sum-1",
   "month": 12,
-  "amount": 25000,
-  "type": "single",
-  "description": "Year-end bonus payment",
-  "category": "bonus",
-  "tags": ["windfall", "annual"]
+  "amount": 25000
 }
 ```
 
@@ -76,51 +48,13 @@ Regular payments that repeat at specified intervals.
   "id": "recurring-monthly-1",
   "month": 6,
   "amount": 500,
-  "type": "recurring",
   "isRecurring": true,
   "recurringQuantity": 18,
   "recurringFrequency": "monthly",
-  "recurringEndMonth": 24,
-  "description": "Monthly extra payment for 18 months",
-  "category": "regular_extra"
+  "recurringEndMonth": 24
 }
 ```
 
-### 3. Escalating Payments
-Payments that increase over time at a specified rate.
-
-```json
-{
-  "id": "escalating-1",
-  "month": 24,
-  "amount": 2000,
-  "type": "escalating",
-  "isRecurring": true,
-  "recurringQuantity": 10,
-  "recurringFrequency": "annually",
-  "escalationRate": 5.0,
-  "escalationFrequency": "annually",
-  "description": "Annual bonus with 5% escalation",
-  "category": "bonus"
-}
-```
-
-## Categories and Tags
-
-### Predefined Categories
-- `bonus`: Work bonuses or performance payments
-- `tax_refund`: Tax refund payments
-- `regular_extra`: Regular budgeted extra payments
-- `windfall`: Unexpected large payments
-- `refinance_proceeds`: Money from refinancing
-- `investment_return`: Investment gains
-- `other`: Miscellaneous payments
-
-### Common Tags
-- `monthly`, `annual`, `quarterly`: Payment frequency
-- `windfall`, `budget`: Payment source
-- `bonus`, `tax`, `investment`: Payment type
-- `refinance`, `emergency`: Special circumstances
 
 ## JSON Schema for Export/Import
 
@@ -214,21 +148,16 @@ if (!configValidation.isValid) {
 
 The enhanced structure is backward compatible with the existing `ExtraItem` interface. Legacy extra payments will be automatically enhanced with default values:
 
-- `type`: Defaults to 'single'
 - `isRecurring`: Defaults to false
 - `recurringQuantity`: Defaults to 1
 - `recurringFrequency`: Defaults to 'monthly'
-- `isActive`: Defaults to true
-- `createdAt`/`lastModified`: Set to current timestamp
 
 ## Best Practices
 
 1. **Use descriptive IDs**: Include payment type and purpose in the ID
-2. **Provide descriptions**: Help users understand the payment purpose
-3. **Use categories and tags**: Enable better organization and filtering
-4. **Set appropriate constraints**: Use min/max amounts for validation
-5. **Track changes**: Always update `lastModified` when making changes
-6. **Use precise dates**: Include start/end dates for time-sensitive payments
+2. **Set appropriate recurrence**: Use `recurringQuantity` and `recurringEndMonth` to control payment duration
+3. **Choose correct frequency**: Use 'monthly' for regular payments, 'annually' for yearly payments
+4. **Validate end months**: Ensure `recurringEndMonth` is within the loan term
 
 ## Future Enhancements
 

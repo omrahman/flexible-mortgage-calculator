@@ -6,41 +6,16 @@ export interface ExtraMap {
 
 export type RecurringFrequency = 'monthly' | 'annually';
 
-export type ExtraPaymentType = 'single' | 'recurring' | 'escalating';
-
 export interface ExtraItem {
   id: string;
   month: number;
   amount: number;
-  type: ExtraPaymentType;
   
   // Recurrence information
   isRecurring?: boolean;
   recurringQuantity?: number; // number of payments
   recurringEndMonth?: number; // end month for recurring payments
   recurringFrequency?: RecurringFrequency; // frequency of recurring payments
-  
-  // Escalation information (for escalating payments)
-  escalationRate?: number; // annual escalation rate as percentage (e.g., 3.5 for 3.5%)
-  escalationFrequency?: RecurringFrequency; // how often escalation applies
-  
-  // Metadata
-  description?: string; // user-friendly description
-  category?: string; // category for grouping (e.g., 'bonus', 'tax_refund', 'regular_extra')
-  tags?: string[]; // flexible tagging system
-  
-  // Validation and constraints
-  minAmount?: number; // minimum amount for this payment
-  maxAmount?: number; // maximum amount for this payment
-  
-  // Date information (for more precise scheduling)
-  startDate?: string; // YYYY-MM-DD format for precise start date
-  endDate?: string; // YYYY-MM-DD format for precise end date
-  
-  // Status and tracking
-  isActive?: boolean; // whether this payment is currently active
-  createdAt?: string; // ISO timestamp when created
-  lastModified?: string; // ISO timestamp when last modified
 }
 
 export interface Row {

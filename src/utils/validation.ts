@@ -144,12 +144,9 @@ export function validateExtraItem(extra: any, termMonths: number): ValidationRes
     errors.push('Amount must be a non-negative number');
   }
   
-  if (!extra.type || !['single', 'recurring', 'escalating'].includes(extra.type)) {
-    errors.push('Type must be one of: single, recurring, escalating');
-  }
   
   // Recurring payment validation
-  if (extra.type === 'recurring' || extra.isRecurring) {
+  if (extra.isRecurring) {
     if (!Number.isFinite(extra.recurringQuantity) || extra.recurringQuantity < 1) {
       errors.push('Recurring quantity must be at least 1');
     }
@@ -163,64 +160,10 @@ export function validateExtraItem(extra: any, termMonths: number): ValidationRes
     }
   }
   
-  // Escalating payment validation
-  if (extra.type === 'escalating') {
-    if (!Number.isFinite(extra.escalationRate) || extra.escalationRate < 0) {
-      errors.push('Escalation rate must be a non-negative number');
-    }
-    
-    if (extra.escalationFrequency && !['monthly', 'annually'].includes(extra.escalationFrequency)) {
-      errors.push('Escalation frequency must be monthly or annually');
-    }
-  }
-  
-  // Amount constraints validation
-  if (extra.minAmount !== undefined && (!Number.isFinite(extra.minAmount) || extra.minAmount < 0)) {
-    errors.push('Minimum amount must be a non-negative number');
-  }
-  
-  if (extra.maxAmount !== undefined && (!Number.isFinite(extra.maxAmount) || extra.maxAmount < 0)) {
-    errors.push('Maximum amount must be a non-negative number');
-  }
-  
-  if (extra.minAmount !== undefined && extra.maxAmount !== undefined && extra.minAmount > extra.maxAmount) {
-    errors.push('Minimum amount cannot be greater than maximum amount');
-  }
-  
-  if (extra.minAmount !== undefined && extra.amount < extra.minAmount) {
-    errors.push('Amount cannot be less than minimum amount');
-  }
-  
-  if (extra.maxAmount !== undefined && extra.amount > extra.maxAmount) {
-    errors.push('Amount cannot be greater than maximum amount');
-  }
-  
-  // Date validation
-  if (extra.startDate && !isValidDate(extra.startDate)) {
-    errors.push('Start date must be in YYYY-MM-DD format');
-  }
-  
-  if (extra.endDate && !isValidDate(extra.endDate)) {
-    errors.push('End date must be in YYYY-MM-DD format');
-  }
-  
-  if (extra.startDate && extra.endDate && new Date(extra.startDate) >= new Date(extra.endDate)) {
-    errors.push('End date must be after start date');
-  }
-  
   return {
     isValid: errors.length === 0,
     errors
   };
-}
-
-// Helper function to validate date format
-function isValidDate(dateString: string): boolean {
-  const regex = /^\d{4}-\d{2}-\d{2}$/;
-  if (!regex.test(dateString)) return false;
-  
-  const date = new Date(dateString);
-  return date instanceof Date && !isNaN(date.getTime()) && dateString === date.toISOString().split('T')[0];
 }
 
 // Validation for loan configuration schema
