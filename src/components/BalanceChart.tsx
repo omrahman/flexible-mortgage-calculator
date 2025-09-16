@@ -7,6 +7,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
+  Legend,
 } from "recharts";
 import { fmtUSD } from '../utils/formatters';
 import type { ScheduleResult } from '../types';
@@ -17,6 +18,15 @@ interface BalanceChartProps {
 }
 
 export const BalanceChart: React.FC<BalanceChartProps> = ({ chartData }) => {
+  const formatTooltipLabel = (label: string) => {
+    const [monthNum, date] = label.split('\n');
+    const [year, month] = date.split('-');
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthName = monthNames[parseInt(month) - 1];
+    return `${monthName} ${year} (Month ${monthNum})`;
+  };
+
   return (
     <div className="rounded-2xl bg-white p-5 shadow">
       <h2 className="text-xl font-semibold mb-4">Balance Over Time</h2>
@@ -30,14 +40,38 @@ export const BalanceChart: React.FC<BalanceChartProps> = ({ chartData }) => {
               domain={[0, 'dataMax']} 
             />
             <Tooltip 
-              formatter={(v: number | string) => fmtUSD(Number(v))} 
-              labelFormatter={(l) => `Month ${l.split("\n")[0]}`} 
+              content={({ active, payload, label }) => {
+                if (active && payload && payload.length) {
+                  return (
+                    <div className="bg-white p-3 border rounded shadow-lg">
+                      <p className="font-medium">{formatTooltipLabel(label)}</p>
+                      {payload.map((entry, index) => (
+                        <p key={index} style={{ color: entry.color }}>
+                          {entry.dataKey === 'balance' ? 'Remaining Balance' : 'Interest Paid'}: {fmtUSD(Number(entry.value))}
+                        </p>
+                      ))}
+                    </div>
+                  );
+                }
+                return null;
+              }}
             />
+            <Legend />
             <Line 
               type="monotone" 
               dataKey="balance" 
               dot={false} 
               strokeWidth={2} 
+              stroke="#3b82f6"
+              name="Remaining Balance"
+            />
+            <Line 
+              type="monotone" 
+              dataKey="cumulativeInterest" 
+              dot={false} 
+              strokeWidth={2} 
+              stroke="#ef4444"
+              name="Interest Paid"
             />
           </LineChart>
         </ResponsiveContainer>

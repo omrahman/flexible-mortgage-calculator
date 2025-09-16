@@ -12,6 +12,7 @@ export const csvFor = (rows: Row[]): string => {
     "Extra",
     "Total Paid",
     "Ending Balance",
+    "Cumulative Interest",
     "Recast?",
     "New Payment",
   ];
@@ -27,6 +28,7 @@ export const csvFor = (rows: Row[]): string => {
         r.extra.toFixed(2),
         r.total.toFixed(2),
         r.balance.toFixed(2),
+        r.cumulativeInterest.toFixed(2),
         r.recast ? "YES" : "",
         r.newPayment ? r.newPayment.toFixed(2) : "",
       ].join(",")

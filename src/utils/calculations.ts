@@ -74,6 +74,7 @@ export const buildSchedule = ({
   const segments: { start: number; payment: number }[] = [{ start: 1, payment }];
   let totalInterest = 0;
   let totalPaid = 0;
+  let cumulativeInterest = 0;
 
   // Safety: guard against pathological loops.
   const maxIters = termMonths + MAX_ITERATIONS; // allows for recasts/rounding edge cases
@@ -96,6 +97,7 @@ export const buildSchedule = ({
 
     totalInterest = round2(totalInterest + interest);
     totalPaid = round2(totalPaid + cashThisMonth);
+    cumulativeInterest = round2(cumulativeInterest + interest);
 
     // Calculate new balance, ensuring it doesn't go negative
     const newBalance = round2(bal - principalPart - extra);
@@ -126,6 +128,7 @@ export const buildSchedule = ({
       extra,
       total: cashThisMonth,
       balance: bal,
+      cumulativeInterest,
       recast: didRecast || undefined,
       newPayment,
     });
@@ -143,6 +146,7 @@ export const buildSchedule = ({
         const payoffTotal = round2(bal + payoffInterest);
         totalInterest = round2(totalInterest + payoffInterest);
         totalPaid = round2(totalPaid + payoffTotal);
+        cumulativeInterest = round2(cumulativeInterest + payoffInterest);
         bal = 0;
         rows.push({
           idx: m + 1,
@@ -153,6 +157,7 @@ export const buildSchedule = ({
           extra: 0,
           total: payoffTotal,
           balance: 0,
+          cumulativeInterest,
         });
         break;
       } else {
@@ -163,7 +168,11 @@ export const buildSchedule = ({
     }
   }
 
-  const chart = rows.map((r) => ({ name: `${r.idx}\n${r.date}`, balance: r.balance }));
+  const chart = rows.map((r) => ({ 
+    name: `${r.idx}\n${r.date}`, 
+    balance: r.balance,
+    cumulativeInterest: r.cumulativeInterest
+  }));
 
   return {
     rows,
