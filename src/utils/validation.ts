@@ -156,10 +156,6 @@ export function validateExtraItem(extra: ExtraItem, termMonths: number): Validat
     if (!extra.recurringFrequency || !['monthly', 'annually'].includes(extra.recurringFrequency)) {
       errors.push('Recurring frequency must be monthly or annually');
     }
-    
-    if (extra.recurringEndMonth && (extra.recurringEndMonth < extra.month || extra.recurringEndMonth > termMonths)) {
-      errors.push('Recurring end month must be after start month and within loan term');
-    }
   }
   
   return {

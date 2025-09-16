@@ -22,7 +22,6 @@ export const recurringMonthlyExample: ExtraItem = {
   isRecurring: true,
   recurringQuantity: 18,
   recurringFrequency: 'monthly',
-  recurringEndMonth: 24
 };
 
 // Example 3: Recurring annual payment
@@ -35,23 +34,11 @@ export const recurringAnnualExample: ExtraItem = {
   recurringFrequency: 'annually'
 };
 
-// Example 4: Recurring payment with end month
-export const recurringWithEndMonthExample: ExtraItem = {
-  id: 'recurring-end-1',
-  month: 24,
-  amount: 2000,
-  isRecurring: true,
-  recurringQuantity: 10,
-  recurringFrequency: 'annually',
-  recurringEndMonth: 120
-};
-
 // Collection of all examples
 export const allExtraPaymentExamples: ExtraItem[] = [
   singlePaymentExample,
   recurringMonthlyExample,
   recurringAnnualExample,
-  recurringWithEndMonthExample
 ];
 
 // Example of a complete loan configuration with various extra payment types
@@ -92,9 +79,6 @@ export function demonstrateSerialization() {
     console.log(`Month: ${example.month}`);
     if (example.isRecurring) {
       console.log(`Recurring: ${example.recurringQuantity} times, ${example.recurringFrequency}`);
-      if (example.recurringEndMonth) {
-        console.log(`End month: ${example.recurringEndMonth}`);
-      }
     } else {
       console.log('Single payment');
     }

@@ -173,7 +173,6 @@ function enhanceExtraItem(extra: ExtraItem): ExtraItem {
     amount: extra.amount,
     isRecurring: extra.isRecurring || false,
     recurringQuantity: extra.recurringQuantity || 1,
-    recurringEndMonth: extra.recurringEndMonth || 0,
     recurringFrequency: extra.recurringFrequency || 'monthly'
   };
 }

@@ -51,16 +51,6 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
     max: extra.recurringFrequency === 'annually' ? Math.ceil(termMonths / 12) : termMonths
   });
 
-  // Recurring end month field hook
-  const endMonthField = useNumberField({
-    initialValue: extra.recurringEndMonth || 0,
-    defaultValue: 0,
-    onValueChange: (value) => onUpdateExtra(extra.id, 'recurringEndMonth', value),
-    validate: (value) => value === 0 || (value >= extra.month + (extra.recurringFrequency === 'annually' ? 12 : 1) && value <= termMonths),
-    min: extra.month + (extra.recurringFrequency === 'annually' ? 12 : 1),
-    max: termMonths
-  });
-
   return (
     <div className="border rounded-xl p-3 sm:p-4 space-y-3">
       <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-3 items-end">
@@ -109,7 +99,6 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
                   onUpdateExtra(extra.id, {
                     isRecurring: false,
                     recurringQuantity: 1,
-                    recurringEndMonth: 0,
                     recurringFrequency: 'monthly'
                   });
                 }
@@ -177,25 +166,6 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
                   onChange={(e) => quantityField.onChange(e.target.value)}
                   onFocus={quantityField.onFocus}
                   onBlur={quantityField.onBlur}
-                />
-              </div>
-              <div className="min-w-0">
-                <span className="text-xs text-gray-500">
-                  End month (optional)
-                  {extra.recurringFrequency === 'annually' && (
-                    <span className="text-gray-400 ml-1">(will be adjusted to year boundaries)</span>
-                  )}
-                </span>
-                <input
-                  className="mt-1 w-full rounded-xl border p-2"
-                  type="number"
-                  min={extra.month + (extra.recurringFrequency === 'annually' ? 12 : 1)}
-                  max={termMonths}
-                  step={extra.recurringFrequency === 'annually' ? "12" : "1"}
-                  value={endMonthField.value}
-                  onChange={(e) => endMonthField.onChange(e.target.value)}
-                  onFocus={endMonthField.onFocus}
-                  onBlur={endMonthField.onBlur}
                 />
               </div>
             </div>

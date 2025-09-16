@@ -147,7 +147,7 @@ export const useMortgageCalculation = () => {
         const quantity = e.recurringQuantity || 1;
         const frequency = e.recurringFrequency || 'monthly';
         const interval = frequency === 'annually' ? 12 : 1;
-        const endMonth = e.recurringEndMonth || (startMonth + (quantity - 1) * interval);
+        const endMonth = (startMonth + (quantity - 1) * interval);
         const actualEndMonth = Math.min(termMonths, endMonth);
         
         for (let i = 0; i < quantity; i++) {

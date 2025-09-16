@@ -22,7 +22,6 @@ interface ExtraItem {
   // Recurrence information
   isRecurring?: boolean;
   recurringQuantity?: number;
-  recurringEndMonth?: number;
   recurringFrequency?: RecurringFrequency; // 'monthly' | 'annually'
 }
 ```
@@ -51,7 +50,6 @@ Regular payments that repeat at specified intervals.
   "isRecurring": true,
   "recurringQuantity": 18,
   "recurringFrequency": "monthly",
-  "recurringEndMonth": 24
 }
 ```
 
@@ -155,9 +153,8 @@ The enhanced structure is backward compatible with the existing `ExtraItem` inte
 ## Best Practices
 
 1. **Use descriptive IDs**: Include payment type and purpose in the ID
-2. **Set appropriate recurrence**: Use `recurringQuantity` and `recurringEndMonth` to control payment duration
+2. **Set appropriate recurrence**: Use `recurringQuantity` to control payment duration
 3. **Choose correct frequency**: Use 'monthly' for regular payments, 'annually' for yearly payments
-4. **Validate end months**: Ensure `recurringEndMonth` is within the loan term
 
 ## Future Enhancements
 
