@@ -1,3 +1,4 @@
+import { Routes, Route } from "react-router-dom";
 import MortgageCalculator from "./components/MortgageCalculator";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ConfigurationsProvider } from "./contexts/ConfigurationsContext";
@@ -11,7 +12,10 @@ function App() {
       }}
     >
       <ConfigurationsProvider>
-        <MortgageCalculator />
+        <Routes>
+          <Route path="/" element={<MortgageCalculator />} />
+          <Route path="/share/:encodedConfig" element={<MortgageCalculator />} />
+        </Routes>
       </ConfigurationsProvider>
     </ErrorBoundary>
   );

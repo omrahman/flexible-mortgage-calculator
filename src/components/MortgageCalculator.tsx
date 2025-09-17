@@ -1,4 +1,5 @@
-import { useMemo, lazy, Suspense } from 'react';
+import { useMemo, lazy, Suspense, useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useMortgageCalculation } from '../hooks/useMortgageCalculation';
 import { useConfigurations } from '../hooks/useConfigurations';
 import { SavedConfiguration } from '../types';
@@ -10,6 +11,7 @@ import { SavedConfigurations } from './SavedConfigurations';
 import { CSV_FILENAME } from '../constants';
 import { Tabs } from './Tabs';
 import { Section } from './Section';
+import { importFromUrl, deserializeLoanConfiguration } from '../utils/serialization';
 
 // Lazy load heavy components
 const BalanceChart = lazy(() => import('./BalanceChart').then(module => ({ default: module.BalanceChart })));
@@ -22,6 +24,9 @@ const loadCSVUtils = () => import('../utils/csv').then(module => ({
 }));
 
 export default function MortgageCalculator() {
+  const { encodedConfig } = useParams<{ encodedConfig?: string }>();
+  const navigate = useNavigate();
+  const [processedConfig, setProcessedConfig] = useState<string | undefined>();
   const {
     // State
     homePrice,
@@ -74,6 +79,22 @@ export default function MortgageCalculator() {
   } = useMortgageCalculation();
 
   const { updateConfiguration, getConfiguration } = useConfigurations();
+
+  useEffect(() => {
+    if (encodedConfig && encodedConfig !== processedConfig) {
+      setProcessedConfig(encodedConfig);
+      const result = importFromUrl(encodedConfig);
+      if (result.isValid && result.data) {
+        const cachedInputs = deserializeLoanConfiguration(result.data);
+        loadConfiguration(cachedInputs, `shared-${Date.now()}`);
+        navigate('/', { replace: true });
+      } else {
+        console.error('Failed to import configuration from URL:', result.errors);
+        // Optionally, show an error message to the user
+        navigate('/', { replace: true });
+      }
+    }
+  }, [encodedConfig, processedConfig, loadConfiguration, navigate]);
 
   // Get current inputs for saving
   const currentInputs = useMemo(() => ({

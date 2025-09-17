@@ -1,6 +1,6 @@
 // Custom hook for mortgage calculation logic
 
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import { getCalculationResults } from '../logic/mortgageLogic';
 import type { ExtraItem, CachedInputs, RecurringFrequency, DownPaymentInput } from '../types';
 import {
@@ -109,16 +109,16 @@ export const useMortgageCalculation = () => {
     clearLoadedConfiguration();
   };
 
-  const loadConfiguration = (configInputs: CachedInputs, configId?: string) => {
+  const loadConfiguration = useCallback((configInputs: CachedInputs, configId?: string) => {
     setCachedInputs(configInputs);
     setLoadedConfigurationId(configId || null);
     setOriginalInputs(configInputs);
-  };
+  }, [setCachedInputs, setLoadedConfigurationId, setOriginalInputs]);
 
-  const clearLoadedConfiguration = () => {
+  const clearLoadedConfiguration = useCallback(() => {
     setLoadedConfigurationId(null);
     setOriginalInputs(null);
-  };
+  }, [setLoadedConfigurationId, setOriginalInputs]);
 
   const markChangesAsSaved = () => {
     if (loadedConfigurationId) {

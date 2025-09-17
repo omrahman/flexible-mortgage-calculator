@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { ConfigurationsContext } from '../contexts/ConfigurationsContextDefinition';
-import { importFromJSON, exportToJSON } from '../utils/serialization';
+import { importFromJSON, exportToJSON, exportToUrl } from '../utils/serialization';
 
 
 export function useConfigurations() {
@@ -20,6 +20,14 @@ export function useConfigurations() {
     return null;
   };
 
+  const exportConfigurationForUrl = (id: string) => {
+    const config = context.configurations.find(c => c.id === id);
+    if (config) {
+      return exportToUrl(config.inputs);
+    }
+    return null;
+  }
+
   const importConfiguration = (json: string) => {
     return importFromJSON(json, { validateSchema: true });
   };
@@ -28,5 +36,6 @@ export function useConfigurations() {
     ...context,
     importConfiguration,
     exportConfiguration,
+    exportConfigurationForUrl,
   };
 }

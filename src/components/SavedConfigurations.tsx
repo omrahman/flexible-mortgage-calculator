@@ -4,6 +4,7 @@ import { ConfigurationModal } from './ConfigurationModal';
 import { SavedConfiguration, CachedInputs, LoanConfigurationSchema } from '../types';
 import { ImportConfirmationModal } from './ImportConfirmationModal';
 import { deserializeLoanConfiguration } from '../utils/serialization';
+import { exportToUrl } from '../utils/serialization';
 
 interface SavedConfigurationsProps {
   onLoadConfiguration: (config: SavedConfiguration) => void;
@@ -87,6 +88,18 @@ export function SavedConfigurations({
     }
   };
 
+  const handleShare = (config: SavedConfiguration) => {
+    const encoded = exportToUrl(config.inputs);
+    const url = `${window.location.origin}${window.location.pathname}#/share/${encoded}`;
+    navigator.clipboard.writeText(url).then(() => {
+      alert('Share link copied to clipboard!');
+    }, (err) => {
+      console.error('Failed to copy share link: ', err);
+      alert('Failed to copy share link.');
+    });
+    setOpenMenuId(null);
+  };
+
   const handleImportClick = () => {
     fileInputRef.current?.click();
   };
@@ -155,11 +168,18 @@ export function SavedConfigurations({
     }
   };
 
+  const isSharedConfig = loadedConfigurationId && loadedConfigurationId.startsWith('shared-');
+
   return (
     <div>
+      {isSharedConfig && (
+        <div className="mb-4 p-3 border border-blue-200 bg-blue-50 rounded-md text-sm text-blue-700">
+          You are viewing a shared configuration. Save it to keep it and any changes you make.
+        </div>
+      )}
       <div className="mb-4">
         <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-2">
-          {hasUnsavedChanges && loadedConfigurationId && (
+          {hasUnsavedChanges && loadedConfigurationId && !isSharedConfig && (
             <button
               onClick={handleSaveChanges}
               className="px-3 py-1 text-sm bg-orange-600 text-white rounded-md hover:bg-orange-700 transition-colors whitespace-nowrap"
@@ -250,6 +270,13 @@ export function SavedConfigurations({
                         role="menuitem"
                       >
                         Load
+                      </button>
+                      <button
+                        onClick={() => { handleShare(config); }}
+                        className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        role="menuitem"
+                      >
+                        Share
                       </button>
                       <button 
                         onClick={() => { handleEdit(config); setOpenMenuId(null); }} 

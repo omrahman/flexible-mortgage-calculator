@@ -14,6 +14,29 @@ import {
   APPLICATION_VERSION 
 } from '../constants';
 import { validateLoanConfigurationSchema } from './validation';
+import pako from 'pako';
+
+/**
+ * Converts a Uint8Array to a binary string for btoa.
+ */
+function uint8ArrayToBinaryString(arr: Uint8Array): string {
+  let binary = '';
+  for (let i = 0; i < arr.length; i++) {
+    binary += String.fromCharCode(arr[i]);
+  }
+  return binary;
+}
+
+/**
+ * Converts a binary string from atob to a Uint8Array.
+ */
+function binaryStringToUint8Array(str: string): Uint8Array {
+  const bytes = new Uint8Array(str.length);
+  for (let i = 0; i < str.length; i++) {
+    bytes[i] = str.charCodeAt(i);
+  }
+  return bytes;
+}
 
 /**
  * Converts CachedInputs to LoanConfigurationSchema for export
@@ -160,6 +183,52 @@ export function importFromJSON(
       isValid: false,
       errors: [`Invalid JSON: ${error instanceof Error ? error.message : 'Unknown error'}`],
       warnings: []
+    };
+  }
+}
+
+/**
+ * Exports configuration to a URL-safe string
+ */
+export function exportToUrl(
+  inputs: CachedInputs,
+  options: ExportOptions = {}
+): string {
+  const schema = serializeLoanConfiguration(inputs, {
+    ...options,
+    includeMetadata: false,
+    includeDisplaySettings: false,
+  });
+  const jsonString = JSON.stringify(schema);
+  const compressed = pako.deflate(jsonString); // Uint8Array
+  const binaryString = uint8ArrayToBinaryString(compressed);
+  const base64 = btoa(binaryString);
+  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+
+/**
+ * Imports configuration from a URL-safe string
+ */
+export function importFromUrl(
+  encodedString: string,
+  options: ImportOptions = {}
+): ConfigurationValidationResult {
+  try {
+    let base64 = encodedString.replace(/-/g, '+').replace(/_/g, '/');
+    while (base64.length % 4) {
+      base64 += '=';
+    }
+    const binaryString = atob(base64);
+    const compressed = binaryStringToUint8Array(binaryString);
+    const jsonString = pako.inflate(compressed, { to: 'string' });
+    const data = JSON.parse(jsonString);
+    return importLoanConfiguration(data, options);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return {
+      isValid: false,
+      errors: [`Invalid URL data: ${errorMessage}`],
+      warnings: [],
     };
   }
 }
