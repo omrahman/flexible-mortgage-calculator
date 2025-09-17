@@ -123,7 +123,9 @@ export const buildSchedule = ({
 
     if (shouldRecast) {
       didRecast = true;
-      const remaining = monthsRemaining; // keep the original maturity date
+      // Use the actual remaining months from the original term
+      // This ensures we maintain the original maturity date
+      const remaining = monthsRemaining;
       newPayment = calcPayment(bal, r, remaining);
       if (Math.abs(newPayment - payment) > PAYMENT_DIFFERENCE_THRESHOLD) {
         payment = newPayment;

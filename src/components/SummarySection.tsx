@@ -39,24 +39,12 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
   // Calculate total principal paid
   const totalPrincipalPaid = result.rows.reduce((sum, row) => sum + row.principal, 0);
   
-  // Calculate annualized return for the lender
-  // This should be based on the lender's actual profit/loss, not just interest earned
-  let annualizedReturn = 0;
-  
-  if (principal > 0) {
-    // Calculate the actual return based on total amount received vs principal lent
-    // The lender only receives the actual payments made, not the forgiven amounts
-    const totalReceived = result.totalPaid;
+  // Calculate Average Annual Return for the lender
+  let averageAnnualReturn = 0;
+  if (principal > 0 && result.payoffMonth > 0) {
     const yearsToPayoff = result.payoffMonth / 12;
-    
-    if (yearsToPayoff > 0) {
-      // Annualized return = (Total Received / Principal)^(1/years) - 1
-      // This gives the true annualized return based on actual payments received
-      annualizedReturn = (Math.pow(totalReceived / principal, 1 / yearsToPayoff) - 1) * 100;
-    } else {
-      // Fallback to 0% if calculation fails
-      annualizedReturn = 0;
-    }
+    // Simple average annual return: (Total Interest / Principal) / Years
+    averageAnnualReturn = (result.totalInterest / principal) / yearsToPayoff * 100;
   }
 
   // Debug functionality
@@ -97,7 +85,7 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
     });
     console.log('Lender Info:', {
       'Lender Profit': fmtUSD(lenderProfit),
-      'Lender Return': `${annualizedReturn.toFixed(2)}%`,
+      'Lender Return': `${averageAnnualReturn.toFixed(2)}%`,
     });
     console.groupEnd();
     
@@ -137,7 +125,7 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
       },
       lender: {
         profit: fmtUSD(lenderProfit),
-        annualizedReturn: `${annualizedReturn.toFixed(2)}%`,
+        annualizedReturn: `${averageAnnualReturn.toFixed(2)}%`,
       },
       extraPayments: debugData.inputs.extraPayments.length > 0 ? debugData.inputs.extraPayments : 'None',
     };
@@ -233,9 +221,9 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
           tooltip="Lender's cash profit = Total Paid - Principal. This is the total amount the lender earns in cash payments above the original loan amount. Does not account for forgiveness amounts that reduce the total amount owed."
         />
         <SummaryCard 
-          label="Lender's Return (Annualized)" 
-          value={`${annualizedReturn.toFixed(2)}%`} 
-          tooltip="Annualized return rate for the lender. For standard loans, this equals the interest rate. For modified loans (with extra payments or forgiveness), this is the interest rate adjusted by the ratio of actual interest earned to expected interest: Interest Rate × (Actual Interest / Expected Interest). This reflects the lender's actual return based on the loan's performance."
+          label="Lender's Return (Avg. Annual)" 
+          value={`${averageAnnualReturn.toFixed(2)}%`} 
+          tooltip="Average annual return on the lender's investment, calculated as (Total Interest / Principal) / (Years to Payoff). This is a simplified measure of the lender's profitability on an annualized basis."
         />
       </div>
 

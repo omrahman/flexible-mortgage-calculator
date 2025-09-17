@@ -25,7 +25,7 @@ export const DEFAULT_EXTRA_PAYMENTS = [
 export const ROUNDING_PRECISION = 2;
 export const MAX_ITERATIONS = 600; // Safety guard for calculation loops
 export const MIN_BALANCE_THRESHOLD = 0.001; // Minimum balance to consider paid off
-export const PAYMENT_DIFFERENCE_THRESHOLD = 0.005; // Minimum payment change to trigger recast
+export const PAYMENT_DIFFERENCE_THRESHOLD = 0.01; // Minimum payment change to trigger recast
 
 export const CSV_FILENAME = "amortization_recast_schedule.csv";
 export const CSV_MIME_TYPE = "text/csv";
