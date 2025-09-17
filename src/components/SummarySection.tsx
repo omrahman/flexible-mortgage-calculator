@@ -137,7 +137,7 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
   };
 
   return (
-    <div className="rounded-2xl bg-white p-4 sm:p-5 shadow">
+    <div>
       <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3 sm:gap-4">
         {/* Core Loan & Payment Info */}
         <SummaryCard

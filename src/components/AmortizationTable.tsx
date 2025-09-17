@@ -20,23 +20,20 @@ export const AmortizationTable: React.FC<AmortizationTableProps> = ({
   const displayRows = showAll ? rows : rows.slice(0, SCHEDULE_PREVIEW_ROWS);
 
   return (
-    <div className="rounded-2xl bg-white p-5 shadow">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold">Schedule</h2>
-        <div className="flex gap-2">
-          <button 
-            className="rounded-xl border px-3 py-2" 
-            onClick={onToggleShowAll}
-          >
-            {showAll ? "Show first 24" : "Show all"}
-          </button>
-          <button 
-            className="rounded-xl bg-black text-white px-3 py-2" 
-            onClick={onDownloadCSV}
-          >
-            Download CSV
-          </button>
-        </div>
+    <div>
+      <div className="flex items-center justify-end gap-2 mb-4">
+        <button 
+          className="rounded-xl border px-3 py-2 text-sm" 
+          onClick={onToggleShowAll}
+        >
+          {showAll ? "Show Preview" : "Show All"}
+        </button>
+        <button 
+          className="rounded-xl bg-black text-white px-3 py-2 text-sm" 
+          onClick={onDownloadCSV}
+        >
+          Download CSV
+        </button>
       </div>
 
       <div className="overflow-auto rounded-xl border table-container">
@@ -89,6 +86,7 @@ export const AmortizationTable: React.FC<AmortizationTableProps> = ({
           </tbody>
         </table>
       </div>
+      
       <p className="text-xs text-gray-500 mt-3">
         Notes: This sim assumes monthly compounding, level-payment mortgage. Recast keeps the original maturity date, recalculating P&I on the remaining balance. Lenders may charge a fee and have rules; this is a planning tool, not advice.
       </p>

@@ -156,7 +156,7 @@ export function SavedConfigurations({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
+    <div>
       <div className="mb-4">
         <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-2">
           {hasUnsavedChanges && loadedConfigurationId && (

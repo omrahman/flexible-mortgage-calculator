@@ -14,7 +14,7 @@ export const PaymentSegments: React.FC<PaymentSegmentsProps> = ({
   monthlyPITI,
 }) => {
   return (
-    <div className="rounded-2xl bg-white p-4 sm:p-5 shadow">
+    <div>
       <p className="text-sm text-gray-600 mb-6 leading-relaxed">
         Track how your monthly payment changes over time with recasting and extra payments.
       </p>
