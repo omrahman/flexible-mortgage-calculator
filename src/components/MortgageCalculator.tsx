@@ -176,7 +176,6 @@ export default function MortgageCalculator() {
             monthsSaved={monthsSaved}
             monthlyPITI={monthlyPITI}
             principal={principal}
-            interestRate={Number(rate) || 0}
             cachedInputs={cachedInputs}
             termMonths={termMonths}
             scheduleParams={params}

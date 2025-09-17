@@ -11,7 +11,6 @@ interface SummarySectionProps {
   monthsSaved: number;
   monthlyPITI: { propertyTax: number; insurance: number; total: number };
   principal: number;
-  interestRate: number; // Annual interest rate as a percentage
   // Debug data
   cachedInputs: CachedInputs;
   termMonths: number;
@@ -25,7 +24,6 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
   monthsSaved,
   monthlyPITI,
   principal,
-  interestRate,
   cachedInputs,
   termMonths,
   scheduleParams,
@@ -42,24 +40,22 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
   const totalPrincipalPaid = result.rows.reduce((sum, row) => sum + row.principal, 0);
   
   // Calculate annualized return for the lender
-  // For standard loans, return equals the interest rate
-  // For modified loans, return is adjusted based on actual vs expected interest
+  // This should be based on the lender's actual profit/loss, not just interest earned
   let annualizedReturn = 0;
   
   if (principal > 0) {
-    // Calculate expected interest for a standard loan at this rate and term
-    const monthlyRate = interestRate / 100 / 12;
-    const termMonths = baseline.payoffMonth;
-    const monthlyPayment = (principal * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -termMonths));
-    const expectedInterest = (monthlyPayment * termMonths) - principal;
+    // Calculate the actual return based on total amount received vs principal lent
+    // The lender only receives the actual payments made, not the forgiven amounts
+    const totalReceived = result.totalPaid;
+    const yearsToPayoff = result.payoffMonth / 12;
     
-    if (expectedInterest > 0) {
-      // Return = Interest Rate * (Actual Interest / Expected Interest)
-      // This adjusts the return based on actual performance
-      annualizedReturn = interestRate * (result.totalInterest / expectedInterest);
+    if (yearsToPayoff > 0) {
+      // Annualized return = (Total Received / Principal)^(1/years) - 1
+      // This gives the true annualized return based on actual payments received
+      annualizedReturn = (Math.pow(totalReceived / principal, 1 / yearsToPayoff) - 1) * 100;
     } else {
-      // Fallback to interest rate if expected interest calculation fails
-      annualizedReturn = interestRate;
+      // Fallback to 0% if calculation fails
+      annualizedReturn = 0;
     }
   }
 
