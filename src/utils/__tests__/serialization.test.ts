@@ -54,7 +54,7 @@ describe('serialization utilities', () => {
 
     it('should return an error for a schema that fails validation', () => {
         const schema = serializeLoanConfiguration(mockInputs);
-        // @ts-ignore
+        // @ts-expect-error Testing invalid input
         delete schema.loan; // Invalidate the schema
         const jsonString = JSON.stringify(schema);
         const result = importFromJSON(jsonString);

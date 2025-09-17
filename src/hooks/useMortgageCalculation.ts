@@ -11,6 +11,7 @@ import {
   DEFAULT_PROPERTY_TAX_ANNUAL,
   DEFAULT_INSURANCE_ANNUAL,
   DEFAULT_EXTRA_PAYMENTS,
+  DEFAULT_AUTORECAST,
 } from '../constants';
 import { useLocalStorage } from './useLocalStorage';
 
@@ -29,7 +30,7 @@ export const useMortgageCalculation = () => {
     propertyTaxAnnual: DEFAULT_PROPERTY_TAX_ANNUAL,
     insuranceAnnual: DEFAULT_INSURANCE_ANNUAL,
     extras: DEFAULT_EXTRA_PAYMENTS,
-    autoRecast: true,
+    autoRecast: DEFAULT_AUTORECAST,
     showAll: false,
   };
 

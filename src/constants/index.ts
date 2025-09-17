@@ -6,6 +6,7 @@ export const DEFAULT_INTEREST_RATE = "4.85";
 export const DEFAULT_TERM_YEARS = "30";
 export const DEFAULT_PROPERTY_TAX_ANNUAL = "12000"; // $12,000 annual property tax
 export const DEFAULT_INSURANCE_ANNUAL = "2400"; // $2,400 annual insurance
+export const DEFAULT_AUTORECAST = true;
 export const DEFAULT_EXTRA_PAYMENTS = [
   { 
     id: 'default-1', 

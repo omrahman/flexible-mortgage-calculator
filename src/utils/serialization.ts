@@ -14,7 +14,8 @@ import {
   APPLICATION_VERSION 
 } from '../constants';
 import { validateLoanConfigurationSchema } from './validation';
-import pako from 'pako';
+import * as pako from 'pako';
+import { strategyManager } from './serializationStrategies';
 
 /**
  * Converts a Uint8Array to a binary string for btoa.
@@ -192,14 +193,10 @@ export function importFromJSON(
  */
 export function exportToUrl(
   inputs: CachedInputs,
-  options: ExportOptions = {}
 ): string {
-  const schema = serializeLoanConfiguration(inputs, {
-    ...options,
-    includeMetadata: false,
-    includeDisplaySettings: false,
-  });
-  const jsonString = JSON.stringify(schema);
+  const strategy = strategyManager.getStrategyForExport();
+  const serialized = strategy.serialize(inputs);
+  const jsonString = JSON.stringify(serialized);
   const compressed = pako.deflate(jsonString); // Uint8Array
   const binaryString = uint8ArrayToBinaryString(compressed);
   const base64 = btoa(binaryString);
@@ -222,7 +219,11 @@ export function importFromUrl(
     const compressed = binaryStringToUint8Array(binaryString);
     const jsonString = pako.inflate(compressed, { to: 'string' });
     const data = JSON.parse(jsonString);
-    return importLoanConfiguration(data, options);
+
+    const strategy = strategyManager.getStrategyForImport(data);
+    const schema = strategy.deserialize(data);
+    
+    return importLoanConfiguration(schema, options);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     return {
