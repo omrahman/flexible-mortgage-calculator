@@ -15,26 +15,26 @@ export function ComparisonModal({ isOpen, onClose, configurations }: ComparisonM
   }
 
   const metrics = [
-    { label: 'Loan Amount', key: 'loanAmount', format: 'usd' },
-    { label: 'Original P&I', key: 'originalPI', format: 'usd' },
-    { label: 'Current P&I', key: 'currentPI', format: 'usd' },
-    { label: 'Original PITI', key: 'originalPITI', format: 'usd' },
-    { label: 'Current PITI', key: 'currentPITI', format: 'usd' },
+    { label: 'Loan Amount', key: 'loanAmount', format: 'usd', comparison: 'lowerIsBetter' },
+    { label: 'Original P&I', key: 'originalPI', format: 'usd', comparison: 'lowerIsBetter' },
+    { label: 'Current P&I', key: 'currentPI', format: 'usd', comparison: 'lowerIsBetter' },
+    { label: 'Original PITI', key: 'originalPITI', format: 'usd', comparison: 'lowerIsBetter' },
+    { label: 'Current PITI', key: 'currentPITI', format: 'usd', comparison: 'lowerIsBetter' },
     { label: 'Payoff Date', key: 'payoffDate' },
-    { label: 'Total Interest (Baseline)', key: 'totalInterestBaseline', format: 'usd' },
-    { label: 'Total Interest (Current)', key: 'totalInterestCurrent', format: 'usd', lowerIsBetter: true },
-    { label: 'Interest Saved', key: 'interestSaved', format: 'usd', higherIsBetter: true },
-    { label: 'Months Saved', key: 'monthsSaved', higherIsBetter: true },
-    { label: 'Total Paid', key: 'totalPaid', format: 'usd', lowerIsBetter: true },
+    { label: 'Total Interest (Baseline)', key: 'totalInterestBaseline', format: 'usd', comparison: 'lowerIsBetter' },
+    { label: 'Total Interest (Current)', key: 'totalInterestCurrent', format: 'usd', comparison: 'lowerIsBetter' },
+    { label: 'Interest Saved', key: 'interestSaved', format: 'usd', comparison: 'higherIsBetter' },
+    { label: 'Months Saved', key: 'monthsSaved', comparison: 'higherIsBetter' },
+    { label: 'Total Paid', key: 'totalPaid', format: 'usd', comparison: 'lowerIsBetter' },
     { label: 'Total Principal Paid', key: 'totalPrincipalPaid', format: 'usd' },
     { label: 'Total Extra Payments', key: 'totalExtraPayments', format: 'usd' },
     { label: 'Total Forgiveness', key: 'totalForgiveness', format: 'usd' },
     { label: "Lender's Profit", key: 'lenderProfit', format: 'usd' },
-    { label: "Lender's ROI", key: 'lenderROI', format: 'percent' },
-  ];
+    { label: "Lender's ROI", key: 'lenderROI', format: 'percent', comparison: 'higherIsBetter' },
+  ] as const;
 
-  const getBestValue = (key: string, higherIsBetter?: boolean, lowerIsBetter?: boolean) => {
-    if (!higherIsBetter && !lowerIsBetter) return null;
+  const getBestValue = (key: string, comparison?: 'higherIsBetter' | 'lowerIsBetter') => {
+    if (!comparison) return null;
 
     const values = configurations
       .map(c => c.summary?.[key as keyof typeof c.summary])
@@ -42,7 +42,36 @@ export function ComparisonModal({ isOpen, onClose, configurations }: ComparisonM
     
     if (values.length === 0) return null;
 
-    return higherIsBetter ? Math.max(...values) : Math.min(...values);
+    return comparison === 'higherIsBetter' ? Math.max(...values) : Math.min(...values);
+  };
+
+  const getHighlightStyle = (value: number, allValues: number[], comparison?: 'higherIsBetter' | 'lowerIsBetter'): React.CSSProperties => {
+    if (allValues.length < 2 || !comparison) return {};
+
+    const min = Math.min(...allValues);
+    const max = Math.max(...allValues);
+
+    if (max === min) return {};
+
+    // Normalize value to a 0-1 scale (0 = worst, 1 = best)
+    let score = (value - min) / (max - min);
+    if (comparison === 'lowerIsBetter') {
+      score = 1 - score;
+    }
+
+    // Don't color the worst value, just the ones better than it
+    if (score < 0.01) return {};
+
+    // Use HSL for easy color manipulation.
+    // Hue 130 is a nice green.
+    // Saturation is fixed.
+    // Lightness will range from 95% (almost white) for the best to lighter for others.
+    const lightness = 95 - (score * 20); // 75% for best, up to 95%
+    
+    return { 
+      backgroundColor: `hsl(130, 80%, ${lightness}%)`,
+      fontWeight: score > 0.99 ? 'bold' : 'normal',
+    };
   };
 
   return (
@@ -89,24 +118,32 @@ export function ComparisonModal({ isOpen, onClose, configurations }: ComparisonM
                       </tr>
                     </thead>
                     <tbody>
-                      {metrics.map(({ label, key, format, higherIsBetter, lowerIsBetter }) => {
-                        const bestValue = getBestValue(key, higherIsBetter, lowerIsBetter);
+                      {metrics.map(({ label, key, format, comparison }) => {
+                        const bestValue = getBestValue(key, comparison);
+                        const allValues = configurations
+                          .map(c => c.summary?.[key as keyof typeof c.summary])
+                          .filter(v => typeof v === 'number') as number[];
 
                         return (
                           <tr key={key} className="bg-white border-b">
                             <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap sticky left-0 bg-white">{label}</td>
                             {configurations.map(c => {
                               const value = c.summary?.[key as keyof typeof c.summary];
-                              const isBest = value === bestValue;
+                              const isNumeric = typeof value === 'number';
+                              
+                              let style = {};
+                              if (isNumeric && comparison) {
+                                style = getHighlightStyle(value as number, allValues, comparison);
+                              }
 
                               let displayValue = value;
-                              if (typeof value === 'number') {
-                                if (format === 'usd') displayValue = fmtUSD(value);
-                                if (format === 'percent') displayValue = `${value.toFixed(2)}%`;
+                              if (isNumeric) {
+                                if (format === 'usd') displayValue = fmtUSD(value as number);
+                                if (format === 'percent') displayValue = `${(value as number).toFixed(2)}%`;
                               }
 
                               return (
-                                <td key={c.id} className={`px-6 py-4 ${isBest ? 'bg-green-100 font-bold text-green-800' : ''}`}>
+                                <td key={c.id} className="px-6 py-4" style={style}>
                                   {displayValue ?? 'N/A'}
                                 </td>
                               );
