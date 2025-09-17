@@ -35,7 +35,7 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
   const totalExtraPayments = result.rows.reduce((sum, row) => sum + row.extra, 0);
   
   // Calculate total principal paid
-  const totalPrincipalPaid = result.rows.reduce((sum, row) => sum + row.principal, 0);
+  const totalPrincipalPaid = result.rows.reduce((sum, row) => sum + row.principal + row.extra, 0);
   
   // Calculate Average Annual Return for the lender
   let averageAnnualReturn = 0;
