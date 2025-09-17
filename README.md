@@ -1,76 +1,85 @@
 # Flexible Mortgage Calculator
 
-A React TypeScript application for calculating mortgage recast scenarios with extra payments and amortization schedules.
+A powerful, open-source mortgage calculator that allows for flexible scenario planning, including extra payments, recasting, and shareable configurations.
 
 ## Features
 
-- **Mortgage Calculations**: Calculate monthly payments, interest, and principal breakdowns
-- **Extra Payments**: Add lump sum payments at specific months
-- **Recast Simulation**: Automatically recast loans when extra payments are made
-- **Visual Charts**: Interactive balance over time charts using Recharts
-- **Amortization Schedule**: Detailed month-by-month breakdown with CSV export
-- **Responsive Design**: Mobile-friendly interface built with Tailwind CSS
+- **Comprehensive Mortgage Calculations**: Calculates monthly PITI (Principal, Interest, Taxes, and Insurance), total interest, and loan amortization schedules.
+- **Scenario Management**: Save and load multiple mortgage scenarios to compare different strategies.
+- **Share via URL**: Share your mortgage scenarios with others through a compressed, URL-safe link.
+- **Flexible Extra Payments**: Add one-time or recurring extra payments (monthly, annually) to see how they impact your loan.
+- **Advanced Recasting**: Simulate loan recasting automatically after extra payments or on specific, manually-defined months.
+- **Visual Charts & Tables**: Interactive charts to visualize your loan balance over time and a detailed amortization table.
+- **CSV Export**: Download your amortization schedule as a CSV file for further analysis.
+- **Responsive Design**: A clean, mobile-friendly interface built with Tailwind CSS.
 
 ## Development Setup
 
 ### Prerequisites
 
 - Node.js (version 18 or higher)
-- npm or yarn
+- npm (comes with Node.js)
 
 ### Installation
 
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/your-username/flexible-mortgage-calculator.git
+    cd flexible-mortgage-calculator
+    ```
 
-2. Start the development server:
-   ```bash
-   npm run dev
-   ```
+2.  Install dependencies:
+    ```bash
+    npm install
+    ```
 
-3. Open your browser and navigate to `http://localhost:3000`
+3.  Start the development server:
+    ```bash
+    npm run dev
+    ```
+
+4.  Open your browser and navigate to `http://localhost:3000`.
 
 ### Available Scripts
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Fix ESLint issues
-- `npm run format` - Format code with Prettier
-- `npm run format:check` - Check code formatting
+-   `npm run dev`: Starts the development server.
+-   `npm run build`: Builds the application for production.
+-   `npm run preview`: Previews the production build locally.
+-   `npm run test`: Runs tests using Jest.
+-   `npm run lint`: Lints the code using ESLint.
+-   `npm run format`: Formats the code with Prettier.
 
 ## Project Structure
 
 ```
 src/
-├── components/
-│   └── MortgageCalculator.tsx        # Main calculator component
-├── App.tsx                           # Root app component
-├── main.tsx                          # Application entry point
-└── index.css                         # Global styles with Tailwind
+├── components/     # React components
+├── constants/      # Application constants
+├── contexts/       # React contexts
+├── hooks/          # Custom React hooks
+├── logic/          # Core business logic
+├── types/          # TypeScript type definitions
+├── utils/          # Utility functions
+├── App.tsx         # Root application component
+└── main.tsx        # Application entry point
 ```
 
 ## Technology Stack
 
-- **React 18** - UI framework
-- **TypeScript** - Type safety
-- **Vite** - Build tool and dev server
-- **Tailwind CSS** - Styling
-- **Recharts** - Data visualization
-- **ESLint** - Code linting
-- **Prettier** - Code formatting
+-   **Framework**: React 18
+-   **Language**: TypeScript
+-   **Build Tool**: Vite
+-   **Styling**: Tailwind CSS
+-   **UI Components**: Headless UI
+-   **Routing**: React Router
+-   **Charts**: Recharts
+-   **Testing**: Jest & React Testing Library
+-   **Linting/Formatting**: ESLint & Prettier
 
-## Usage
+## Contributing
 
-1. Enter your loan details (principal, interest rate, term)
-2. Add extra payments for specific months
-3. Configure recast options (automatic or manual)
-4. View the amortization schedule and charts
-5. Export results to CSV for further analysis
+Contributions are welcome! Please feel free to submit a pull request or open an issue.
 
-## Notes
+## License
 
-This calculator is for planning purposes only and does not constitute financial advice. Actual loan terms and recast policies may vary by lender.
+This project is licensed under the MIT License.
