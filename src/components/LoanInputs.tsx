@@ -95,19 +95,7 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
     setDownPayment(newDownPayment);
   };
   return (
-    <div className="rounded-2xl bg-white p-3 sm:p-4 lg:p-5 shadow">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg sm:text-xl font-semibold">Loan</h2>
-        {onReset && (
-          <button
-            onClick={onReset}
-            className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-            title="Reset all inputs to defaults"
-          >
-            Reset
-          </button>
-        )}
-      </div>
+    <div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         <label className="col-span-1 sm:col-span-2">
           <span className="text-sm text-gray-600">Home Price</span>
@@ -250,6 +238,18 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
           />
         </label>
       </div>
+
+      {onReset && (
+        <div className="mt-6 border-t pt-4">
+          <button
+            onClick={onReset}
+            className="w-full rounded-xl bg-gray-200 text-gray-800 px-4 py-2 text-sm font-semibold hover:bg-gray-300"
+            title="Reset all inputs to defaults"
+          >
+            Reset Inputs
+          </button>
+        </div>
+      )}
     </div>
   );
 };

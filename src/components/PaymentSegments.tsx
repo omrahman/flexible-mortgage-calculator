@@ -15,7 +15,6 @@ export const PaymentSegments: React.FC<PaymentSegmentsProps> = ({
 }) => {
   return (
     <div className="rounded-2xl bg-white p-4 sm:p-5 shadow">
-      <h2 className="text-lg sm:text-xl font-semibold mb-4">Payment Segments</h2>
       <p className="text-sm text-gray-600 mb-6 leading-relaxed">
         Track how your monthly payment changes over time with recasting and extra payments.
       </p>

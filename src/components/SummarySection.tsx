@@ -138,17 +138,13 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
 
   return (
     <div className="rounded-2xl bg-white p-4 sm:p-5 shadow">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg sm:text-xl font-semibold">Summary</h2>
-        <button
-          onClick={handleDebugDump}
-          className="px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-md border border-gray-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          title="Log full debug data to console and copy summary to clipboard"
-        >
-          🐛 Debug
-        </button>
-      </div>
       <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3 sm:gap-4">
+        {/* Core Loan & Payment Info */}
+        <SummaryCard
+          label="Loan Amount"
+          value={fmtUSD(principal)}
+          tooltip="Total amount of the loan, calculated as Home Price - Down Payment."
+        />
         <SummaryCard 
           label="Original P&I" 
           value={fmtUSD(baseline.segments[0]?.payment || 0)} 
@@ -169,6 +165,8 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
           value={fmtUSD((result.segments[result.segments.length - 1]?.payment || 0) + monthlyPITI.total)} 
           tooltip="Current P&I + monthly Property Tax + monthly Insurance = total monthly housing payment after recasts."
         />
+
+        {/* Savings */}
         <SummaryCard 
           label="Total Interest (baseline)" 
           value={fmtUSD(baseline.totalInterest)} 
@@ -191,16 +189,17 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
           highlight={monthsSaved > 0} 
           tooltip="Number of months earlier the loan is paid off compared to the baseline schedule. Calculated as Baseline Payoff Month - Current Plan Payoff Month."
         />
+
+        {/* Payment Totals */}
         <SummaryCard 
           label="Total Paid" 
           value={fmtUSD(result.totalPaid)} 
           tooltip="Total cash payments made by the borrower = all scheduled P&I payments + all extra principal payments. Does not include forgiveness amounts."
         />
         <SummaryCard 
-          label="Total Forgiveness" 
-          value={fmtUSD(result.totalForgiveness)} 
-          highlight={result.totalForgiveness > 0} 
-          tooltip="Total amount of loan forgiveness received. This reduces the loan balance without requiring cash payment from the borrower."
+          label="Total Principal Paid" 
+          value={fmtUSD(totalPrincipalPaid)} 
+          tooltip="Total amount of principal paid over the life of the loan, including both scheduled principal payments and extra principal payments."
         />
         <SummaryCard 
           label="Total Extra Payments" 
@@ -209,10 +208,13 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
           tooltip="Total amount of extra principal payments made beyond the scheduled monthly payments. This does not include forgiveness amounts."
         />
         <SummaryCard 
-          label="Total Principal Paid" 
-          value={fmtUSD(totalPrincipalPaid)} 
-          tooltip="Total amount of principal paid over the life of the loan, including both scheduled principal payments and extra principal payments."
+          label="Total Forgiveness" 
+          value={fmtUSD(result.totalForgiveness)} 
+          highlight={result.totalForgiveness > 0} 
+          tooltip="Total amount of loan forgiveness received. This reduces the loan balance without requiring cash payment from the borrower."
         />
+
+        {/* Lender Metrics */}
         <SummaryCard 
           label="Lender's Profit" 
           value={fmtUSD(lenderProfit)} 
@@ -225,6 +227,15 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
         />
       </div>
 
+      <div className="mt-6 text-right">
+        <button
+          onClick={handleDebugDump}
+          className="px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-md border border-gray-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          title="Log full debug data to console and copy summary to clipboard"
+        >
+          🐛 Debug
+        </button>
+      </div>
     </div>
   );
 };

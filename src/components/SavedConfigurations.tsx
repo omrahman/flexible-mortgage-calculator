@@ -158,7 +158,6 @@ export function SavedConfigurations({
   return (
     <div className="bg-white rounded-lg shadow p-6">
       <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-900 mb-3">Saved Configurations</h3>
         <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-2">
           {hasUnsavedChanges && loadedConfigurationId && (
             <button

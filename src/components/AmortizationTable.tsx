@@ -22,7 +22,7 @@ export const AmortizationTable: React.FC<AmortizationTableProps> = ({
   return (
     <div className="rounded-2xl bg-white p-5 shadow">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold">Amortization Schedule</h2>
+        <h2 className="text-xl font-semibold">Schedule</h2>
         <div className="flex gap-2">
           <button 
             className="rounded-xl border px-3 py-2" 

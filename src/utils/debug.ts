@@ -1,6 +1,6 @@
 // Debug utilities for mortgage calculator
 
-import type { CachedInputs, ScheduleResult, ScheduleParams } from '../types';
+import type { CachedInputs, ScheduleResult, ScheduleParams, MonthInput } from '../types';
 import { fmtUSD } from './formatters';
 
 export interface DebugData {
@@ -36,6 +36,7 @@ export interface DebugData {
       isRecurring: boolean;
       recurringQuantity?: number;
       recurringFrequency?: 'monthly' | 'annually';
+      monthInput?: MonthInput;
     }>;
     recastSettings: {
       autoRecast: boolean;
@@ -117,6 +118,7 @@ export function createDebugData(
         isRecurring: extra.isRecurring || false,
         recurringQuantity: extra.recurringQuantity,
         recurringFrequency: extra.recurringFrequency,
+        monthInput: extra.monthInput,
       })),
       recastSettings: {
         autoRecast: cachedInputs.autoRecast,

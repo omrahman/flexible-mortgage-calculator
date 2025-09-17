@@ -4,6 +4,7 @@ import { MonthInput } from './MonthInput';
 import { yearMonthToMonthNumber, monthNumberToYearMonth } from '../utils/calculations';
 import type { ExtraItem, RecurringFrequency, MonthInput as MonthInputType } from '../types';
 import { SegmentedControl } from './SegmentedControl';
+import { Accordion } from './Accordion';
 
 interface ExtraPaymentsProps {
   extras: ExtraItem[];
@@ -77,19 +78,10 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
   });
 
   return (
-    <div className="rounded-xl border border-gray-200 p-4 space-y-3 bg-gray-50/50">
-      <div className="flex justify-between items-center">
-        <h3 className="font-semibold text-gray-800">Payment #{paymentIndex}</h3>
-        <button
-          className="text-red-500 bg-red-100 hover:bg-red-200 rounded-full p-1.5 -mr-1.5 -mt-1.5"
-          onClick={() => onRemoveExtra(extra.id)}
-          aria-label="Remove payment"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-          </svg>
-        </button>
-      </div>
+    <Accordion
+      title={`Payment #${paymentIndex}`}
+      defaultOpen={paymentIndex === 1}
+    >
       <div className="space-y-4 pt-2">
         {/* Payment Details */}
         <fieldset className="space-y-3">
@@ -220,8 +212,17 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
             </div>
           )}
         </fieldset>
+
+        <div className="border-t border-gray-200 pt-4">
+          <button
+            onClick={() => onRemoveExtra(extra.id)}
+            className="w-full rounded-xl bg-red-100 text-red-700 px-4 py-2 text-sm font-semibold hover:bg-red-200"
+          >
+            Remove Payment
+          </button>
+        </div>
       </div>
-    </div>
+    </Accordion>
   );
 };
 
@@ -247,8 +248,7 @@ export const ExtraPayments: React.FC<ExtraPaymentsProps> = ({
   });
 
   return (
-    <div className="rounded-2xl bg-white p-4 sm:p-5 shadow space-y-4">
-      <h2 className="text-lg sm:text-xl font-semibold">Extra Payments & Loan Forgiveness</h2>
+    <div className="space-y-4">
       <p className="text-sm text-gray-600 leading-relaxed">
         Add extra principal payments or loan forgiveness amounts by month number or year/month. Use the checkbox to designate as forgiveness (reduces balance but doesn't count as principal paid) or extra payment (counts as principal paid). You can make payments recurring with a quantity and/or end date. If multiple payments land on the same month, they aggregate.
       </p>

@@ -29,7 +29,6 @@ export const BalanceChart: React.FC<BalanceChartProps> = ({ chartData }) => {
 
   return (
     <div className="rounded-2xl bg-white p-5 shadow">
-      <h2 className="text-xl font-semibold mb-4">Balance Over Time</h2>
       <div style={{ height: CHART_HEIGHT }}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData} margin={{ left: 8, right: 8, top: 8, bottom: 8 }}>
