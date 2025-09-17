@@ -16,6 +16,9 @@ export interface ExtraItem {
   amount: number;
   monthInput?: MonthInput; // UI state for month input type and value
   
+  // Payment type
+  isForgiveness?: boolean; // true for loan forgiveness, false for extra principal payment
+  
   // Recurrence information
   isRecurring?: boolean;
   recurringQuantity?: number; // number of payments
@@ -76,6 +79,7 @@ export interface SummaryCardProps {
   label: string;
   value: string;
   highlight?: boolean;
+  tooltip?: string;
 }
 
 export interface TableCellProps {
@@ -109,7 +113,6 @@ export interface CachedInputs {
   propertyTaxAnnual: string; // Annual property tax amount
   insuranceAnnual: string; // Annual insurance amount
   extras: ExtraItem[];
-  forgiveness: ForgivenessItem[];
   autoRecast: boolean;
   recastMonthsText?: string; // Optional - only used when user specifies recast months
   showAll: boolean;

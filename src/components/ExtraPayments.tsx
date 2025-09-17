@@ -103,6 +103,37 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
          </div>
        </div>
       
+      {/* Payment Type */}
+      <div className="space-y-3">
+        <div className="space-y-2">
+          <span className="text-sm font-medium text-gray-700">Payment Type:</span>
+          <div className="flex gap-4">
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                name={`payment-type-${extra.id}`}
+                checked={!extra.isForgiveness}
+                onChange={() => {
+                  onUpdateExtra(extra.id, 'isForgiveness', false);
+                }}
+              />
+              <span className="text-sm">Extra Principal Payment</span>
+            </label>
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                name={`payment-type-${extra.id}`}
+                checked={Boolean(extra.isForgiveness)}
+                onChange={() => {
+                  onUpdateExtra(extra.id, 'isForgiveness', true);
+                }}
+              />
+              <span className="text-sm">Loan Forgiveness</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      
       {/* Recurring Payment Options */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
@@ -220,9 +251,9 @@ export const ExtraPayments: React.FC<ExtraPaymentsProps> = ({
 
   return (
     <div className="rounded-2xl bg-white p-4 sm:p-5 shadow space-y-4">
-      <h2 className="text-lg sm:text-xl font-semibold">Extra Payments</h2>
+      <h2 className="text-lg sm:text-xl font-semibold">Extra Payments & Loan Forgiveness</h2>
       <p className="text-sm text-gray-600 leading-relaxed">
-        Add lump sums by month number or year/month. You can make payments recurring with a quantity and/or end date. If multiple extras land on the same month, they aggregate.
+        Add extra principal payments or loan forgiveness amounts by month number or year/month. Use the checkbox to designate as forgiveness (reduces balance but doesn't count as principal paid) or extra payment (counts as principal paid). You can make payments recurring with a quantity and/or end date. If multiple payments land on the same month, they aggregate.
       </p>
       <div className="space-y-4">
         {extras.map((extra) => (
@@ -240,7 +271,7 @@ export const ExtraPayments: React.FC<ExtraPaymentsProps> = ({
             className="w-full rounded-xl bg-black text-white px-4 py-2"
             onClick={onAddExtra}
           >
-            Add Extra Payment
+            Add Payment
           </button>
         </div>
       </div>
@@ -252,7 +283,7 @@ export const ExtraPayments: React.FC<ExtraPaymentsProps> = ({
             checked={autoRecast}
             onChange={(e) => setAutoRecast(e.target.checked)}
           />
-          <span>Recast automatically after any month with an extra payment</span>
+          <span>Recast automatically after any month with an extra payment or forgiveness</span>
         </label>
         <label className="block">
           <span className="text-xs text-gray-500">

@@ -42,6 +42,12 @@ export const BalanceChart: React.FC<BalanceChartProps> = ({ chartData }) => {
             <Tooltip 
               content={({ active, payload, label }) => {
                 if (active && payload && payload.length) {
+                  // Calculate total paid (interest + principal)
+                  const interestEntry = payload.find(entry => entry.dataKey === 'cumulativeInterest');
+                  const principalEntry = payload.find(entry => entry.dataKey === 'cumulativePrincipal');
+                  const totalPaid = (interestEntry ? Number(interestEntry.value) : 0) + 
+                                   (principalEntry ? Number(principalEntry.value) : 0);
+                  
                   return (
                     <div className="bg-white p-3 border rounded shadow-lg">
                       <p className="font-medium">{formatTooltipLabel(label)}</p>
@@ -49,9 +55,15 @@ export const BalanceChart: React.FC<BalanceChartProps> = ({ chartData }) => {
                         <p key={index} style={{ color: entry.color }}>
                           {entry.dataKey === 'balance' ? 'Remaining Balance' : 
                            entry.dataKey === 'cumulativeInterest' ? 'Interest Paid' : 
-                           entry.dataKey === 'cumulativePrincipal' ? 'Principal Paid' : 'Forgiveness'}: {fmtUSD(Number(entry.value))}
+                           entry.dataKey === 'cumulativePrincipal' ? 'Principal Paid' : 'Principal Forgiven'}: {fmtUSD(Number(entry.value))}
                         </p>
                       ))}
+                      {/* Add Total Paid between Principal Paid and Forgiveness */}
+                      {interestEntry && principalEntry && (
+                        <p style={{ color: '#6b7280', fontWeight: 'bold' }}>
+                          Total Paid: {fmtUSD(totalPaid)}
+                        </p>
+                      )}
                     </div>
                   );
                 }
@@ -89,7 +101,7 @@ export const BalanceChart: React.FC<BalanceChartProps> = ({ chartData }) => {
               dot={false} 
               strokeWidth={2} 
               stroke="#8b5cf6"
-              name="Forgiveness"
+              name="Principal Forgiven"
             />
           </LineChart>
         </ResponsiveContainer>

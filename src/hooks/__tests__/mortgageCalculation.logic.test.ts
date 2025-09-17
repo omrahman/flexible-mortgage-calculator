@@ -16,7 +16,6 @@ describe('Mortgage Calculation Business Logic', () => {
     propertyTaxAnnual: '12000',
     insuranceAnnual: '2400',
     extras: [],
-    forgiveness: [],
     autoRecast: true,
     showAll: false,
   });

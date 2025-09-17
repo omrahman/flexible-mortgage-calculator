@@ -4,7 +4,6 @@ import { useConfigurations } from '../hooks/useConfigurations';
 import { SavedConfiguration } from '../types';
 import { LoanInputs } from './LoanInputs';
 import { ExtraPayments } from './ExtraPayments';
-import { ForgivenessPayments } from './ForgivenessPayments';
 import { SummarySection } from './SummarySection';
 import { PaymentSegments } from './PaymentSegments';
 import { SavedConfigurations } from './SavedConfigurations';
@@ -27,6 +26,7 @@ export default function MortgageCalculator() {
     setHomePrice,
     downPayment,
     setDownPayment,
+    principal,
     rate,
     setRate,
     termYears,
@@ -38,7 +38,6 @@ export default function MortgageCalculator() {
     insuranceAnnual,
     setInsuranceAnnual,
     extras,
-    forgiveness,
     autoRecast,
     setAutoRecast,
     recastMonthsText,
@@ -57,9 +56,6 @@ export default function MortgageCalculator() {
     handleAddExtra,
     handleRemoveExtra,
     handleUpdateExtra,
-    handleAddForgiveness,
-    handleRemoveForgiveness,
-    handleUpdateForgiveness,
     clearAllInputs,
     loadConfiguration,
     markChangesAsSaved,
@@ -115,11 +111,10 @@ export default function MortgageCalculator() {
     propertyTaxAnnual,
     insuranceAnnual,
     extras,
-    forgiveness,
     autoRecast,
     recastMonthsText,
     showAll,
-  }), [homePrice, downPayment, rate, termYears, startYM, propertyTaxAnnual, insuranceAnnual, extras, forgiveness, autoRecast, recastMonthsText, showAll]);
+  }), [homePrice, downPayment, rate, termYears, startYM, propertyTaxAnnual, insuranceAnnual, extras, autoRecast, recastMonthsText, showAll]);
 
 
   return (
@@ -158,19 +153,6 @@ export default function MortgageCalculator() {
             onUpdateExtra={handleUpdateExtra}
           />
 
-          <ForgivenessPayments
-            forgiveness={forgiveness}
-            termMonths={Math.round(Number(termYears) * 12)}
-            startYM={startYM}
-            autoRecast={autoRecast}
-            setAutoRecast={setAutoRecast}
-            recastMonthsText={recastMonthsText}
-            setRecastMonthsText={setRecastMonthsText}
-            onAddForgiveness={handleAddForgiveness}
-            onRemoveForgiveness={handleRemoveForgiveness}
-            onUpdateForgiveness={handleUpdateForgiveness}
-          />
-
           <SavedConfigurations
             onLoadConfiguration={handleLoadConfiguration}
             loadedConfigurationId={loadedConfigurationId}
@@ -188,6 +170,8 @@ export default function MortgageCalculator() {
             interestSaved={interestSaved}
             monthsSaved={monthsSaved}
             monthlyPITI={monthlyPITI}
+            principal={principal}
+            interestRate={Number(rate) || 0}
           />
 
           <Suspense fallback={<div className="rounded-2xl bg-white p-5 shadow animate-pulse"><div className="h-64 bg-gray-200 rounded"></div></div>}>

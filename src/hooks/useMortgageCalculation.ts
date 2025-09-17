@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import { buildSchedule, parseMonthInput } from '../utils/calculations';
 import { round2 } from '../utils/formatters';
-import type { ExtraItem, ExtraMap, ForgivenessItem, ForgivenessMap, ScheduleParams, CachedInputs, RecurringFrequency, DownPaymentInput } from '../types';
+import type { ExtraItem, ExtraMap, ForgivenessMap, ScheduleParams, CachedInputs, RecurringFrequency, DownPaymentInput } from '../types';
 import { DEFAULT_HOME_PRICE, DEFAULT_DOWN_PAYMENT, DEFAULT_INTEREST_RATE, DEFAULT_TERM_YEARS, DEFAULT_PROPERTY_TAX_ANNUAL, DEFAULT_INSURANCE_ANNUAL, DEFAULT_EXTRA_PAYMENTS } from '../constants';
 import { useLocalStorage } from './useLocalStorage';
 
@@ -23,7 +23,6 @@ export const useMortgageCalculation = () => {
     propertyTaxAnnual: DEFAULT_PROPERTY_TAX_ANNUAL,
     insuranceAnnual: DEFAULT_INSURANCE_ANNUAL,
     extras: DEFAULT_EXTRA_PAYMENTS,
-    forgiveness: [],
     autoRecast: true,
     // recastMonthsText is optional - only set when user specifies recast months
     showAll: false,
@@ -57,7 +56,6 @@ export const useMortgageCalculation = () => {
   const propertyTaxAnnual = cachedInputs.propertyTaxAnnual;
   const insuranceAnnual = cachedInputs.insuranceAnnual;
   const extras = cachedInputs.extras;
-  const forgiveness = cachedInputs.forgiveness || [];
   const autoRecast = cachedInputs.autoRecast;
   const recastMonthsText = cachedInputs.recastMonthsText ?? '';
 
@@ -123,15 +121,6 @@ export const useMortgageCalculation = () => {
     }));
   };
 
-  const setForgiveness = (value: ForgivenessItem[] | ((prev: ForgivenessItem[]) => ForgivenessItem[])) => {
-    setCachedInputs((prev: CachedInputs) => {
-      const newForgiveness = typeof value === 'function' ? value(prev.forgiveness || []) : value;
-      return { 
-        ...prev, 
-        forgiveness: newForgiveness
-      };
-    });
-  };
 
   const setAutoRecast = (value: boolean) => {
     setCachedInputs((prev: CachedInputs) => ({ ...prev, autoRecast: value }));
@@ -150,6 +139,9 @@ export const useMortgageCalculation = () => {
   const extrasMap = useMemo(() => {
     const map: ExtraMap = {};
     for (const e of extras) {
+      // Only process items that are NOT forgiveness
+      if (e.isForgiveness) continue;
+      
       if (!Number.isFinite(e.month) || e.month < 1) continue;
       const startMonth = Math.min(termMonths, Math.round(e.month));
       const amount = Math.max(0, e.amount);
@@ -178,15 +170,18 @@ export const useMortgageCalculation = () => {
 
   const forgivenessMap = useMemo(() => {
     const map: ForgivenessMap = {};
-    for (const f of forgiveness) {
-      if (!Number.isFinite(f.month) || f.month < 1) continue;
-      const startMonth = Math.min(termMonths, Math.round(f.month));
-      const amount = Math.max(0, f.amount);
+    for (const e of extras) {
+      // Only process items that ARE forgiveness
+      if (!e.isForgiveness) continue;
       
-      if (f.isRecurring) {
+      if (!Number.isFinite(e.month) || e.month < 1) continue;
+      const startMonth = Math.min(termMonths, Math.round(e.month));
+      const amount = Math.max(0, e.amount);
+      
+      if (e.isRecurring) {
         // Handle recurring payments
-        const quantity = f.recurringQuantity || 1;
-        const frequency = f.recurringFrequency || 'monthly';
+        const quantity = e.recurringQuantity || 1;
+        const frequency = e.recurringFrequency || 'monthly';
         const interval = frequency === 'annually' ? 12 : 1;
         const endMonth = (startMonth + (quantity - 1) * interval);
         const actualEndMonth = Math.min(termMonths, endMonth);
@@ -203,7 +198,7 @@ export const useMortgageCalculation = () => {
       }
     }
     return map;
-  }, [forgiveness, termMonths]);
+  }, [extras, termMonths]);
 
   const recastSet = useMemo(() => {
     const set = new Set<number>();
@@ -271,35 +266,6 @@ export const useMortgageCalculation = () => {
     }));
   };
 
-  const handleAddForgiveness = () => {
-    setForgiveness((fs) => [
-      ...fs,
-      { 
-        id: `forgiveness-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, 
-        month: 1, 
-        amount: 1000 
-      }
-    ]);
-  };
-
-  const handleRemoveForgiveness = (id: string) => {
-    setForgiveness((fs) => fs.filter((f) => f.id !== id));
-  };
-
-  const handleUpdateForgiveness = (id: string, fieldOrUpdates: keyof ForgivenessItem | Partial<ForgivenessItem>, value?: number | boolean | RecurringFrequency) => {
-    setForgiveness((fs) => fs.map((f) => {
-      if (f.id === id) {
-        if (typeof fieldOrUpdates === 'string') {
-          // Single field update
-          return { ...f, [fieldOrUpdates]: value };
-        } else {
-          // Multiple field update
-          return { ...f, ...fieldOrUpdates };
-        }
-      }
-      return f;
-    }));
-  };
 
   // Function to clear all cached inputs (useful for reset functionality)
   const clearAllInputs = () => {
@@ -343,8 +309,7 @@ export const useMortgageCalculation = () => {
       cachedInputs.autoRecast !== originalInputs.autoRecast ||
       (cachedInputs.recastMonthsText ?? '') !== (originalInputs.recastMonthsText ?? '') ||
       cachedInputs.showAll !== originalInputs.showAll ||
-      JSON.stringify(cachedInputs.extras) !== JSON.stringify(originalInputs.extras) ||
-      JSON.stringify(cachedInputs.forgiveness || []) !== JSON.stringify(originalInputs.forgiveness || [])
+      JSON.stringify(cachedInputs.extras) !== JSON.stringify(originalInputs.extras)
     );
   }, [loadedConfigurationId, originalInputs, cachedInputs]);
 
@@ -366,7 +331,6 @@ export const useMortgageCalculation = () => {
     insuranceAnnual,
     setInsuranceAnnual,
     extras,
-    forgiveness,
     autoRecast,
     setAutoRecast,
     recastMonthsText,
@@ -386,9 +350,6 @@ export const useMortgageCalculation = () => {
     handleAddExtra,
     handleRemoveExtra,
     handleUpdateExtra,
-    handleAddForgiveness,
-    handleRemoveForgiveness,
-    handleUpdateForgiveness,
     clearAllInputs,
     loadConfiguration,
     clearLoadedConfiguration,

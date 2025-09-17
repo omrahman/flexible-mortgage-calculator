@@ -47,7 +47,7 @@ export function serializeLoanConfiguration(
       insuranceAnnual: inputs.insuranceAnnual
     },
     extraPayments: inputs.extras.map(enhanceExtraItem),
-    forgivenessPayments: inputs.forgiveness.map(enhanceExtraItem),
+    forgivenessPayments: inputs.extras.filter(e => e.isForgiveness).map(enhanceExtraItem),
     recastSettings: {
       autoRecast: inputs.autoRecast,
       recastMonths: inputs.recastMonthsText 
@@ -90,8 +90,7 @@ export function deserializeLoanConfiguration(
     startYM: schema.loan.startDate,
     propertyTaxAnnual: schema.loan.propertyTaxAnnual,
     insuranceAnnual: schema.loan.insuranceAnnual,
-    extras: extraPayments,
-    forgiveness: schema.forgivenessPayments?.map(enhanceExtraItem) || [],
+    extras: [...extraPayments, ...(schema.forgivenessPayments?.map(enhanceExtraItem) || [])],
     autoRecast: schema.recastSettings.autoRecast,
     recastMonthsText: schema.recastSettings.recastMonths.join(', '),
     showAll: schema.displaySettings?.showAll || false

@@ -2,12 +2,12 @@
 export { default as MortgageCalculator } from './MortgageCalculator';
 export { LoanInputs } from './LoanInputs';
 export { ExtraPayments } from './ExtraPayments';
-export { ForgivenessPayments } from './ForgivenessPayments';
 export { SummarySection } from './SummarySection';
 export { PaymentSegments } from './PaymentSegments';
 export { BalanceChart } from './BalanceChart';
 export { AmortizationTable } from './AmortizationTable';
 export { SummaryCard } from './SummaryCard';
+export { Tooltip } from './Tooltip';
 export { Th, Td } from './TableComponents';
 export { SegmentedControl } from './SegmentedControl';
 export { MonthInput } from './MonthInput';
