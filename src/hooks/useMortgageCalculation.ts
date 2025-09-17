@@ -80,7 +80,15 @@ export const useMortgageCalculation = () => {
   const handleAddExtra = () => {
     setExtras(xs => [
       ...xs,
-      { id: `extra-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, month: 1, amount: 1000 },
+      { 
+        id: `extra-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, 
+        month: 1, 
+        amount: 1000,
+        isForgiveness: false,
+        isRecurring: false,
+        recurringQuantity: 1,
+        recurringFrequency: 'monthly'
+      },
     ]);
   };
 

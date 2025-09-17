@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useId, useState } from 'react';
 import { useInputField, useNumberField } from '../hooks';
 import { MonthInput } from './MonthInput';
 import { yearMonthToMonthNumber, monthNumberToYearMonth } from '../utils/calculations';
@@ -29,6 +29,7 @@ interface ExtraPaymentItemProps {
 }
 
 const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, startYM, onUpdateExtra, onRemoveExtra, paymentIndex }) => {
+  const groupId = useId();
   // Initialize monthInput state - use existing or create default
   const [monthInput, setMonthInput] = useState<MonthInputType>(() => 
     extra.monthInput || {
@@ -88,9 +89,9 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
           <legend className="text-sm font-medium text-gray-600">Payment Details</legend>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label htmlFor={`amount-${extra.id}`} className="text-xs text-gray-500 block mb-2">Amount</label>
+              <label htmlFor={`amount-${groupId}`} className="text-xs text-gray-500 block mb-2">Amount</label>
               <input
-                id={`amount-${extra.id}`}
+                id={`amount-${groupId}`}
                 className="w-full rounded-xl border p-2 text-sm sm:text-base"
                 type="tel"
                 inputMode="numeric"
@@ -103,32 +104,19 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
                 onBlur={amountField.onBlur}
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 min-w-0">
               <label className="text-xs text-gray-500 block mb-2">Payment Type</label>
-              <div className="flex flex-col space-y-2">
-                <label className="flex items-center space-x-2 text-sm">
-                  <input
-                    type="radio"
-                    name={`type-${extra.id}`}
-                    value="payment"
-                    checked={!extra.isForgiveness}
-                    onChange={() => onUpdateExtra(extra.id, 'isForgiveness', false)}
-                    className="h-4 w-4 text-black border-gray-300 focus:ring-black"
-                  />
-                  <span>Extra Principal Payment</span>
-                </label>
-                <label className="flex items-center space-x-2 text-sm">
-                  <input
-                    type="radio"
-                    name={`type-${extra.id}`}
-                    value="forgiveness"
-                    checked={!!extra.isForgiveness}
-                    onChange={() => onUpdateExtra(extra.id, 'isForgiveness', true)}
-                    className="h-4 w-4 text-black border-gray-300 focus:ring-black"
-                  />
-                  <span>Loan Forgiveness</span>
-                </label>
-              </div>
+              <SegmentedControl
+                options={[
+                  { value: 'principal', label: 'Extra Principal' },
+                  { value: 'forgiveness', label: 'Forgiveness' },
+                ]}
+                value={extra.isForgiveness ? 'forgiveness' : 'principal'}
+                onChange={(value) => {
+                  onUpdateExtra(extra.id, 'isForgiveness', value === 'forgiveness');
+                }}
+                className="w-full"
+              />
             </div>
           </div>
         </fieldset>
@@ -172,7 +160,7 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
                   <label className="flex items-center space-x-2 text-sm">
                     <input
                       type="radio"
-                      name={`frequency-${extra.id}`}
+                      name={`frequency-${groupId}`}
                       value="monthly"
                       checked={extra.recurringFrequency === 'monthly'}
                       onChange={() => onUpdateExtra(extra.id, 'recurringFrequency', 'monthly')}
@@ -183,7 +171,7 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
                   <label className="flex items-center space-x-2 text-sm">
                     <input
                       type="radio"
-                      name={`frequency-${extra.id}`}
+                      name={`frequency-${groupId}`}
                       value="annually"
                       checked={extra.recurringFrequency === 'annually'}
                       onChange={() => onUpdateExtra(extra.id, 'recurringFrequency', 'annually')}
@@ -194,9 +182,9 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
                 </div>
               </div>
               <div>
-                <label htmlFor={`quantity-${extra.id}`} className="text-xs text-gray-500 block mb-2">Number of payments</label>
+                <label htmlFor={`quantity-${groupId}`} className="text-xs text-gray-500 block mb-2">Number of payments</label>
                 <input
-                  id={`quantity-${extra.id}`}
+                  id={`quantity-${groupId}`}
                   className="w-full rounded-xl border p-2 text-sm sm:text-base"
                   type="tel"
                   inputMode="numeric"
@@ -255,7 +243,7 @@ export const ExtraPayments: React.FC<ExtraPaymentsProps> = ({
       <div className="space-y-4">
         {extras.map((extra, index) => (
           <ExtraPaymentItem
-            key={extra.id}
+            key={`${extra.id}-${index}`}
             extra={extra}
             termMonths={termMonths}
             startYM={startYM}

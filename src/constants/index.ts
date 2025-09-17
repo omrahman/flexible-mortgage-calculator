@@ -11,12 +11,14 @@ export const DEFAULT_EXTRA_PAYMENTS = [
   { 
     id: 'default-1', 
     month: 6, 
-    amount: 150000
+    amount: 150000,
+    isForgiveness: false
   },
   { 
     id: 'default-2', 
     month: 12, 
     amount: 5000,
+    isForgiveness: false,
     isRecurring: true,
     recurringQuantity: 12,
     recurringFrequency: 'monthly' as const
