@@ -3,7 +3,7 @@ import { SavedConfiguration, CachedInputs } from '../types';
 
 export interface ConfigurationsContextType {
   configurations: SavedConfiguration[];
-  saveConfiguration: (name: string, description: string, inputs: CachedInputs) => string;
+  saveConfiguration: (name: string, description: string, inputs: CachedInputs) => SavedConfiguration;
   updateConfiguration: (id: string, name: string, description: string, inputs: CachedInputs) => void;
   deleteConfiguration: (id: string) => void;
   getConfiguration: (id: string) => SavedConfiguration | undefined;
