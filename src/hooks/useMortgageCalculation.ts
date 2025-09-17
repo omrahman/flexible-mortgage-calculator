@@ -346,6 +346,10 @@ export const useMortgageCalculation = () => {
     interestSaved,
     monthsSaved,
     
+    // Debug data
+    cachedInputs,
+    params,
+    
     // Handlers
     handleAddExtra,
     handleRemoveExtra,

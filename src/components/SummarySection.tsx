@@ -1,7 +1,8 @@
 import React from 'react';
 import { SummaryCard } from './SummaryCard';
 import { fmtUSD } from '../utils/formatters';
-import type { ScheduleResult } from '../types';
+import { createDebugData, logDebugData } from '../utils/debug';
+import type { ScheduleResult, CachedInputs, ScheduleParams } from '../types';
 
 interface SummarySectionProps {
   baseline: ScheduleResult;
@@ -11,6 +12,10 @@ interface SummarySectionProps {
   monthlyPITI: { propertyTax: number; insurance: number; total: number };
   principal: number;
   interestRate: number; // Annual interest rate as a percentage
+  // Debug data
+  cachedInputs: CachedInputs;
+  termMonths: number;
+  scheduleParams: ScheduleParams;
 }
 
 export const SummarySection: React.FC<SummarySectionProps> = ({
@@ -21,6 +26,9 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
   monthlyPITI,
   principal,
   interestRate,
+  cachedInputs,
+  termMonths,
+  scheduleParams,
 }) => {
   // Calculate lender's profit and annualized return percentage
   // Lender's profit = Total Paid - Principal
@@ -55,9 +63,109 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
     }
   }
 
+  // Debug functionality
+  const handleDebugDump = () => {
+    const debugData = createDebugData(
+      cachedInputs,
+      principal,
+      termMonths,
+      monthlyPITI,
+      baseline,
+      result,
+      interestSaved,
+      monthsSaved,
+      scheduleParams
+    );
+    
+    logDebugData(debugData);
+    
+    // Also log the summary card values to console for easy debugging
+    console.group('📊 Summary Card Values');
+    console.log('Monthly Payments:', {
+      'Original P&I': fmtUSD(debugData.calculations.baseline.monthlyPayment),
+      'Current P&I': fmtUSD(debugData.calculations.result.monthlyPayment),
+      'Original PITI': fmtUSD(debugData.calculations.baseline.monthlyPayment + debugData.inputs.property.monthlyPITI.total),
+      'Current PITI': fmtUSD(debugData.calculations.result.monthlyPayment + debugData.inputs.property.monthlyPITI.total),
+    });
+    console.log('Interest:', {
+      'Baseline Total Interest': fmtUSD(debugData.calculations.baseline.totalInterest),
+      'Current Total Interest': fmtUSD(debugData.calculations.result.totalInterest),
+      'Interest Saved': fmtUSD(debugData.calculations.savings.interestSaved),
+    });
+    console.log('Payments & Savings:', {
+      'Total Paid': fmtUSD(debugData.calculations.result.totalPaid),
+      'Total Forgiveness': fmtUSD(debugData.calculations.result.totalForgiveness),
+      'Total Extra Payments': fmtUSD(totalExtraPayments),
+      'Total Principal Paid': fmtUSD(totalPrincipalPaid),
+      'Months Saved': debugData.calculations.savings.monthsSaved,
+    });
+    console.log('Lender Info:', {
+      'Lender Profit': fmtUSD(lenderProfit),
+      'Lender Return': `${annualizedReturn.toFixed(2)}%`,
+    });
+    console.groupEnd();
+    
+    // Copy summary information including all SummaryCard values to clipboard
+    const summaryData = {
+      timestamp: debugData.timestamp,
+      loan: {
+        homePrice: fmtUSD(parseFloat(debugData.inputs.loan.homePrice) || 0),
+        principal: fmtUSD(debugData.inputs.loan.principal),
+        interestRate: `${debugData.inputs.loan.interestRate}%`,
+        term: `${debugData.inputs.loan.termYears} years (${debugData.inputs.loan.termMonths} months)`,
+        startDate: debugData.inputs.loan.startDate,
+      },
+      monthlyPayments: {
+        originalPandI: fmtUSD(debugData.calculations.baseline.monthlyPayment),
+        currentPandI: fmtUSD(debugData.calculations.result.monthlyPayment),
+        originalPITI: fmtUSD(debugData.calculations.baseline.monthlyPayment + debugData.inputs.property.monthlyPITI.total),
+        currentPITI: fmtUSD(debugData.calculations.result.monthlyPayment + debugData.inputs.property.monthlyPITI.total),
+        propertyTax: fmtUSD(debugData.inputs.property.monthlyPITI.propertyTax),
+        insurance: fmtUSD(debugData.inputs.property.monthlyPITI.insurance),
+      },
+      interest: {
+        baselineTotalInterest: fmtUSD(debugData.calculations.baseline.totalInterest),
+        currentTotalInterest: fmtUSD(debugData.calculations.result.totalInterest),
+        interestSaved: fmtUSD(debugData.calculations.savings.interestSaved),
+      },
+      payments: {
+        totalPaid: fmtUSD(debugData.calculations.result.totalPaid),
+        totalForgiveness: fmtUSD(debugData.calculations.result.totalForgiveness),
+        totalExtraPayments: fmtUSD(totalExtraPayments),
+        totalPrincipalPaid: fmtUSD(totalPrincipalPaid),
+      },
+      savings: {
+        monthsSaved: debugData.calculations.savings.monthsSaved,
+        payoffMonth: debugData.calculations.result.payoffMonth,
+        baselinePayoffMonth: debugData.calculations.baseline.payoffMonth,
+      },
+      lender: {
+        profit: fmtUSD(lenderProfit),
+        annualizedReturn: `${annualizedReturn.toFixed(2)}%`,
+      },
+      extraPayments: debugData.inputs.extraPayments.length > 0 ? debugData.inputs.extraPayments : 'None',
+    };
+    
+    const summaryString = JSON.stringify(summaryData, null, 2);
+    navigator.clipboard.writeText(summaryString).then(() => {
+      console.log('📋 Summary data copied to clipboard!');
+    }).catch((err) => {
+      console.error('Failed to copy to clipboard:', err);
+    });
+  };
+
   return (
     <div className="rounded-2xl bg-white p-4 sm:p-5 shadow">
-      <h2 className="text-lg sm:text-xl font-semibold mb-4">Summary</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-lg sm:text-xl font-semibold">Summary</h2>
+        <button
+          onClick={handleDebugDump}
+          className="px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-md border border-gray-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          title="Log full debug data to console and copy summary to clipboard"
+        >
+          🐛 Debug
+        </button>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3 sm:gap-4">
         <SummaryCard 
           label="Original P&I" 

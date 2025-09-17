@@ -46,11 +46,16 @@ export default function MortgageCalculator() {
     setShowAll,
     
     // Computed values
+    termMonths,
     monthlyPITI,
     result,
     baseline,
     interestSaved,
     monthsSaved,
+    
+    // Debug data
+    cachedInputs,
+    params,
     
     // Handlers
     handleAddExtra,
@@ -172,6 +177,9 @@ export default function MortgageCalculator() {
             monthlyPITI={monthlyPITI}
             principal={principal}
             interestRate={Number(rate) || 0}
+            cachedInputs={cachedInputs}
+            termMonths={termMonths}
+            scheduleParams={params}
           />
 
           <Suspense fallback={<div className="rounded-2xl bg-white p-5 shadow animate-pulse"><div className="h-64 bg-gray-200 rounded"></div></div>}>
