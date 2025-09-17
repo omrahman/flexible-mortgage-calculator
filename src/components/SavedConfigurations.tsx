@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { useConfigurations } from '../hooks/useConfigurations';
 import { ConfigurationModal } from './ConfigurationModal';
-import { SavedConfiguration, CachedInputs } from '../types';
+import { SavedConfiguration, CachedInputs, LoanConfigurationSchema } from '../types';
+import { useRef } from 'react';
+import { ImportConfirmationModal } from './ImportConfirmationModal';
+import { deserializeLoanConfiguration } from '../utils/serialization';
 
 interface SavedConfigurationsProps {
   onLoadConfiguration: (config: SavedConfiguration) => void;
@@ -18,11 +21,20 @@ export function SavedConfigurations({
   hasUnsavedChanges = false, 
   onSaveChanges 
 }: SavedConfigurationsProps) {
-  const { configurations, saveConfiguration, updateConfiguration, deleteConfiguration } = useConfigurations();
+  const { 
+    configurations, 
+    saveConfiguration, 
+    updateConfiguration, 
+    deleteConfiguration,
+    importConfiguration,
+    exportConfiguration,
+  } = useConfigurations();
   
-  
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [editingConfig, setEditingConfig] = useState<SavedConfiguration | null>(null);
+  const [importedConfigData, setImportedConfigData] = useState<LoanConfigurationSchema | null>(null);
 
   const handleLoad = (config: SavedConfiguration) => {
     onLoadConfiguration(config);
@@ -37,6 +49,60 @@ export function SavedConfigurations({
   const handleEdit = (config: SavedConfiguration) => {
     setEditingConfig(config);
     setIsModalOpen(true);
+  };
+
+  const handleExport = (id: string) => {
+    const json = exportConfiguration(id);
+    if (json) {
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const config = configurations.find(c => c.id === id);
+      a.download = `mortgage-config-${config?.name.replace(/\s/g, '_') || id}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  };
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target?.result as string;
+        const validationResult = importConfiguration(text);
+        
+        if (validationResult.isValid && validationResult.data) {
+          setImportedConfigData(validationResult.data);
+          setIsImportModalOpen(true);
+        } else {
+          console.error('Import failed', validationResult.errors);
+          alert(`Failed to import configuration: ${validationResult.errors?.join(', ')}`);
+        }
+      };
+      reader.readAsText(file);
+    }
+    // Reset file input
+    if (event.target) {
+      event.target.value = '';
+    }
+  };
+
+  const handleConfirmImport = (name: string, description?: string) => {
+    if (importedConfigData) {
+      const inputsToSave = deserializeLoanConfiguration(importedConfigData);
+      saveConfiguration(name, description, inputsToSave);
+      setIsImportModalOpen(false);
+      setImportedConfigData(null);
+      alert('Configuration imported and saved successfully!');
+    }
   };
 
   const handleSave = (name: string, description?: string) => {
@@ -85,6 +151,19 @@ export function SavedConfigurations({
           >
             Save Current
           </button>
+          <button
+            onClick={handleImportClick}
+            className="px-3 py-1 text-sm bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors whitespace-nowrap"
+          >
+            Import
+          </button>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            className="hidden"
+            accept="application/json"
+          />
         </div>
       </div>
 
@@ -142,6 +221,12 @@ export function SavedConfigurations({
                 >
                   Delete
                 </button>
+                <button
+                  onClick={() => handleExport(config.id)}
+                  className="text-green-600 hover:text-green-800 text-sm whitespace-nowrap"
+                >
+                  Export
+                </button>
               </div>
             </div>
           ))}
@@ -154,6 +239,13 @@ export function SavedConfigurations({
         onSave={handleSave}
         onUpdate={handleUpdate}
         configuration={editingConfig}
+      />
+
+      <ImportConfirmationModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        onConfirm={handleConfirmImport}
+        configData={importedConfigData}
       />
     </div>
   );

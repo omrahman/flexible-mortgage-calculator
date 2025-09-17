@@ -1,6 +1,8 @@
 import { useCallback } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 import { SavedConfiguration, CachedInputs } from '../types';
+import { exportToJSON, importFromJSON } from '../utils/serialization';
+import { ConfigurationValidationResult } from '../types';
 
 export function useSavedConfigurations() {
   const [configurations, setConfigurations] = useLocalStorage<SavedConfiguration[]>('mortgage-configurations', []);
@@ -43,11 +45,25 @@ export function useSavedConfigurations() {
     return configurations.find(config => config.id === id);
   }, [configurations]);
 
+  const importConfiguration = useCallback((jsonString: string): ConfigurationValidationResult => {
+    return importFromJSON(jsonString);
+  }, []);
+
+  const exportConfiguration = useCallback((id: string) => {
+    const config = configurations.find(c => c.id === id);
+    if (config) {
+      return exportToJSON(config.inputs);
+    }
+    return null;
+  }, [configurations]);
+
   return {
     configurations,
     saveConfiguration,
     updateConfiguration,
     deleteConfiguration,
     getConfiguration,
+    importConfiguration,
+    exportConfiguration,
   };
 }
