@@ -1,8 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useConfigurations } from '../hooks/useConfigurations';
 import { ConfigurationModal } from './ConfigurationModal';
 import { SavedConfiguration, CachedInputs, LoanConfigurationSchema } from '../types';
-import { useRef } from 'react';
 import { ImportConfirmationModal } from './ImportConfirmationModal';
 import { deserializeLoanConfiguration } from '../utils/serialization';
 
@@ -35,6 +34,22 @@ export function SavedConfigurations({
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [editingConfig, setEditingConfig] = useState<SavedConfiguration | null>(null);
   const [importedConfigData, setImportedConfigData] = useState<LoanConfigurationSchema | null>(null);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpenMenuId(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleLoad = (config: SavedConfiguration) => {
     onLoadConfiguration(config);
@@ -202,31 +217,57 @@ export function SavedConfigurations({
                 </p>
               </div>
               
-              <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(60px,1fr))] gap-2 ml-3 min-w-0">
+              <div className="relative ml-3" ref={openMenuId === config.id ? menuRef : null}>
                 <button
-                  onClick={() => handleLoad(config)}
-                  className="text-blue-600 hover:text-blue-800 text-sm font-medium whitespace-nowrap"
+                  onClick={() => setOpenMenuId(openMenuId === config.id ? null : config.id)}
+                  className="p-2 rounded-full hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  aria-label="Actions"
+                  aria-haspopup="true"
+                  aria-expanded={openMenuId === config.id}
                 >
-                  Load
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                  </svg>
                 </button>
-                <button
-                  onClick={() => handleEdit(config)}
-                  className="text-gray-600 hover:text-gray-800 text-sm whitespace-nowrap"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(config.id)}
-                  className="text-red-600 hover:text-red-800 text-sm whitespace-nowrap"
-                >
-                  Delete
-                </button>
-                <button
-                  onClick={() => handleExport(config.id)}
-                  className="text-green-600 hover:text-green-800 text-sm whitespace-nowrap"
-                >
-                  Export
-                </button>
+                {openMenuId === config.id && (
+                  <div 
+                    className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 origin-top-right ring-1 ring-black ring-opacity-5 focus:outline-none"
+                    role="menu"
+                    aria-orientation="vertical"
+                    aria-labelledby="menu-button"
+                  >
+                    <div className="py-1" role="none">
+                      <button 
+                        onClick={() => { handleLoad(config); setOpenMenuId(null); }} 
+                        className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        role="menuitem"
+                      >
+                        Load
+                      </button>
+                      <button 
+                        onClick={() => { handleEdit(config); setOpenMenuId(null); }} 
+                        className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        role="menuitem"
+                      >
+                        Edit
+                      </button>
+                      <button 
+                        onClick={() => { handleDelete(config.id); setOpenMenuId(null); }} 
+                        className="flex items-center w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-50 hover:text-red-900"
+                        role="menuitem"
+                      >
+                        Delete
+                      </button>
+                      <button 
+                        onClick={() => { handleExport(config.id); setOpenMenuId(null); }}
+                        className="flex items-center w-full text-left px-4 py-2 text-sm text-green-700 hover:bg-green-50 hover:text-green-900"
+                        role="menuitem"
+                      >
+                        Export
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           ))}
