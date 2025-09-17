@@ -39,14 +39,14 @@ describe('SummarySection Calculations', () => {
     it('should correctly sum total principal and extra payments from schedule rows', () => {
       const result = createMockResult({
         rows: [
-          { idx: 1, principal: 100, extra: 50, interest: 0, balance: 0, date: '', forgiveness: 0, payment: 150, total: 150, cumulativeForgiveness: 0, cumulativeInterest: 0, cumulativePrincipal: 150 },
-          { idx: 2, principal: 110, extra: 0, interest: 0, balance: 0, date: '', forgiveness: 0, payment: 110, total: 110, cumulativeForgiveness: 0, cumulativeInterest: 0, cumulativePrincipal: 260 },
-          { idx: 3, principal: 120, extra: 100, interest: 0, balance: 0, date: '', forgiveness: 0, payment: 220, total: 220, cumulativeForgiveness: 0, cumulativeInterest: 0, cumulativePrincipal: 480 },
+          { idx: 1, scheduledPrincipal: 100, extraPrincipal: 50, interest: 0, loanBalance: 0, paymentDate: '', forgivenPrincipal: 0, scheduledPayment: 150, actualPayment: 150, cumulativeForgiveness: 0, cumulativeInterest: 0, cumulativePrincipal: 150 },
+          { idx: 2, scheduledPrincipal: 110, extraPrincipal: 0, interest: 0, loanBalance: 0, paymentDate: '', forgivenPrincipal: 0, scheduledPayment: 110, actualPayment: 110, cumulativeForgiveness: 0, cumulativeInterest: 0, cumulativePrincipal: 260 },
+          { idx: 3, scheduledPrincipal: 120, extraPrincipal: 100, interest: 0, loanBalance: 0, paymentDate: '', forgivenPrincipal: 0, scheduledPayment: 220, actualPayment: 220, cumulativeForgiveness: 0, cumulativeInterest: 0, cumulativePrincipal: 480 },
         ],
       });
       
-      const totalExtraPayments = result.rows.reduce((sum, row) => sum + row.extra, 0);
-      const totalPrincipalPaid = result.rows.reduce((sum, row) => sum + row.principal, 0);
+      const totalExtraPayments = result.rows.reduce((sum, row) => sum + row.extraPrincipal, 0);
+      const totalPrincipalPaid = result.rows.reduce((sum, row) => sum + row.scheduledPrincipal, 0);
 
       expect(totalExtraPayments).toBe(150);
       expect(totalPrincipalPaid).toBe(330);

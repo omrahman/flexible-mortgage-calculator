@@ -1,11 +1,11 @@
 import React from 'react';
 import { Th, Td } from './TableComponents';
 import { fmtUSD } from '../utils/formatters';
-import type { Row } from '../types';
+import type { BalanceChartRow } from '../types';
 import { SCHEDULE_PREVIEW_ROWS } from '../constants';
 
 interface AmortizationTableProps {
-  rows: Row[];
+  rows: BalanceChartRow[];
   showAll: boolean;
   onToggleShowAll: () => void;
   onDownloadCSV: () => void;
@@ -60,14 +60,14 @@ export const AmortizationTable: React.FC<AmortizationTableProps> = ({
             {displayRows.map((r) => (
               <tr key={r.idx} className="border-t">
                 <Td className="whitespace-nowrap">{r.idx}</Td>
-                <Td className="whitespace-nowrap">{r.date}</Td>
-                <Td className="text-right whitespace-nowrap">{fmtUSD(r.payment)}</Td>
+                <Td className="whitespace-nowrap">{r.paymentDate}</Td>
+                <Td className="text-right whitespace-nowrap">{fmtUSD(r.scheduledPayment)}</Td>
                 <Td className="text-right whitespace-nowrap">{fmtUSD(r.interest)}</Td>
-                <Td className="text-right whitespace-nowrap">{fmtUSD(r.principal)}</Td>
-                <Td className="text-right whitespace-nowrap">{fmtUSD(r.extra)}</Td>
-                <Td className="text-right whitespace-nowrap">{fmtUSD(r.forgiveness)}</Td>
-                <Td className="text-right whitespace-nowrap">{fmtUSD(r.total)}</Td>
-                <Td className="text-right whitespace-nowrap">{fmtUSD(r.balance)}</Td>
+                <Td className="text-right whitespace-nowrap">{fmtUSD(r.scheduledPrincipal)}</Td>
+                <Td className="text-right whitespace-nowrap">{fmtUSD(r.extraPrincipal)}</Td>
+                <Td className="text-right whitespace-nowrap">{fmtUSD(r.forgivenPrincipal)}</Td>
+                <Td className="text-right whitespace-nowrap">{fmtUSD(r.actualPayment)}</Td>
+                <Td className="text-right whitespace-nowrap">{fmtUSD(r.loanBalance)}</Td>
                 <Td className="text-right whitespace-nowrap">{fmtUSD(r.cumulativeInterest)}</Td>
                 <Td className="text-right whitespace-nowrap">{fmtUSD(r.cumulativePrincipal)}</Td>
                 <Td className="text-right whitespace-nowrap">{fmtUSD(r.cumulativeForgiveness)}</Td>

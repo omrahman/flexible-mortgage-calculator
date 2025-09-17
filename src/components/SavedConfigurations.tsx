@@ -1,32 +1,55 @@
-import { useState, useRef, useEffect } from 'react';
-import { useConfigurations } from '../hooks/useConfigurations';
-import { ConfigurationModal } from './ConfigurationModal';
-import { SavedConfiguration, CachedInputs, LoanConfigurationSchema } from '../types';
-import { ImportConfirmationModal } from './ImportConfirmationModal';
-import { deserializeLoanConfiguration } from '../utils/serialization';
-import { exportToUrl } from '../utils/serialization';
+import {
+  useState,
+  useRef,
+  useEffect
+} from 'react';
+import {
+  useConfigurations
+} from '../hooks/useConfigurations';
+import {
+  ConfigurationModal
+} from './ConfigurationModal';
+import {
+  SavedConfiguration,
+  CachedInputs,
+  LoanConfigurationSchema,
+  LoanSummary
+} from '../types';
+import {
+  ImportConfirmationModal
+} from './ImportConfirmationModal';
+import {
+  deserializeLoanConfiguration,
+  exportToUrl
+} from '../utils/serialization';
+import {
+  fmtUSD
+} from '../utils/formatters';
+
 
 interface SavedConfigurationsProps {
   onLoadConfiguration: (config: SavedConfiguration) => void;
   onClearLoadedConfiguration: () => void;
-  loadedConfigurationId?: string | null;
+  loadedConfigurationId ? : string | null;
   currentInputs: CachedInputs;
-  hasUnsavedChanges?: boolean;
-  onSaveChanges?: (configId: string) => void;
+  hasUnsavedChanges ? : boolean;
+  onSaveChanges ? : (configId: string) => void;
+  loanSummary ? : LoanSummary;
 }
 
-export function SavedConfigurations({ 
-  onLoadConfiguration, 
-  onClearLoadedConfiguration, 
-  loadedConfigurationId, 
-  currentInputs, 
-  hasUnsavedChanges = false, 
-  onSaveChanges 
+export function SavedConfigurations({
+  onLoadConfiguration,
+  onClearLoadedConfiguration,
+  loadedConfigurationId,
+  currentInputs,
+  hasUnsavedChanges = false,
+  onSaveChanges,
+  loanSummary
 }: SavedConfigurationsProps) {
-  const { 
-    configurations, 
-    saveConfiguration, 
-    updateConfiguration, 
+  const {
+    configurations,
+    saveConfiguration,
+    updateConfiguration,
     deleteConfiguration,
     importConfiguration,
     exportConfiguration,
@@ -128,7 +151,7 @@ export function SavedConfigurations({
     }
   };
 
-  const handleConfirmImport = (name: string, description?: string) => {
+  const handleConfirmImport = (name: string, description ? : string) => {
     if (importedConfigData) {
       const inputsToSave = deserializeLoanConfiguration(importedConfigData);
       saveConfiguration(name, description || '', inputsToSave);
@@ -138,22 +161,22 @@ export function SavedConfigurations({
     }
   };
 
-  const handleSave = (name: string, description?: string) => {
+  const handleSave = (name: string, description ? : string) => {
     if (editingConfig) {
       // Update existing configuration
-      updateConfiguration(editingConfig.id, name, description || '', currentInputs);
+      updateConfiguration(editingConfig.id, name, description || '', currentInputs, loanSummary);
       setEditingConfig(null);
     } else {
       // Save new configuration
-      const newConfig = saveConfiguration(name, description || '', currentInputs);
+      const newConfig = saveConfiguration(name, description || '', currentInputs, loanSummary);
       if (newConfig) {
         onLoadConfiguration(newConfig);
       }
     }
   };
 
-  const handleUpdate = (id: string, name: string, description?: string) => {
-    updateConfiguration(id, name, description || '', currentInputs);
+  const handleUpdate = (id: string, name: string, description ? : string) => {
+    updateConfiguration(id, name, description || '', currentInputs, loanSummary);
     setEditingConfig(null);
   };
 
@@ -232,7 +255,7 @@ export function SavedConfigurations({
                   )}
                 </p>
                 {config.description && (
-                  <p className="text-xs text-gray-600 break-words leading-relaxed">
+                  <p className="text-xs text-gray-600 break-words leading-relaxed mt-1">
                     {config.description}
                   </p>
                 )}
@@ -242,9 +265,40 @@ export function SavedConfigurations({
                 <p className="text-xs text-gray-400">
                   {new Date(config.createdAt).toLocaleDateString()}
                 </p>
+
+                {config.summary && (
+                  <div className="mt-3 pt-3 border-t border-gray-200">
+                    <dl className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-2 text-xs">
+                      {/* Core Loan & Payment Info */}
+                      <SummaryItem label="Loan Amount" value={fmtUSD(config.summary.loanAmount)} />
+                      <SummaryItem label="Original P&I" value={fmtUSD(config.summary.originalPI)} />
+                      <SummaryItem label="Current P&I" value={fmtUSD(config.summary.currentPI)} />
+                      <SummaryItem label="Original PITI" value={fmtUSD(config.summary.originalPITI)} />
+                      <SummaryItem label="Current PITI" value={fmtUSD(config.summary.currentPITI)} />
+                      <SummaryItem label="Payoff Date" value={config.summary.payoffDate} />
+                      
+                      {/* Savings */}
+                      <SummaryItem label="Total Interest (Baseline)" value={fmtUSD(config.summary.totalInterestBaseline)} />
+                      <SummaryItem label="Total Interest (Current)" value={fmtUSD(config.summary.totalInterestCurrent)} />
+                      <SummaryItem label="Interest Saved" value={fmtUSD(config.summary.interestSaved)} highlight />
+                      <SummaryItem label="Months Saved" value={config.summary.monthsSaved.toString()} highlight />
+                      
+                      {/* Payment Totals */}
+                      <SummaryItem label="Total Paid" value={fmtUSD(config.summary.totalPaid)} />
+                      <SummaryItem label="Total Principal Paid" value={fmtUSD(config.summary.totalPrincipalPaid)} />
+                      <SummaryItem label="Total Extra Payments" value={fmtUSD(config.summary.totalExtraPayments)} highlight />
+                      <SummaryItem label="Total Forgiveness" value={fmtUSD(config.summary.totalForgiveness)} highlight />
+
+                      {/* Lender Metrics */}
+                      <SummaryItem label="Lender's Profit" value={fmtUSD(config.summary.lenderProfit)} />
+                      <SummaryItem label="Lender's ROI" value={`${typeof config.summary.lenderROI === 'number' ? config.summary.lenderROI.toFixed(2) : 'N/A'}%`} />
+                    </dl>
+                  </div>
+                )}
               </div>
               
-              <div className="relative ml-3" ref={openMenuId === config.id ? menuRef : null}>
+              <div className="relative ml-3"
+                ref={openMenuId === config.id ? menuRef : null}>
                 <button
                   onClick={() => setOpenMenuId(openMenuId === config.id ? null : config.id)}
                   className="p-2 rounded-full hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
@@ -325,3 +379,10 @@ export function SavedConfigurations({
     </div>
   );
 }
+
+const SummaryItem = ({ label, value, highlight = false }: { label: string, value: string, highlight?: boolean }) => (
+  <div className="grid grid-cols-[auto_1fr] gap-x-2 items-baseline">
+    <dt className="text-gray-500">{label}</dt>
+    <dd className={`font-medium ${highlight ? 'text-green-600' : 'text-gray-800'} text-right break-words`}>{value}</dd>
+  </div>
+);

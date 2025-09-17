@@ -71,7 +71,7 @@ export const getCalculationResults = (inputs: CachedInputs) => {
     annualRatePct: Number(inputs.rate) || 0,
     termMonths,
     startYM: inputs.startYM,
-    extras: extrasMap,
+    extraPayments: extrasMap,
     forgiveness: forgivenessMap,
     recastMonths: recastSet,
     autoRecastOnExtra: inputs.autoRecast,
@@ -81,7 +81,7 @@ export const getCalculationResults = (inputs: CachedInputs) => {
 
   const baselineParams: ScheduleParams = {
     ...scheduleParams,
-    extras: {},
+    extraPayments: {},
     forgiveness: {},
     recastMonths: new Set(),
     autoRecastOnExtra: false,

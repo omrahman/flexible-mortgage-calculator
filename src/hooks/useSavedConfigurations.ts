@@ -1,13 +1,13 @@
 import { useCallback } from 'react';
 import { useLocalStorage } from './useLocalStorage';
-import { SavedConfiguration, CachedInputs } from '../types';
+import { SavedConfiguration, CachedInputs, LoanSummary } from '../types';
 import { exportToJSON, importFromJSON } from '../utils/serialization';
 import { ConfigurationValidationResult } from '../types';
 
 export function useSavedConfigurations() {
   const [configurations, setConfigurations] = useLocalStorage<SavedConfiguration[]>('mortgage-configurations', []);
 
-  const saveConfiguration = useCallback((name: string, description: string, inputs: CachedInputs) => {
+  const saveConfiguration = useCallback((name: string, description: string, inputs: CachedInputs, summary?: LoanSummary) => {
     const newConfig: SavedConfiguration = {
       id: crypto.randomUUID(),
       name,
@@ -15,13 +15,14 @@ export function useSavedConfigurations() {
       createdAt: new Date().toISOString(),
       lastModified: new Date().toISOString(),
       inputs,
+      summary,
     };
     
     setConfigurations(prev => [...prev, newConfig]);
     return newConfig;
   }, [setConfigurations]);
 
-  const updateConfiguration = useCallback((id: string, name: string, description: string, inputs: CachedInputs) => {
+  const updateConfiguration = useCallback((id: string, name: string, description: string, inputs: CachedInputs, summary?: LoanSummary) => {
     setConfigurations(prev => 
       prev.map(config => 
         config.id === id 
@@ -30,6 +31,7 @@ export function useSavedConfigurations() {
               name, 
               description, 
               inputs,
+              summary,
               lastModified: new Date().toISOString()
             }
           : config

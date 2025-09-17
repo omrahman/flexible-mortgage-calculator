@@ -71,7 +71,7 @@ describe('calculations.ts', () => {
   describe('buildSchedule()', () => {
     const baseParams: Omit<ScheduleParams, 'principal' | 'annualRatePct' | 'termMonths'> = {
     startYM: '2024-01',
-    extras: {},
+    extraPayments: {},
     forgiveness: {},
     recastMonths: new Set(),
     autoRecastOnExtra: false,
@@ -88,9 +88,9 @@ describe('calculations.ts', () => {
       expect(rows.length).toBe(360);
       expect(payoffMonth).toBe(360);
       expect(rows[0].interest).toBeCloseTo(500.0, 2);
-      expect(rows[0].principal).toBeCloseTo(99.55, 2);
-      expect(rows[0].balance).toBeCloseTo(99900.45, 2);
-      expect(rows[359].balance).toBeLessThan(1.0); // Should be near zero
+      expect(rows[0].scheduledPrincipal).toBeCloseTo(99.55, 2);
+      expect(rows[0].loanBalance).toBeCloseTo(99900.45, 2);
+      expect(rows[359].loanBalance).toBeLessThan(1.0); // Should be near zero
       expect(totalInterest).toBeCloseTo(115838.45, 2);
     });
 
@@ -100,14 +100,14 @@ describe('calculations.ts', () => {
         principal: 100000,
         annualRatePct: 6,
         termMonths: 360,
-        extras: { 1: 10000 }, // $10k extra payment in month 1
+        extraPayments: { 1: 10000 }, // $10k extra payment in month 1
       });
 
       expect(payoffMonth).toBeLessThan(360);
       expect(rows.length).toBeLessThan(360);
       expect(totalInterest).toBeLessThan(115838.45);
-      expect(rows[0].extra).toBe(10000);
-      expect(rows[0].balance).toBeCloseTo(89900.45, 2);
+      expect(rows[0].extraPrincipal).toBe(10000);
+      expect(rows[0].loanBalance).toBeCloseTo(89900.45, 2);
     });
 
     it('should shorten the loan term with loan forgiveness', () => {
@@ -122,7 +122,7 @@ describe('calculations.ts', () => {
       expect(payoffMonth).toBeLessThan(360);
       expect(totalForgiveness).toBe(20000);
       // Total Paid (cash from borrower) should equal total principal paid + total interest
-      const totalPrincipalRepaid = rows.reduce((acc, r) => acc + r.principal + r.extra, 0);
+      const totalPrincipalRepaid = rows.reduce((acc, r) => acc + r.scheduledPrincipal + r.extraPrincipal, 0);
       expect(totalPrincipalRepaid).toBeCloseTo(80000, 2); // Since 20k was forgiven
       expect(totalPaid).toBeCloseTo(totalPrincipalRepaid + totalInterest, 2);
     });
@@ -133,14 +133,14 @@ describe('calculations.ts', () => {
         principal: 100000,
         annualRatePct: 6,
         termMonths: 360,
-        extras: { 12: 10000 },
+        extraPayments: { 12: 10000 },
         recastMonths: new Set([12]),
       });
 
       const recastRow = rows[11]; // Month 12 is at index 11
       expect(recastRow.recast).toBe(true);
       expect(recastRow.newPayment).toBeDefined();
-      expect(recastRow.newPayment).not.toBe(recastRow.payment);
+      expect(recastRow.newPayment).not.toBe(recastRow.scheduledPayment);
       expect(segments.length).toBe(2);
       expect(segments[1].start).toBe(13); // New payment starts in the next month
       expect(segments[1].payment).toBe(recastRow.newPayment);
@@ -152,7 +152,7 @@ describe('calculations.ts', () => {
         principal: 100000,
         annualRatePct: 6,
         termMonths: 360,
-        extras: { 6: 5000 },
+        extraPayments: { 6: 5000 },
         autoRecastOnExtra: true,
       });
 
@@ -167,7 +167,7 @@ describe('calculations.ts', () => {
         principal: 100000,
         annualRatePct: 6,
         termMonths: 360,
-        extras: { 6: 1 }, // A tiny extra payment
+        extraPayments: { 6: 1 }, // A tiny extra payment
         autoRecastOnExtra: true,
       });
 
@@ -183,14 +183,14 @@ describe('calculations.ts', () => {
         principal: 100000,
         annualRatePct: 6,
         termMonths: 360,
-        extras: { 1: 100000 },
+        extraPayments: { 1: 100000 },
       });
 
       expect(payoffMonth).toBe(1);
       expect(rows.length).toBe(1);
-      expect(rows[0].balance).toBe(0);
+      expect(rows[0].loanBalance).toBe(0);
       // Total paid = scheduled principal + scheduled interest + extra payment
-      expect(totalPaid).toBeCloseTo(rows[0].principal + rows[0].interest + rows[0].extra, 2);
+      expect(totalPaid).toBeCloseTo(rows[0].scheduledPrincipal + rows[0].interest + rows[0].extraPrincipal, 2);
     });
 
     it('should correctly cap an extra payment that exceeds the remaining balance', () => {
@@ -199,7 +199,7 @@ describe('calculations.ts', () => {
         principal: 100000,
         annualRatePct: 6,
         termMonths: 360,
-        extras: { 1: 150000 }, // Overpayment
+        extraPayments: { 1: 150000 }, // Overpayment
       });
 
       expect(rows.length).toBe(1);
@@ -209,8 +209,8 @@ describe('calculations.ts', () => {
       const principalPart = scheduledPayment - interest;
       const expectedExtra = 100000 - principalPart;
 
-      expect(rows[0].extra).toBeCloseTo(expectedExtra, 2);
-      expect(rows[0].balance).toBe(0);
+      expect(rows[0].extraPrincipal).toBeCloseTo(expectedExtra, 2);
+      expect(rows[0].loanBalance).toBe(0);
     });
 
     it('should correctly handle a final "payoff" month if a small balance remains at term end', () => {
@@ -225,7 +225,7 @@ describe('calculations.ts', () => {
 
       // A slightly higher rate can push the loan into one extra payment due to rounding
       expect(payoffMonth).toBeLessThanOrEqual(361);
-      expect(rows[rows.length - 1].balance).toBeLessThan(1.0);
+      expect(rows[rows.length - 1].loanBalance).toBeLessThan(1.0);
     });
   });
 });

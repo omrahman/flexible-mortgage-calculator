@@ -32,10 +32,10 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
   const lenderProfit = result.totalInterest - result.totalForgiveness;
   
   // Calculate total extra payments (not forgiveness payments)
-  const totalExtraPayments = result.rows.reduce((sum, row) => sum + row.extra, 0);
+  const totalExtraPayments = result.rows.reduce((sum, row) => sum + row.extraPrincipal, 0);
   
   // Calculate total principal paid
-  const totalPrincipalPaid = result.rows.reduce((sum, row) => sum + row.principal + row.extra, 0);
+  const totalPrincipalPaid = result.rows.reduce((sum, row) => sum + row.scheduledPrincipal + row.extraPrincipal, 0);
   
   // Calculate Lender's Return on Investment (ROI)
   let lendersReturnOnInvestment = 0;

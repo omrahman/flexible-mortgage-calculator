@@ -85,16 +85,16 @@ export interface ForgivenessItem {
   recurringFrequency?: RecurringFrequency; // frequency of recurring payments
 }
 
-export interface Row {
+export interface BalanceChartRow {
   idx: number;
-  date: string; // YYYY-MM
-  payment: number; // scheduled P&I this month (capped to payoff)
-  interest: number;
-  principal: number;
-  extra: number; // extra paid this month
-  forgiveness: number; // forgiveness amount this month
-  total: number; // total cash out this month
-  balance: number; // ending balance after this month
+  paymentDate: string; // YYYY-MM
+  scheduledPayment: number; // scheduled P&I this month (capped to payoff)
+  interest: number; // interest paid this month
+  scheduledPrincipal: number; // scheduled principal paid this month
+  extraPrincipal: number; // extra principal paid this month
+  forgivenPrincipal: number; // forgiven principal this month
+  actualPayment: number; // total cash out this month
+  loanBalance: number; // ending balance after this month
   cumulativeInterest: number; // cumulative interest paid up to this month
   cumulativePrincipal: number; // cumulative principal paid up to this month
   cumulativeForgiveness: number; // cumulative forgiveness up to this month
@@ -103,7 +103,7 @@ export interface Row {
 }
 
 export interface ScheduleResult {
-  rows: Row[];
+  rows: BalanceChartRow[];
   totalInterest: number;
   totalPaid: number;
   totalForgiveness: number; // total forgiveness amount
@@ -117,7 +117,7 @@ export interface ScheduleParams {
   annualRatePct: number;
   termMonths: number;
   startYM: string;
-  extras: ExtraMap;
+  extraPayments: ExtraMap;
   forgiveness: ForgivenessMap;
   recastMonths: Set<number>;
   autoRecastOnExtra: boolean;
@@ -174,6 +174,34 @@ export interface SavedConfiguration {
   createdAt: string;
   lastModified: string;
   inputs: CachedInputs;
+  summary?: LoanSummary;
+}
+
+// Interface for the compact loan summary
+export interface LoanSummary {
+  // Core Loan & Payment Info
+  loanAmount: number;
+  originalPI: number;
+  currentPI: number;
+  originalPITI: number;
+  currentPITI: number;
+
+  // Savings
+  totalInterestBaseline: number;
+  totalInterestCurrent: number;
+  interestSaved: number;
+  monthsSaved: number;
+  payoffDate: string; // YYYY-MM
+
+  // Payment Totals
+  totalPaid: number;
+  totalPrincipalPaid: number;
+  totalExtraPayments: number;
+  totalForgiveness: number;
+
+  // Lender Metrics
+  lenderProfit: number;
+  lenderROI: number;
 }
 
 // Interface for configuration management component props

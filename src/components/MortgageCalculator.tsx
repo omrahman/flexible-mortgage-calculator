@@ -2,7 +2,7 @@ import { useMemo, lazy, Suspense, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useMortgageCalculation } from '../hooks/useMortgageCalculation';
 import { useConfigurations } from '../hooks/useConfigurations';
-import { SavedConfiguration } from '../types';
+import { SavedConfiguration, LoanSummary } from '../types';
 import { LoanInputs } from './LoanInputs';
 import { ExtraPayments } from './ExtraPayments';
 import { SummarySection } from './SummarySection';
@@ -79,6 +79,47 @@ export default function MortgageCalculator() {
   } = useMortgageCalculation();
 
   const { updateConfiguration, getConfiguration } = useConfigurations();
+
+  const loanSummary: LoanSummary | undefined = useMemo(() => {
+    if (!result.payoffMonth || !startYM) return undefined;
+
+    const [year, month] = startYM.split('-').map(Number);
+    const payoffDateObj = new Date(year, month - 1);
+    payoffDateObj.setMonth(payoffDateObj.getMonth() + result.payoffMonth - 1);
+    const payoffDate = `${payoffDateObj.getFullYear()}-${String(payoffDateObj.getMonth() + 1).padStart(2, '0')}`;
+
+    const totalExtraPayments = result.rows.reduce((sum, row) => sum + row.extraPrincipal, 0);
+    const totalPrincipalPaid = result.rows.reduce((sum, row) => sum + row.scheduledPrincipal + row.extraPrincipal, 0);
+    const lenderProfit = result.totalInterest - result.totalForgiveness;
+    const lenderROI = principal > 0 ? (lenderProfit / principal) * 100 : 0;
+
+    return {
+      // Core Loan & Payment Info
+      loanAmount: principal,
+      originalPI: baseline.segments[0]?.payment || 0,
+      currentPI: result.segments[result.segments.length - 1]?.payment || 0,
+      originalPITI: (baseline.segments[0]?.payment || 0) + monthlyPITI.total,
+      currentPITI: (result.segments[result.segments.length - 1]?.payment || 0) + monthlyPITI.total,
+
+      // Savings
+      totalInterestBaseline: baseline.totalInterest,
+      totalInterestCurrent: result.totalInterest,
+      interestSaved,
+      monthsSaved,
+      payoffDate,
+
+      // Payment Totals
+      totalPaid: result.totalPaid,
+      totalPrincipalPaid,
+      totalExtraPayments,
+      totalForgiveness: result.totalForgiveness,
+
+      // Lender Metrics
+      lenderProfit,
+      lenderROI,
+    };
+  }, [result, baseline, principal, monthlyPITI, interestSaved, monthsSaved, startYM]);
+
 
   useEffect(() => {
     if (encodedConfig && encodedConfig !== processedConfig) {
@@ -251,6 +292,7 @@ export default function MortgageCalculator() {
             currentInputs={currentInputs}
             hasUnsavedChanges={hasUnsavedChanges}
             onSaveChanges={handleSaveChanges}
+            loanSummary={loanSummary}
           />
         </Section>
       ),
@@ -315,6 +357,7 @@ export default function MortgageCalculator() {
                 currentInputs={currentInputs}
                 hasUnsavedChanges={hasUnsavedChanges}
                 onSaveChanges={handleSaveChanges}
+                loanSummary={loanSummary}
               />
             </Section>
           </div>

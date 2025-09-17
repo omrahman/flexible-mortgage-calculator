@@ -1,8 +1,8 @@
 // CSV export utilities
 
-import type { Row } from '../types';
+import type { BalanceChartRow } from '../types';
 
-export const csvFor = (rows: Row[]): string => {
+export const csvFor = (rows: BalanceChartRow[]): string => {
   const header = [
     "Month",
     "Date",
@@ -22,13 +22,13 @@ export const csvFor = (rows: Row[]): string => {
     lines.push(
       [
         r.idx,
-        r.date,
-        r.payment.toFixed(2),
+        r.paymentDate,
+        r.scheduledPayment.toFixed(2),
         r.interest.toFixed(2),
-        r.principal.toFixed(2),
-        r.extra.toFixed(2),
-        r.total.toFixed(2),
-        r.balance.toFixed(2),
+        r.scheduledPrincipal.toFixed(2),
+        r.extraPrincipal.toFixed(2),
+        r.actualPayment.toFixed(2),
+        r.loanBalance.toFixed(2),
         r.cumulativeInterest.toFixed(2),
         r.cumulativePrincipal.toFixed(2),
         r.recast ? "YES" : "",

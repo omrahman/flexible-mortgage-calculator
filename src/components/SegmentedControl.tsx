@@ -1,4 +1,4 @@
-import { RadioGroup } from '@headlessui/react';
+import { RadioGroup, Label, Radio } from '@headlessui/react';
 import clsx from 'clsx';
 
 interface SegmentedControlProps {
@@ -18,7 +18,7 @@ export const SegmentedControl: React.FC<SegmentedControlProps> = ({
     <RadioGroup value={value} onChange={onChange} className={clsx('flex flex-col sm:flex-row flex-wrap min-w-0 rounded-xl bg-gray-200 p-1', className)}>
       <div className="flex w-full justify-between space-x-1">
         {options.map((option) => (
-          <RadioGroup.Option
+          <Radio
             key={option.value}
             value={option.value}
             className={({ checked }) =>
@@ -30,10 +30,10 @@ export const SegmentedControl: React.FC<SegmentedControlProps> = ({
               )
             }
           >
-            <RadioGroup.Label as="span" className="w-full h-full flex items-center justify-center">
+            <Label as="span" className="w-full h-full flex items-center justify-center">
               {option.label}
-            </RadioGroup.Label>
-          </RadioGroup.Option>
+            </Label>
+          </Radio>
         ))}
       </div>
     </RadioGroup>
