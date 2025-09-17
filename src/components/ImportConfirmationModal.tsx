@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { SavedConfiguration, LoanConfigurationSchema } from '../types';
+import { LoanConfigurationSchema } from '../types';
 
 interface ImportConfirmationModalProps {
   isOpen: boolean;

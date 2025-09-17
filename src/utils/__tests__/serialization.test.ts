@@ -1,5 +1,5 @@
 import { exportToJSON, importFromJSON, serializeLoanConfiguration, deserializeLoanConfiguration } from '../serialization';
-import { CachedInputs, LoanConfigurationSchema } from '../../types';
+import { CachedInputs } from '../../types';
 import { SCHEMA_VERSION } from '../../constants';
 
 const mockInputs: CachedInputs = {

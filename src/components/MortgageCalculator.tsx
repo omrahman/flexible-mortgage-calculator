@@ -63,6 +63,7 @@ export default function MortgageCalculator() {
     handleUpdateExtra,
     clearAllInputs,
     loadConfiguration,
+    clearLoadedConfiguration,
     markChangesAsSaved,
     
     // State
@@ -163,6 +164,7 @@ export default function MortgageCalculator() {
 
           <SavedConfigurations
             onLoadConfiguration={handleLoadConfiguration}
+            onClearLoadedConfiguration={clearLoadedConfiguration}
             loadedConfigurationId={loadedConfigurationId}
             currentInputs={currentInputs}
             hasUnsavedChanges={hasUnsavedChanges}

@@ -18,7 +18,7 @@ export function useSavedConfigurations() {
     };
     
     setConfigurations(prev => [...prev, newConfig]);
-    return newConfig.id;
+    return newConfig;
   }, [setConfigurations]);
 
   const updateConfiguration = useCallback((id: string, name: string, description: string, inputs: CachedInputs) => {

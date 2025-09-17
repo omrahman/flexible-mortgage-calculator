@@ -7,6 +7,7 @@ import { deserializeLoanConfiguration } from '../utils/serialization';
 
 interface SavedConfigurationsProps {
   onLoadConfiguration: (config: SavedConfiguration) => void;
+  onClearLoadedConfiguration: () => void;
   loadedConfigurationId?: string | null;
   currentInputs: CachedInputs;
   hasUnsavedChanges?: boolean;
@@ -15,6 +16,7 @@ interface SavedConfigurationsProps {
 
 export function SavedConfigurations({ 
   onLoadConfiguration, 
+  onClearLoadedConfiguration, 
   loadedConfigurationId, 
   currentInputs, 
   hasUnsavedChanges = false, 
@@ -58,6 +60,9 @@ export function SavedConfigurations({
   const handleDelete = (id: string) => {
     if (window.confirm('Are you sure you want to delete this configuration?')) {
       deleteConfiguration(id);
+      if (id === loadedConfigurationId) {
+        onClearLoadedConfiguration();
+      }
     }
   };
 
@@ -73,7 +78,7 @@ export function SavedConfigurations({
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      const config = configurations.find(c => c.id === id);
+      const config = configurations.find((c: SavedConfiguration) => c.id === id);
       a.download = `mortgage-config-${config?.name.replace(/\s/g, '_') || id}.json`;
       document.body.appendChild(a);
       a.click();
@@ -113,7 +118,7 @@ export function SavedConfigurations({
   const handleConfirmImport = (name: string, description?: string) => {
     if (importedConfigData) {
       const inputsToSave = deserializeLoanConfiguration(importedConfigData);
-      saveConfiguration(name, description, inputsToSave);
+      saveConfiguration(name, description || '', inputsToSave);
       setIsImportModalOpen(false);
       setImportedConfigData(null);
       alert('Configuration imported and saved successfully!');
@@ -127,7 +132,10 @@ export function SavedConfigurations({
       setEditingConfig(null);
     } else {
       // Save new configuration
-      saveConfiguration(name, description || '', currentInputs);
+      const newConfig = saveConfiguration(name, description || '', currentInputs);
+      if (newConfig) {
+        onLoadConfiguration(newConfig);
+      }
     }
   };
 

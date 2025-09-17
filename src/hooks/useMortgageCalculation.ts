@@ -104,7 +104,10 @@ export const useMortgageCalculation = () => {
     );
   };
 
-  const clearAllInputs = () => clearCachedInputs();
+  const clearAllInputs = () => {
+    clearCachedInputs();
+    clearLoadedConfiguration();
+  };
 
   const loadConfiguration = (configInputs: CachedInputs, configId?: string) => {
     setCachedInputs(configInputs);
