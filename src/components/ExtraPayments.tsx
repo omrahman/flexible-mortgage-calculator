@@ -1,4 +1,4 @@
-import React, { useId, useState } from 'react';
+import React, { useId, useState, useEffect } from 'react';
 import { useInputField, useNumberField } from '../hooks';
 import { MonthInput } from './MonthInput';
 import { yearMonthToMonthNumber, monthNumberToYearMonth } from '../utils/calculations';
@@ -59,6 +59,12 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
     onUpdateExtra(extra.id, 'month', monthNumber);
   };
 
+  useEffect(() => {
+    if (extra.defaultOpen) {
+      onUpdateExtra(extra.id, 'defaultOpen', false);
+    }
+  }, [extra.defaultOpen, extra.id, onUpdateExtra]);
+
   // Amount field hook
   const amountField = useNumberField({
     initialValue: extra.amount,
@@ -81,7 +87,7 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
   return (
     <Accordion
       title={`Payment #${paymentIndex}`}
-      defaultOpen={paymentIndex === 1}
+      defaultOpen={extra.defaultOpen}
     >
       <div className="space-y-4 pt-2">
         {/* Payment Details */}

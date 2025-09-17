@@ -87,7 +87,8 @@ export const useMortgageCalculation = () => {
         isForgiveness: false,
         isRecurring: false,
         recurringQuantity: 1,
-        recurringFrequency: 'monthly'
+        recurringFrequency: 'monthly',
+        defaultOpen: true,
       },
     ]);
   };

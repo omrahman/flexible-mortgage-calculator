@@ -62,6 +62,7 @@ export interface ExtraItem {
   month: number;
   amount: number;
   monthInput?: MonthInput; // UI state for month input type and value
+  defaultOpen?: boolean;
   
   // Payment type
   isForgiveness?: boolean; // true for loan forgiveness, false for extra principal payment
