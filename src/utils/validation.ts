@@ -149,7 +149,7 @@ export function validateExtraItem(extra: ExtraItem, termMonths: number): Validat
   
   // Recurring payment validation
   if (extra.isRecurring) {
-    if (!Number.isFinite(extra.recurringQuantity) || (extra.recurringQuantity && extra.recurringQuantity < 1)) {
+    if (extra.recurringQuantity === undefined || !Number.isFinite(extra.recurringQuantity) || extra.recurringQuantity < 1) {
       errors.push('Recurring quantity must be at least 1');
     }
     

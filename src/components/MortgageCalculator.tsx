@@ -145,18 +145,20 @@ export default function MortgageCalculator() {
             onReset={clearAllInputs}
           />
 
-          <ExtraPayments
-            extras={extras}
-            termMonths={Math.round(Number(termYears) * 12)}
-            startYM={startYM}
-            autoRecast={autoRecast}
-            setAutoRecast={setAutoRecast}
-            recastMonthsText={recastMonthsText}
-            setRecastMonthsText={setRecastMonthsText}
-            onAddExtra={handleAddExtra}
-            onRemoveExtra={handleRemoveExtra}
-            onUpdateExtra={handleUpdateExtra}
-          />
+          {result.rows.length > 0 && (
+            <ExtraPayments
+              extras={extras}
+              termMonths={termMonths}
+              startYM={startYM}
+              onAddExtra={handleAddExtra}
+              onRemoveExtra={handleRemoveExtra}
+              onUpdateExtra={handleUpdateExtra}
+              autoRecast={autoRecast}
+              setAutoRecast={setAutoRecast}
+              recastMonthsText={recastMonthsText ?? ''}
+              setRecastMonthsText={setRecastMonthsText}
+            />
+          )}
 
           <SavedConfigurations
             onLoadConfiguration={handleLoadConfiguration}

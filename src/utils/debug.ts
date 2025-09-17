@@ -10,7 +10,7 @@ export interface DebugData {
     loan: {
       homePrice: string;
       downPayment: {
-        type: 'percentage' | 'dollar';
+        type: 'percentage' | 'amount';
         value: string;
       };
       principal: number;

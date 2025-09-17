@@ -88,13 +88,20 @@ export const buildSchedule = ({
     const date = addMonths(startYM, m - 1);
     const interest = round2(bal * r);
 
+    let scheduled = payment;
+    // For the final month of the original term, adjust the payment to exactly pay off the loan
+    if (m === termMonths) {
+      scheduled = bal + interest;
+    }
+
     // Scheduled payment cannot exceed payoff amount (bal + interest)
-    const scheduled = Math.min(payment, round2(bal + interest));
+    scheduled = Math.min(scheduled, round2(bal + interest));
     let principalPart = round2(scheduled - interest);
     if (principalPart < 0) principalPart = 0; // paranoia guard
 
     const plannedExtra = round2(extras[m] || 0);
-    const maxExtra = round2(bal + interest); // Maximum extra payment is the entire remaining balance + interest
+    const principalPartAfterScheduled = bal - principalPart;
+    const maxExtra = round2(principalPartAfterScheduled);
     const extra = Math.max(0, Math.min(plannedExtra, maxExtra));
     
     const plannedForgiveness = round2(forgiveness[m] || 0);
@@ -150,38 +157,14 @@ export const buildSchedule = ({
       newPayment,
     });
 
-    // If we've reached the contractual maturity but tiny balance remains due to rounding,
-    // just zero out the balance to avoid adding extra months for small rounding errors
-    if (m === termMonths && bal > MIN_BALANCE_THRESHOLD) {
-      // For very small balances at maturity, just zero them out
-      if (bal < 1.0) {
+    // If we've reached the contractual maturity but a balance remains due to rounding,
+    // we need to handle it gracefully.
+    if (m === termMonths && bal > MIN_BALANCE_THRESHOLD && bal < 1.0) {
+      // This block is now largely redundant but can be kept as a safeguard for extreme rounding cases
+      const lastRow = rows[m - 1];
+      if (lastRow) {
+        lastRow.balance = 0;
         bal = 0;
-        break;
-      } else {
-        // For larger balances, add a payoff month
-        const payoffInterest = round2(bal * r);
-        const payoffTotal = round2(bal + payoffInterest);
-        const payoffPrincipal = round2(payoffTotal - payoffInterest);
-        totalInterest = round2(totalInterest + payoffInterest);
-        totalPaid = round2(totalPaid + payoffTotal);
-        cumulativeInterest = round2(cumulativeInterest + payoffInterest);
-        cumulativePrincipal = round2(cumulativePrincipal + payoffPrincipal);
-        bal = 0;
-        rows.push({
-          idx: m + 1,
-          date: addMonths(startYM, m),
-          payment: payoffTotal,
-          interest: payoffInterest,
-          principal: payoffPrincipal,
-          extra: 0,
-          forgiveness: 0,
-          total: payoffTotal,
-          balance: 0,
-          cumulativeInterest,
-          cumulativePrincipal,
-          cumulativeForgiveness,
-        });
-        break;
       }
     }
   }

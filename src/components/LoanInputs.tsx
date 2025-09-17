@@ -129,7 +129,7 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
     
     setDownPayment({
       ...downPayment,
-      type: type as 'percentage' | 'dollar',
+      type: type as 'percentage' | 'amount',
       value: newValue,
     });
   };
@@ -170,7 +170,7 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
             <SegmentedControl
               options={[
                 { value: 'percentage', label: 'Percentage' },
-                { value: 'dollar', label: 'Dollar Amount' },
+                { value: 'amount', label: 'Dollar Amount' },
               ]}
               value={downPayment.type}
               onChange={handleDownPaymentTypeChange}

@@ -1,5 +1,7 @@
 // Core data structures for mortgage calculations
 
+export type ColorStops = [string, string];
+
 export interface ExtraMap {
   [monthIndex: number]: number; // 1-based month index -> extra amount
 }
@@ -9,6 +11,51 @@ export interface ForgivenessMap {
 }
 
 export type RecurringFrequency = 'monthly' | 'annually';
+export type ScheduleSegment = { start: number; payment: number };
+
+// Manually define the return type of the useMortgageCalculation hook to avoid circular dependencies
+export type MortgageHook = {
+  homePrice: string;
+  setHomePrice: (value: string) => void;
+  downPayment: DownPaymentInput;
+  setDownPayment: (value: DownPaymentInput) => void;
+  principal: number;
+  rate: string;
+  setRate: (value: string) => void;
+  termYears: string;
+  setTermYears: (value: string) => void;
+  startYM: string;
+  setStartYM: (value: string) => void;
+  propertyTaxAnnual: string;
+  setPropertyTaxAnnual: (value: string) => void;
+  insuranceAnnual: string;
+  setInsuranceAnnual: (value:string) => void;
+  extras: ExtraItem[];
+  autoRecast: boolean;
+  setAutoRecast: (value: boolean) => void;
+  recastMonthsText: string;
+  setRecastMonthsText: (value: string) => void;
+  showAll: boolean;
+  setShowAll: (value: boolean) => void;
+  termMonths: number;
+  monthlyPITI: { propertyTax: number; insurance: number; total: number };
+  result: ScheduleResult;
+  baseline: ScheduleResult;
+  interestSaved: number;
+  monthsSaved: number;
+  cachedInputs: CachedInputs;
+  params: ScheduleParams;
+  handleAddExtra: () => void;
+  handleRemoveExtra: (id: string) => void;
+  handleUpdateExtra: (id: string, fieldOrUpdates: keyof ExtraItem | Partial<ExtraItem>, value?: number | boolean | RecurringFrequency) => void;
+  clearAllInputs: () => void;
+  loadConfiguration: (configInputs: CachedInputs, configId?: string) => void;
+  clearLoadedConfiguration: () => void;
+  markChangesAsSaved: () => void;
+  loadedConfigurationId: string | null;
+  hasUnsavedChanges: boolean;
+};
+
 
 export interface ExtraItem {
   id: string;
@@ -88,7 +135,7 @@ export interface TableCellProps {
 }
 
 // Down payment input types
-export type DownPaymentType = 'percentage' | 'dollar';
+export type DownPaymentType = 'percentage' | 'amount';
 
 export interface DownPaymentInput {
   type: DownPaymentType;
