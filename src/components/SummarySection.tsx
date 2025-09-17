@@ -37,12 +37,10 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
   // Calculate total principal paid
   const totalPrincipalPaid = result.rows.reduce((sum, row) => sum + row.principal + row.extra, 0);
   
-  // Calculate Average Annual Return for the lender
-  let averageAnnualReturn = 0;
-  if (principal > 0 && result.payoffMonth > 0) {
-    const yearsToPayoff = result.payoffMonth / 12;
-    // Simple average annual return: (Total Interest / Principal) / Years
-    averageAnnualReturn = (result.totalInterest / principal) / yearsToPayoff * 100;
+  // Calculate Lender's Return on Investment (ROI)
+  let lendersReturnOnInvestment = 0;
+  if (principal > 0) {
+    lendersReturnOnInvestment = (lenderProfit / principal) * 100;
   }
 
   // Debug functionality
@@ -83,7 +81,7 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
     });
     console.log('Lender Info:', {
       'Lender Profit': fmtUSD(lenderProfit),
-      'Lender Return': `${averageAnnualReturn.toFixed(2)}%`,
+      'Lender ROI': `${lendersReturnOnInvestment.toFixed(2)}%`,
     });
     console.groupEnd();
     
@@ -123,7 +121,7 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
       },
       lender: {
         profit: fmtUSD(lenderProfit),
-        annualizedReturn: `${averageAnnualReturn.toFixed(2)}%`,
+        totalROI: `${lendersReturnOnInvestment.toFixed(2)}%`,
       },
       extraPayments: debugData.inputs.extraPayments.length > 0 ? debugData.inputs.extraPayments : 'None',
     };
@@ -221,9 +219,9 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
           tooltip="Lender's net profit = Total Interest Paid - Total Forgiveness. This represents the lender's total earnings after accounting for any forgiven principal, which is a direct loss."
         />
         <SummaryCard 
-          label="Lender's Return (Avg. Annual)" 
-          value={`${averageAnnualReturn.toFixed(2)}%`} 
-          tooltip="Average annual return on the lender's investment, calculated as (Total Interest / Principal) / (Years to Payoff). This is a simplified measure of the lender's profitability on an annualized basis."
+          label="Lender's ROI (Total)" 
+          value={`${lendersReturnOnInvestment.toFixed(2)}%`} 
+          tooltip="Lender's total Return on Investment, calculated as (Lender Profit / Principal). This shows the total net profit as a percentage of the original loan amount over the entire loan term."
         />
       </div>
 

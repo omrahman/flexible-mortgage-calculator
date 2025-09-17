@@ -156,30 +156,16 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
               <div>
                 <label className="text-xs text-gray-500 block mb-2">Payment frequency</label>
-                <div className="flex space-x-4">
-                  <label className="flex items-center space-x-2 text-sm">
-                    <input
-                      type="radio"
-                      name={`frequency-${groupId}`}
-                      value="monthly"
-                      checked={extra.recurringFrequency === 'monthly'}
-                      onChange={() => onUpdateExtra(extra.id, 'recurringFrequency', 'monthly')}
-                      className="h-4 w-4 text-black border-gray-300 focus:ring-black"
-                    />
-                    <span>Monthly</span>
-                  </label>
-                  <label className="flex items-center space-x-2 text-sm">
-                    <input
-                      type="radio"
-                      name={`frequency-${groupId}`}
-                      value="annually"
-                      checked={extra.recurringFrequency === 'annually'}
-                      onChange={() => onUpdateExtra(extra.id, 'recurringFrequency', 'annually')}
-                      className="h-4 w-4 text-black border-gray-300 focus:ring-black"
-                    />
-                    <span>Annually</span>
-                  </label>
-                </div>
+                <SegmentedControl
+                  options={[
+                    { value: 'monthly', label: 'Monthly' },
+                    { value: 'annually', label: 'Annual' },
+                  ]}
+                  value={extra.recurringFrequency || 'monthly'}
+                  onChange={(value) => {
+                    onUpdateExtra(extra.id, 'recurringFrequency', value as RecurringFrequency);
+                  }}
+                />
               </div>
               <div>
                 <label htmlFor={`quantity-${groupId}`} className="text-xs text-gray-500 block mb-2">Number of payments</label>

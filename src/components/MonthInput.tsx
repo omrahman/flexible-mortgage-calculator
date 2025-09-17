@@ -77,7 +77,7 @@ export const MonthInput: React.FC<MonthInputProps> = ({
     <div className={`space-y-3 ${className}`}>
       <SegmentedControl
         options={[
-          { value: 'yearmonth', label: 'Year/Month' },
+          { value: 'yearmonth', label: 'Date' },
           { value: 'number', label: 'Month #' },
         ]}
         value={monthInput.type}
