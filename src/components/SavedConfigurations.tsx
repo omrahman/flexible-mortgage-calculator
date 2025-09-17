@@ -25,6 +25,7 @@ import {
 import {
   fmtUSD
 } from '../utils/formatters';
+import { ComparisonModal } from './ComparisonModal';
 
 
 interface SavedConfigurationsProps {
@@ -61,6 +62,8 @@ export function SavedConfigurations({
   const [editingConfig, setEditingConfig] = useState<SavedConfiguration | null>(null);
   const [importedConfigData, setImportedConfigData] = useState<LoanConfigurationSchema | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
 
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -151,6 +154,18 @@ export function SavedConfigurations({
     }
   };
 
+  const handleToggleSelection = (id: string) => {
+    setSelectedIds(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  };
+
   const handleConfirmImport = (name: string, description ? : string) => {
     if (importedConfigData) {
       const inputsToSave = deserializeLoanConfiguration(importedConfigData);
@@ -230,6 +245,16 @@ export function SavedConfigurations({
             accept="application/json"
           />
         </div>
+        {selectedIds.size > 1 && (
+          <div className="mt-2">
+            <button
+              onClick={() => setIsCompareModalOpen(true)}
+              className="w-full px-3 py-1.5 text-sm bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+            >
+              Compare Scenarios ({selectedIds.size})
+            </button>
+          </div>
+        )}
       </div>
 
       {configurations.length === 0 ? (
@@ -239,67 +264,43 @@ export function SavedConfigurations({
           {configurations.map((config: SavedConfiguration) => (
             <div
               key={config.id}
-              className={`flex items-center justify-between p-3 border rounded-md ${
+              className={`p-3 border rounded-md transition-colors ${
                 loadedConfigurationId === config.id
                   ? hasUnsavedChanges
                     ? 'border-orange-500 bg-orange-50'
                     : 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-gray-300'
+                  : 'border-gray-200 bg-white hover:border-gray-300'
               }`}
             >
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 break-words flex items-center gap-2">
-                  <span className="truncate">{config.name}</span>
-                  {loadedConfigurationId === config.id && hasUnsavedChanges && (
-                    <span className="text-orange-600 text-xs font-bold flex-shrink-0">●</span>
-                  )}
-                </p>
-                {config.description && (
-                  <p className="text-xs text-gray-600 break-words leading-relaxed mt-1">
-                    {config.description}
-                  </p>
-                )}
-                <p className="text-xs text-gray-500 break-words">
-                  ${config.inputs.homePrice} • {config.inputs.rate}% • {config.inputs.termYears} years
-                </p>
-                <p className="text-xs text-gray-400">
-                  {new Date(config.createdAt).toLocaleDateString()}
-                </p>
-
-                {config.summary && (
-                  <div className="mt-3 pt-3 border-t border-gray-200">
-                    <dl className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-2 text-xs">
-                      {/* Core Loan & Payment Info */}
-                      <SummaryItem label="Loan Amount" value={fmtUSD(config.summary.loanAmount)} />
-                      <SummaryItem label="Original P&I" value={fmtUSD(config.summary.originalPI)} />
-                      <SummaryItem label="Current P&I" value={fmtUSD(config.summary.currentPI)} />
-                      <SummaryItem label="Original PITI" value={fmtUSD(config.summary.originalPITI)} />
-                      <SummaryItem label="Current PITI" value={fmtUSD(config.summary.currentPITI)} />
-                      <SummaryItem label="Payoff Date" value={config.summary.payoffDate} />
-                      
-                      {/* Savings */}
-                      <SummaryItem label="Total Interest (Baseline)" value={fmtUSD(config.summary.totalInterestBaseline)} />
-                      <SummaryItem label="Total Interest (Current)" value={fmtUSD(config.summary.totalInterestCurrent)} />
-                      <SummaryItem label="Interest Saved" value={fmtUSD(config.summary.interestSaved)} highlight />
-                      <SummaryItem label="Months Saved" value={config.summary.monthsSaved.toString()} highlight />
-                      
-                      {/* Payment Totals */}
-                      <SummaryItem label="Total Paid" value={fmtUSD(config.summary.totalPaid)} />
-                      <SummaryItem label="Total Principal Paid" value={fmtUSD(config.summary.totalPrincipalPaid)} />
-                      <SummaryItem label="Total Extra Payments" value={fmtUSD(config.summary.totalExtraPayments)} highlight />
-                      <SummaryItem label="Total Forgiveness" value={fmtUSD(config.summary.totalForgiveness)} highlight />
-
-                      {/* Lender Metrics */}
-                      <SummaryItem label="Lender's Profit" value={fmtUSD(config.summary.lenderProfit)} />
-                      <SummaryItem label="Lender's ROI" value={`${typeof config.summary.lenderROI === 'number' ? config.summary.lenderROI.toFixed(2) : 'N/A'}%`} />
-                    </dl>
+              <div className="flex items-start justify-between">
+                <div className="flex items-start flex-1 min-w-0">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(config.id)}
+                    onChange={() => handleToggleSelection(config.id)}
+                    className="mr-3 mt-0.5 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 break-words flex items-center gap-2">
+                      <span className="truncate">{config.name}</span>
+                      {loadedConfigurationId === config.id && hasUnsavedChanges && (
+                        <span className="text-orange-600 text-xs font-bold flex-shrink-0">●</span>
+                      )}
+                    </p>
+                    {config.description && (
+                      <p className="text-xs text-gray-600 break-words leading-relaxed mt-1">
+                        {config.description}
+                      </p>
+                    )}
+                    <p className="text-xs text-gray-400">
+                      {new Date(config.createdAt).toLocaleDateString()}
+                    </p>
                   </div>
-                )}
-              </div>
-              
-              <div className="relative ml-3"
-                ref={openMenuId === config.id ? menuRef : null}>
-                <button
+                </div>
+
+                <div className="relative ml-3"
+                  ref={openMenuId === config.id ? menuRef : null}>
+                  <button
                   onClick={() => setOpenMenuId(openMenuId === config.id ? null : config.id)}
                   className="p-2 rounded-full hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                   aria-label="Actions"
@@ -358,6 +359,36 @@ export function SavedConfigurations({
                 )}
               </div>
             </div>
+            {config.summary && (
+                  <div className="mt-3 pt-3 border-t border-gray-200">
+                    <dl className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-2 text-xs">
+                      {/* Core Loan & Payment Info */}
+                      <SummaryItem label="Loan Amount" value={fmtUSD(config.summary.loanAmount)} />
+                      <SummaryItem label="Original P&I" value={fmtUSD(config.summary.originalPI)} />
+                      <SummaryItem label="Current P&I" value={fmtUSD(config.summary.currentPI)} />
+                      <SummaryItem label="Original PITI" value={fmtUSD(config.summary.originalPITI)} />
+                      <SummaryItem label="Current PITI" value={fmtUSD(config.summary.currentPITI)} />
+                      <SummaryItem label="Payoff Date" value={config.summary.payoffDate} />
+                      
+                      {/* Savings */}
+                      <SummaryItem label="Total Interest (Baseline)" value={fmtUSD(config.summary.totalInterestBaseline)} />
+                      <SummaryItem label="Total Interest (Current)" value={fmtUSD(config.summary.totalInterestCurrent)} />
+                      <SummaryItem label="Interest Saved" value={fmtUSD(config.summary.interestSaved)} highlight />
+                      <SummaryItem label="Months Saved" value={config.summary.monthsSaved.toString()} highlight />
+                      
+                      {/* Payment Totals */}
+                      <SummaryItem label="Total Paid" value={fmtUSD(config.summary.totalPaid)} />
+                      <SummaryItem label="Total Principal Paid" value={fmtUSD(config.summary.totalPrincipalPaid)} />
+                      <SummaryItem label="Total Extra Payments" value={fmtUSD(config.summary.totalExtraPayments)} highlight />
+                      <SummaryItem label="Total Forgiveness" value={fmtUSD(config.summary.totalForgiveness)} highlight />
+
+                      {/* Lender Metrics */}
+                      <SummaryItem label="Lender's Profit" value={fmtUSD(config.summary.lenderProfit)} />
+                      <SummaryItem label="Lender's ROI" value={`${typeof config.summary.lenderROI === 'number' ? config.summary.lenderROI.toFixed(2) : 'N/A'}%`} />
+                    </dl>
+                  </div>
+                )}
+            </div>
           ))}
         </div>
       )}
@@ -375,6 +406,12 @@ export function SavedConfigurations({
         onClose={() => setIsImportModalOpen(false)}
         onConfirm={handleConfirmImport}
         configData={importedConfigData}
+      />
+
+      <ComparisonModal
+        isOpen={isCompareModalOpen}
+        onClose={() => setIsCompareModalOpen(false)}
+        configurations={configurations.filter(c => selectedIds.has(c.id))}
       />
     </div>
   );
