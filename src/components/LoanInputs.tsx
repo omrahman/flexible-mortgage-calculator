@@ -2,6 +2,7 @@ import React from 'react';
 import { SegmentedControl } from './SegmentedControl';
 import { useInputField } from '../hooks';
 import type { DownPaymentInput } from '../types';
+import { convertDownPayment } from '../logic/downPaymentLogic';
 
 interface LoanInputsProps {
   homePrice: string;
@@ -18,6 +19,7 @@ interface LoanInputsProps {
   setPropertyTaxAnnual: (value: string) => void;
   insuranceAnnual: string;
   setInsuranceAnnual: (value: string) => void;
+  loanAmount: number;
   onReset?: () => void;
 }
 
@@ -36,6 +38,7 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
   setPropertyTaxAnnual,
   insuranceAnnual,
   setInsuranceAnnual,
+  loanAmount,
   onReset,
 }) => {
   // Use the input field hook for all text inputs
@@ -74,20 +77,6 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
     validate: (value) => value === '' || (!isNaN(Number(value)) && Number(value) >= 0)
   });
 
-  // Calculate loan amount based on home price and down payment
-  const calculateLoanAmount = () => {
-    const homePriceNum = parseFloat(homePrice) || 0;
-    const downPaymentValue = parseFloat(downPayment.value) || 0;
-    
-    if (downPayment.type === 'percentage') {
-      return homePriceNum * (1 - downPaymentValue / 100);
-    } else {
-      return Math.max(0, homePriceNum - downPaymentValue);
-    }
-  };
-
-  const loanAmount = calculateLoanAmount();
-
   // Down payment field hook
   const downPaymentField = useInputField({
     initialValue: downPayment.value,
@@ -97,41 +86,13 @@ export const LoanInputs: React.FC<LoanInputsProps> = ({
   });
 
   const handleDownPaymentTypeChange = (type: string) => {
-    // Don't convert if we're already in the target type
-    if (type === downPayment.type) {
-      return;
-    }
-    
-    const homePriceNum = parseFloat(homePrice) || 0;
-    const currentValue = parseFloat(downPayment.value) || 0;
-    
-    let newValue: string;
-    
-    if (type === 'percentage') {
-      // Converting from dollar amount to percentage
-      if (homePriceNum > 0 && currentValue > 0) {
-        const percentage = (currentValue / homePriceNum) * 100;
-        newValue = percentage > 0 ? percentage.toFixed(1) : '0';
-      } else {
-        // Only set default if we're not in the middle of typing
-        newValue = homePriceField.isFocused ? '0' : '20';
-      }
-    } else {
-      // Converting from percentage to dollar amount
-      if (homePriceNum > 0 && currentValue > 0) {
-        const dollarAmount = homePriceNum * (currentValue / 100);
-        newValue = Math.round(dollarAmount).toString();
-      } else {
-        // Only set default if we're not in the middle of typing
-        newValue = homePriceField.isFocused ? '0' : '200000';
-      }
-    }
-    
-    setDownPayment({
-      ...downPayment,
-      type: type as 'percentage' | 'amount',
-      value: newValue,
-    });
+    const newDownPayment = convertDownPayment(
+      downPayment,
+      type as 'percentage' | 'amount',
+      homePrice,
+      homePriceField.isFocused
+    );
+    setDownPayment(newDownPayment);
   };
   return (
     <div className="rounded-2xl bg-white p-3 sm:p-4 lg:p-5 shadow">

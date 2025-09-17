@@ -142,6 +142,7 @@ export default function MortgageCalculator() {
             setPropertyTaxAnnual={setPropertyTaxAnnual}
             insuranceAnnual={insuranceAnnual}
             setInsuranceAnnual={setInsuranceAnnual}
+            loanAmount={principal}
             onReset={clearAllInputs}
           />
 

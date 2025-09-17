@@ -28,10 +28,8 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
   termMonths,
   scheduleParams,
 }) => {
-  // Calculate lender's profit and annualized return percentage
-  // Lender's profit = Total Paid - Principal
-  // This represents the total amount the lender earns above the original loan amount
-  const lenderProfit = result.totalPaid - principal;
+  // Calculate lender's profit using the explicit formula: Total Interest - Total Forgiveness
+  const lenderProfit = result.totalInterest - result.totalForgiveness;
   
   // Calculate total extra payments (not forgiveness payments)
   const totalExtraPayments = result.rows.reduce((sum, row) => sum + row.extra, 0);
@@ -218,7 +216,7 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
         <SummaryCard 
           label="Lender's Profit" 
           value={fmtUSD(lenderProfit)} 
-          tooltip="Lender's cash profit = Total Paid - Principal. This is the total amount the lender earns in cash payments above the original loan amount. Does not account for forgiveness amounts that reduce the total amount owed."
+          tooltip="Lender's net profit = Total Interest Paid - Total Forgiveness. This represents the lender's total earnings after accounting for any forgiven principal, which is a direct loss."
         />
         <SummaryCard 
           label="Lender's Return (Avg. Annual)" 
