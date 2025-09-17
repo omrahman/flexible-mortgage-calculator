@@ -1,4 +1,5 @@
-import React from 'react';
+import { RadioGroup } from '@headlessui/react';
+import clsx from 'clsx';
 
 interface SegmentedControlProps {
   options: { value: string; label: string }[];
@@ -14,22 +15,27 @@ export const SegmentedControl: React.FC<SegmentedControlProps> = ({
   className = '',
 }) => {
   return (
-    <div className={`flex flex-col sm:flex-row flex-wrap min-w-0 rounded-lg border border-gray-300 bg-gray-50 p-1 ${className}`}>
-      {options.map((option, index) => (
-        <React.Fragment key={option.value}>
-          <button
-            onClick={() => onChange(option.value)}
-            className={`flex-1 min-w-0 px-3 py-2 sm:py-1 text-sm font-medium rounded-md transition-all duration-200 min-h-[44px] sm:min-h-0 text-center whitespace-normal ${
-              value === option.value
-                ? 'bg-white text-gray-900 shadow-sm border border-gray-200'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-            }`}
+    <RadioGroup value={value} onChange={onChange} className={clsx('flex flex-col sm:flex-row flex-wrap min-w-0 rounded-xl bg-gray-200 p-1', className)}>
+      <div className="flex w-full justify-between space-x-1">
+        {options.map((option) => (
+          <RadioGroup.Option
+            key={option.value}
+            value={option.value}
+            className={({ checked }) =>
+              clsx(
+                'flex-1 min-w-0 px-3 py-2 sm:py-1 text-sm font-medium rounded-lg transition-all duration-200 min-h-[44px] sm:min-h-0 text-center whitespace-normal cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75',
+                checked
+                  ? 'bg-white text-gray-900 shadow'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/[0.6]'
+              )
+            }
           >
-            {option.label}
-          </button>
-          {index < options.length - 1 && <div className="w-full sm:w-0 h-1 sm:h-0" />}
-        </React.Fragment>
-      ))}
-    </div>
+            <RadioGroup.Label as="span" className="w-full h-full flex items-center justify-center">
+              {option.label}
+            </RadioGroup.Label>
+          </RadioGroup.Option>
+        ))}
+      </div>
+    </RadioGroup>
   );
 };

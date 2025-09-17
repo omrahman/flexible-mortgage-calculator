@@ -14,17 +14,17 @@ interface TabsProps {
 export function Tabs({ tabs }: TabsProps) {
   return (
     <Tab.Group as="div" className="w-full">
-      <Tab.List className="flex space-x-1 rounded-xl bg-blue-900/20 p-1">
+      <Tab.List className="flex space-x-1 rounded-xl bg-gray-200 p-1">
         {tabs.map((tab) => (
           <Tab as={Fragment} key={tab.label}>
             {({ selected }) => (
               <button
                 className={clsx(
-                  'w-full rounded-lg py-2.5 text-sm font-medium leading-5 text-blue-700',
-                  'ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2',
+                  'w-full rounded-lg py-2.5 text-sm font-medium leading-5',
+                  'focus:outline-none focus:ring-2 ring-offset-2 ring-offset-gray-100 ring-white ring-opacity-60',
                   selected
-                    ? 'bg-white shadow'
-                    : 'text-blue-100 hover:bg-white/[0.12] hover:text-white'
+                    ? 'bg-white text-gray-900 shadow'
+                    : 'text-gray-600 hover:bg-white/[0.6] hover:text-gray-800'
                 )}
               >
                 {tab.label}
@@ -37,7 +37,7 @@ export function Tabs({ tabs }: TabsProps) {
         {tabs.map((tab) => (
           <Tab.Panel
             key={tab.label}
-            className="rounded-xl bg-white p-3 ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2"
+            className="rounded-xl bg-white p-3"
           >
             {tab.content}
           </Tab.Panel>

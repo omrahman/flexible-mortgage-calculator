@@ -7,30 +7,14 @@ export const DEFAULT_TERM_YEARS = "30";
 export const DEFAULT_PROPERTY_TAX_ANNUAL = "12000"; // $12,000 annual property tax
 export const DEFAULT_INSURANCE_ANNUAL = "2400"; // $2,400 annual insurance
 export const DEFAULT_AUTORECAST = true;
-export const DEFAULT_EXTRA_PAYMENTS = [
-  { 
-    id: 'default-1', 
-    month: 6, 
-    amount: 150000,
-    isForgiveness: false
-  },
-  { 
-    id: 'default-2', 
-    month: 12, 
-    amount: 5000,
-    isForgiveness: false,
-    isRecurring: true,
-    recurringQuantity: 12,
-    recurringFrequency: 'monthly' as const
-  },
-];
+export const DEFAULT_EXTRA_PAYMENTS = [];
 
 export const ROUNDING_PRECISION = 2;
 export const MAX_ITERATIONS = 600; // Safety guard for calculation loops
 export const MIN_BALANCE_THRESHOLD = 0.001; // Minimum balance to consider paid off
 export const PAYMENT_DIFFERENCE_THRESHOLD = 0.01; // Minimum payment change to trigger recast
 
-export const CSV_FILENAME = "amortization_recast_schedule.csv";
+export const CSV_FILENAME = "amortization_schedule.csv";
 export const CSV_MIME_TYPE = "text/csv";
 
 export const CHART_HEIGHT = 288; // 72 * 4 (h-72 in Tailwind)

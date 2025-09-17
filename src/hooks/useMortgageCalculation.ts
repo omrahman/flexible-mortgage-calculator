@@ -57,7 +57,7 @@ export const useMortgageCalculation = () => {
     baseline,
     interestSaved,
     monthsSaved,
-    params,
+    scheduleParams,
   } = useMemo(() => getCalculationResults(cachedInputs), [cachedInputs]);
 
   // Individual setters that update the cached inputs
@@ -162,7 +162,7 @@ export const useMortgageCalculation = () => {
     interestSaved,
     monthsSaved,
     cachedInputs,
-    params,
+    params: scheduleParams,
     handleAddExtra,
     handleRemoveExtra,
     handleUpdateExtra,

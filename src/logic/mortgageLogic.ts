@@ -66,7 +66,7 @@ export const getCalculationResults = (inputs: CachedInputs) => {
   const { extrasMap, forgivenessMap } = mapExtras(inputs.extras, termMonths);
   const recastSet = new Set(parseMonthInput(inputs.recastMonthsText ?? ''));
 
-  const params: ScheduleParams = {
+  const scheduleParams: ScheduleParams = {
     principal,
     annualRatePct: Number(inputs.rate) || 0,
     termMonths,
@@ -77,10 +77,10 @@ export const getCalculationResults = (inputs: CachedInputs) => {
     autoRecastOnExtra: inputs.autoRecast,
   };
 
-  const result = buildSchedule(params);
+  const result = buildSchedule(scheduleParams);
 
   const baselineParams: ScheduleParams = {
-    ...params,
+    ...scheduleParams,
     extras: {},
     forgiveness: {},
     recastMonths: new Set(),
@@ -100,6 +100,6 @@ export const getCalculationResults = (inputs: CachedInputs) => {
     baseline,
     interestSaved,
     monthsSaved,
-    params,
+    scheduleParams,
   };
 };
