@@ -3,6 +3,7 @@ import { useInputField, useNumberField } from '../hooks';
 import { MonthInput } from './MonthInput';
 import { yearMonthToMonthNumber, monthNumberToYearMonth } from '../utils/calculations';
 import type { ExtraItem, RecurringFrequency, MonthInput as MonthInputType } from '../types';
+import { SegmentedControl } from './SegmentedControl';
 
 interface ExtraPaymentsProps {
   extras: ExtraItem[];
@@ -23,9 +24,10 @@ interface ExtraPaymentItemProps {
   startYM: string;
   onUpdateExtra: (id: string, fieldOrUpdates: keyof ExtraItem | Partial<ExtraItem>, value?: number | boolean | RecurringFrequency) => void;
   onRemoveExtra: (id: string) => void;
+  paymentIndex: number;
 }
 
-const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, startYM, onUpdateExtra, onRemoveExtra }) => {
+const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, startYM, onUpdateExtra, onRemoveExtra, paymentIndex }) => {
   // Initialize monthInput state - use existing or create default
   const [monthInput, setMonthInput] = useState<MonthInputType>(() => 
     extra.monthInput || {
@@ -75,144 +77,139 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
   });
 
   return (
-    <div className="border rounded-xl p-3 sm:p-4 space-y-3">
-       <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-3">
-         <div className="min-w-0">
-           <span className="text-xs text-gray-500 block mb-2">Start</span>
-           <MonthInput
-             monthInput={monthInput}
-             setMonthInput={handleMonthInputChange}
-             startYM={startYM}
-             termMonths={termMonths}
-           />
-         </div>
-         <div className="min-w-0">
-           <span className="text-xs text-gray-500 block mb-2">Amount</span>
-           <input
-             className="w-full rounded-xl border p-2 text-sm sm:text-base"
-             type="tel"
-             inputMode="numeric"
-             pattern="[0-9]*"
-             min={0}
-             step="100"
-             value={amountField.value}
-             onChange={(e) => amountField.onChange(e.target.value)}
-             onFocus={amountField.onFocus}
-             onBlur={amountField.onBlur}
-           />
-         </div>
-       </div>
-      
-      {/* Payment Type */}
-      <div className="space-y-3">
-        <div className="space-y-2">
-          <span className="text-sm font-medium text-gray-700">Payment Type:</span>
-          <div className="flex gap-4">
-            <label className="flex items-center gap-2">
-              <input
-                type="radio"
-                name={`payment-type-${extra.id}`}
-                checked={!extra.isForgiveness}
-                onChange={() => {
-                  onUpdateExtra(extra.id, 'isForgiveness', false);
-                }}
-              />
-              <span className="text-sm">Extra Principal Payment</span>
-            </label>
-            <label className="flex items-center gap-2">
-              <input
-                type="radio"
-                name={`payment-type-${extra.id}`}
-                checked={Boolean(extra.isForgiveness)}
-                onChange={() => {
-                  onUpdateExtra(extra.id, 'isForgiveness', true);
-                }}
-              />
-              <span className="text-sm">Loan Forgiveness</span>
-            </label>
-          </div>
-        </div>
+    <div className="rounded-xl border border-gray-200 p-4 space-y-3 bg-gray-50/50">
+      <div className="flex justify-between items-center">
+        <h3 className="font-semibold text-gray-800">Payment #{paymentIndex}</h3>
+        <button
+          className="text-red-500 bg-red-100 hover:bg-red-200 rounded-full p-1.5 -mr-1.5 -mt-1.5"
+          onClick={() => onRemoveExtra(extra.id)}
+          aria-label="Remove payment"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+          </svg>
+        </button>
       </div>
-      
-      {/* Recurring Payment Options */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={Boolean(extra.isRecurring)}
-              onChange={(ev) => {
-                const isChecked = ev.target.checked;
-                if (isChecked) {
-                  onUpdateExtra(extra.id, 'isRecurring', true);
-                } else {
-                  // Reset all recurring fields when unchecked in a single update
-                  onUpdateExtra(extra.id, {
-                    isRecurring: false,
-                    recurringQuantity: 1,
-                    recurringFrequency: 'monthly'
-                  });
-                }
-              }}
+      <div className="space-y-4 pt-2">
+        {/* Payment Details */}
+        <fieldset className="space-y-3">
+          <legend className="text-sm font-medium text-gray-600">Payment Details</legend>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label htmlFor={`amount-${extra.id}`} className="text-xs text-gray-500 block mb-2">Amount</label>
+              <input
+                id={`amount-${extra.id}`}
+                className="w-full rounded-xl border p-2 text-sm sm:text-base"
+                type="tel"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                min={0}
+                step="100"
+                value={amountField.value}
+                onChange={(e) => amountField.onChange(e.target.value)}
+                onFocus={amountField.onFocus}
+                onBlur={amountField.onBlur}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs text-gray-500 block mb-2">Payment Type</label>
+              <div className="flex flex-col space-y-2">
+                <label className="flex items-center space-x-2 text-sm">
+                  <input
+                    type="radio"
+                    name={`type-${extra.id}`}
+                    value="payment"
+                    checked={!extra.isForgiveness}
+                    onChange={() => onUpdateExtra(extra.id, 'isForgiveness', false)}
+                    className="h-4 w-4 text-black border-gray-300 focus:ring-black"
+                  />
+                  <span>Extra Principal Payment</span>
+                </label>
+                <label className="flex items-center space-x-2 text-sm">
+                  <input
+                    type="radio"
+                    name={`type-${extra.id}`}
+                    value="forgiveness"
+                    checked={!!extra.isForgiveness}
+                    onChange={() => onUpdateExtra(extra.id, 'isForgiveness', true)}
+                    className="h-4 w-4 text-black border-gray-300 focus:ring-black"
+                  />
+                  <span>Loan Forgiveness</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        {/* Payment Schedule */}
+        <fieldset className="space-y-3">
+          <legend className="text-sm font-medium text-gray-600">Payment Schedule</legend>
+          <div>
+            <span className="text-xs text-gray-500 block mb-2">Start</span>
+            <MonthInput
+              monthInput={monthInput}
+              setMonthInput={handleMonthInputChange}
+              startYM={startYM}
+              termMonths={termMonths}
             />
-            <span className="text-sm font-medium">Make this a recurring payment</span>
-          </label>
-          <button
-            className="rounded-xl bg-red-600 text-white px-3 py-2 text-xs sm:text-sm hover:bg-red-700 whitespace-nowrap transition-colors"
-            onClick={() => onRemoveExtra(extra.id)}
-          >
-            Remove
-          </button>
-        </div>
-        
-        {Boolean(extra.isRecurring) && (
-          <div className="space-y-4">
-            {/* Frequency Selection and Number of Payments */}
-            <div className="space-y-4">
+          </div>
+          <SegmentedControl
+            options={[
+              { value: 'one-time', label: 'One-time' },
+              { value: 'recurring', label: 'Recurring' },
+            ]}
+            value={extra.isRecurring ? 'recurring' : 'one-time'}
+            onChange={(value) => {
+              const isRecurring = value === 'recurring';
+              if (isRecurring) {
+                onUpdateExtra(extra.id, 'isRecurring', true);
+              } else {
+                onUpdateExtra(extra.id, {
+                  isRecurring: false,
+                  recurringQuantity: 1,
+                  recurringFrequency: 'monthly'
+                });
+              }
+            }}
+          />
+          {extra.isRecurring && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
               <div>
-                <span className="text-xs text-gray-500 block mb-2">Payment frequency</span>
-                <div className="flex gap-4">
-                  <label className="flex items-center gap-2">
+                <label className="text-xs text-gray-500 block mb-2">Payment frequency</label>
+                <div className="flex space-x-4">
+                  <label className="flex items-center space-x-2 text-sm">
                     <input
                       type="radio"
                       name={`frequency-${extra.id}`}
                       value="monthly"
-                      checked={(extra.recurringFrequency || 'monthly') === 'monthly'}
-                      onChange={(ev) => {
-                        onUpdateExtra(extra.id, 'recurringFrequency', ev.target.value as RecurringFrequency);
-                      }}
+                      checked={extra.recurringFrequency === 'monthly'}
+                      onChange={() => onUpdateExtra(extra.id, 'recurringFrequency', 'monthly')}
+                      className="h-4 w-4 text-black border-gray-300 focus:ring-black"
                     />
-                    <span className="text-sm">Monthly</span>
+                    <span>Monthly</span>
                   </label>
-                  <label className="flex items-center gap-2">
+                  <label className="flex items-center space-x-2 text-sm">
                     <input
                       type="radio"
                       name={`frequency-${extra.id}`}
                       value="annually"
                       checked={extra.recurringFrequency === 'annually'}
-                      onChange={(ev) => {
-                        onUpdateExtra(extra.id, 'recurringFrequency', ev.target.value as RecurringFrequency);
-                      }}
+                      onChange={() => onUpdateExtra(extra.id, 'recurringFrequency', 'annually')}
+                      className="h-4 w-4 text-black border-gray-300 focus:ring-black"
                     />
-                    <span className="text-sm">Annually</span>
+                    <span>Annually</span>
                   </label>
                 </div>
               </div>
-              
               <div>
-                <span className="text-xs text-gray-500 block mb-2">
-                  Number of payments
-                  {extra.recurringFrequency === 'annually' && (
-                    <span className="text-gray-400 ml-1">(years)</span>
-                  )}
-                </span>
+                <label htmlFor={`quantity-${extra.id}`} className="text-xs text-gray-500 block mb-2">Number of payments</label>
                 <input
-                  className="w-full rounded-xl border p-2"
+                  id={`quantity-${extra.id}`}
+                  className="w-full rounded-xl border p-2 text-sm sm:text-base"
                   type="tel"
                   inputMode="numeric"
                   pattern="[0-9]*"
                   min={1}
-                  max={extra.recurringFrequency === 'annually' ? Math.ceil(termMonths / 12) : termMonths}
                   step="1"
                   value={quantityField.value}
                   onChange={(e) => quantityField.onChange(e.target.value)}
@@ -221,8 +218,8 @@ const ExtraPaymentItem: React.FC<ExtraPaymentItemProps> = ({ extra, termMonths, 
                 />
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </fieldset>
       </div>
     </div>
   );
@@ -256,7 +253,7 @@ export const ExtraPayments: React.FC<ExtraPaymentsProps> = ({
         Add extra principal payments or loan forgiveness amounts by month number or year/month. Use the checkbox to designate as forgiveness (reduces balance but doesn't count as principal paid) or extra payment (counts as principal paid). You can make payments recurring with a quantity and/or end date. If multiple payments land on the same month, they aggregate.
       </p>
       <div className="space-y-4">
-        {extras.map((extra) => (
+        {extras.map((extra, index) => (
           <ExtraPaymentItem
             key={extra.id}
             extra={extra}
@@ -264,6 +261,7 @@ export const ExtraPayments: React.FC<ExtraPaymentsProps> = ({
             startYM={startYM}
             onUpdateExtra={onUpdateExtra}
             onRemoveExtra={onRemoveExtra}
+            paymentIndex={index + 1}
           />
         ))}
         <div>
