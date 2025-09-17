@@ -94,7 +94,7 @@ export const buildSchedule = ({
     if (principalPart < 0) principalPart = 0; // paranoia guard
 
     const plannedExtra = round2(extras[m] || 0);
-    const maxExtra = round2(bal); // Maximum extra payment is the entire remaining balance
+    const maxExtra = round2(bal + interest); // Maximum extra payment is the entire remaining balance + interest
     const extra = Math.max(0, Math.min(plannedExtra, maxExtra));
     
     const plannedForgiveness = round2(forgiveness[m] || 0);
@@ -149,14 +149,14 @@ export const buildSchedule = ({
     });
 
     // If we've reached the contractual maturity but tiny balance remains due to rounding,
-    // tack on one last payoff row. Only do this if the balance is significant enough
-    // to warrant an additional payment (not just rounding errors from extra payments).
+    // just zero out the balance to avoid adding extra months for small rounding errors
     if (m === termMonths && bal > MIN_BALANCE_THRESHOLD) {
-      // Check if this is likely a rounding error from extra payments
-      // If the balance is very small compared to a typical payment, consider it paid off
-      const isRoundingError = bal < (payment * 0.01); // Less than 1% of a payment
-      
-      if (!isRoundingError) {
+      // For very small balances at maturity, just zero them out
+      if (bal < 1.0) {
+        bal = 0;
+        break;
+      } else {
+        // For larger balances, add a payoff month
         const payoffInterest = round2(bal * r);
         const payoffTotal = round2(bal + payoffInterest);
         const payoffPrincipal = round2(payoffTotal - payoffInterest);
@@ -179,10 +179,6 @@ export const buildSchedule = ({
           cumulativePrincipal,
           cumulativeForgiveness,
         });
-        break;
-      } else {
-        // For rounding errors, just zero out the balance without adding an extra month
-        bal = 0;
         break;
       }
     }

@@ -23,26 +23,35 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
   interestRate,
 }) => {
   // Calculate lender's profit and annualized return percentage
+  // Lender's profit = Total Paid - Principal
+  // This represents the total amount the lender earns above the original loan amount
   const lenderProfit = result.totalPaid - principal;
   
+  // Calculate total extra payments (not forgiveness payments)
+  const totalExtraPayments = result.rows.reduce((sum, row) => sum + row.extra, 0);
+  
+  // Calculate total principal paid
+  const totalPrincipalPaid = result.rows.reduce((sum, row) => sum + row.principal, 0);
+  
   // Calculate annualized return for the lender
-  // Extra payments don't change the return rate, they just reduce the outstanding balance
-  // Forgiveness DOES change the return rate because the lender loses principal that is never recovered
+  // For standard loans, return equals the interest rate
+  // For modified loans, return is adjusted based on actual vs expected interest
   let annualizedReturn = 0;
   
   if (principal > 0) {
-    const hasForgiveness = result.totalForgiveness > 0;
+    // Calculate expected interest for a standard loan at this rate and term
+    const monthlyRate = interestRate / 100 / 12;
+    const termMonths = baseline.payoffMonth;
+    const monthlyPayment = (principal * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -termMonths));
+    const expectedInterest = (monthlyPayment * termMonths) - principal;
     
-    if (!hasForgiveness) {
-      // No forgiveness - return equals the interest rate
-      // Extra payments don't change the return rate, they just reduce the outstanding balance
-      annualizedReturn = interestRate;
+    if (expectedInterest > 0) {
+      // Return = Interest Rate * (Actual Interest / Expected Interest)
+      // This adjusts the return based on actual performance
+      annualizedReturn = interestRate * (result.totalInterest / expectedInterest);
     } else {
-      // With forgiveness - the return rate is reduced proportionally
-      // The lender earns the interest rate on the effective principal (principal - forgiveness)
-      // Return = Interest Rate * (1 - Forgiveness/Principal)
-      const forgivenessRatio = result.totalForgiveness / principal;
-      annualizedReturn = interestRate * (1 - forgivenessRatio);
+      // Fallback to interest rate if expected interest calculation fails
+      annualizedReturn = interestRate;
     }
   }
 
@@ -104,14 +113,25 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
           tooltip="Total amount of loan forgiveness received. This reduces the loan balance without requiring cash payment from the borrower."
         />
         <SummaryCard 
+          label="Total Extra Payments" 
+          value={fmtUSD(totalExtraPayments)} 
+          highlight={totalExtraPayments > 0} 
+          tooltip="Total amount of extra principal payments made beyond the scheduled monthly payments. This does not include forgiveness amounts."
+        />
+        <SummaryCard 
+          label="Total Principal Paid" 
+          value={fmtUSD(totalPrincipalPaid)} 
+          tooltip="Total amount of principal paid over the life of the loan, including both scheduled principal payments and extra principal payments."
+        />
+        <SummaryCard 
           label="Lender's Profit" 
           value={fmtUSD(lenderProfit)} 
-          tooltip="Lender's profit = Total Paid - Principal. This is the total amount the lender earns above the original loan amount."
+          tooltip="Lender's cash profit = Total Paid - Principal. This is the total amount the lender earns in cash payments above the original loan amount. Does not account for forgiveness amounts that reduce the total amount owed."
         />
         <SummaryCard 
           label="Lender's Return (Annualized)" 
           value={`${annualizedReturn.toFixed(2)}%`} 
-          tooltip="Annualized return rate for the lender. For standard loans and loans with extra payments, this equals the interest rate. For loans with forgiveness, this is the interest rate reduced proportionally by the forgiveness amount: Interest Rate × (1 - Forgiveness/Principal). This reflects that the lender earns interest on the effective principal (principal minus forgiveness)."
+          tooltip="Annualized return rate for the lender. For standard loans, this equals the interest rate. For modified loans (with extra payments or forgiveness), this is the interest rate adjusted by the ratio of actual interest earned to expected interest: Interest Rate × (Actual Interest / Expected Interest). This reflects the lender's actual return based on the loan's performance."
         />
       </div>
 
