@@ -1,7 +1,9 @@
 import { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { SavedConfiguration } from '../types';
+import { SavedConfiguration, LoanSummary } from '../types';
 import { fmtUSD } from '../utils/formatters';
+import { Tooltip } from './Tooltip';
+import { TOOLTIPS } from '../constants/tooltips';
 
 interface ComparisonModalProps {
   isOpen: boolean;
@@ -9,44 +11,41 @@ interface ComparisonModalProps {
   configurations: SavedConfiguration[];
 }
 
+type Metric = {
+  label: string;
+  key: keyof LoanSummary;
+  format?: 'usd' | 'percent';
+  lowerIsBetter?: boolean;
+  tooltip?: string;
+};
+
+
 export function ComparisonModal({ isOpen, onClose, configurations }: ComparisonModalProps) {
   if (!isOpen) {
     return null;
   }
 
-  const metrics = [
-    { label: 'Loan Amount', key: 'loanAmount', format: 'usd', comparison: 'lowerIsBetter' },
-    { label: 'Original P&I', key: 'originalPI', format: 'usd', comparison: 'lowerIsBetter' },
-    { label: 'Current P&I', key: 'currentPI', format: 'usd', comparison: 'lowerIsBetter' },
-    { label: 'Original PITI', key: 'originalPITI', format: 'usd', comparison: 'lowerIsBetter' },
-    { label: 'Current PITI', key: 'currentPITI', format: 'usd', comparison: 'lowerIsBetter' },
+  const metrics: readonly Metric[] = [
+    { label: 'Loan Amount', key: 'loanAmount', format: 'usd', lowerIsBetter: true, tooltip: TOOLTIPS.loanAmount },
+    { label: 'Original P&I', key: 'originalPI', format: 'usd', lowerIsBetter: true, tooltip: TOOLTIPS.originalPI },
+    { label: 'Current P&I', key: 'currentPI', format: 'usd', lowerIsBetter: true, tooltip: TOOLTIPS.currentPI },
+    { label: 'Original PITI', key: 'originalPITI', format: 'usd', lowerIsBetter: true, tooltip: TOOLTIPS.originalPITI },
+    { label: 'Current PITI', key: 'currentPITI', format: 'usd', lowerIsBetter: true, tooltip: TOOLTIPS.currentPITI },
     { label: 'Payoff Date', key: 'payoffDate' },
-    { label: 'Total Interest (Baseline)', key: 'totalInterestBaseline', format: 'usd', comparison: 'lowerIsBetter' },
-    { label: 'Total Interest (Current)', key: 'totalInterestCurrent', format: 'usd', comparison: 'lowerIsBetter' },
-    { label: 'Interest Saved', key: 'interestSaved', format: 'usd', comparison: 'higherIsBetter' },
-    { label: 'Months Saved', key: 'monthsSaved', comparison: 'higherIsBetter' },
-    { label: 'Total Paid', key: 'totalPaid', format: 'usd', comparison: 'lowerIsBetter' },
-    { label: 'Total Principal Paid', key: 'totalPrincipalPaid', format: 'usd' },
-    { label: 'Total Extra Payments', key: 'totalExtraPayments', format: 'usd' },
-    { label: 'Total Forgiveness', key: 'totalForgiveness', format: 'usd' },
-    { label: "Lender's Profit", key: 'lenderProfit', format: 'usd' },
-    { label: "Lender's ROI", key: 'lenderROI', format: 'percent', comparison: 'higherIsBetter' },
-  ] as const;
+    { label: 'Total Interest (Baseline)', key: 'totalInterestBaseline', format: 'usd', lowerIsBetter: true, tooltip: TOOLTIPS.totalInterestBaseline },
+    { label: 'Total Interest (Current)', key: 'totalInterestCurrent', format: 'usd', lowerIsBetter: true, tooltip: TOOLTIPS.totalInterestCurrent },
+    { label: 'Interest Saved', key: 'interestSaved', format: 'usd', lowerIsBetter: false, tooltip: TOOLTIPS.interestSaved },
+    { label: 'Months Saved', key: 'monthsSaved', lowerIsBetter: false, tooltip: TOOLTIPS.monthsSaved },
+    { label: 'Total Paid', key: 'totalPaid', format: 'usd', lowerIsBetter: true, tooltip: TOOLTIPS.totalPaid },
+    { label: 'Total Principal Paid', key: 'totalPrincipalPaid', format: 'usd', tooltip: TOOLTIPS.totalPrincipalPaid },
+    { label: 'Total Extra Payments', key: 'totalExtraPayments', format: 'usd', tooltip: TOOLTIPS.totalExtraPayments },
+    { label: 'Total Forgiveness', key: 'totalForgiveness', format: 'usd', tooltip: TOOLTIPS.totalForgiveness },
+    { label: "Lender's Profit", key: 'lenderProfit', format: 'usd', tooltip: TOOLTIPS.lenderProfit },
+    { label: "Lender's ROI", key: 'lenderROI', format: 'percent', lowerIsBetter: false, tooltip: TOOLTIPS.lenderROI },
+  ];
 
-  const getBestValue = (key: string, comparison?: 'higherIsBetter' | 'lowerIsBetter') => {
-    if (!comparison) return null;
-
-    const values = configurations
-      .map(c => c.summary?.[key as keyof typeof c.summary])
-      .filter(v => typeof v === 'number') as number[];
-    
-    if (values.length === 0) return null;
-
-    return comparison === 'higherIsBetter' ? Math.max(...values) : Math.min(...values);
-  };
-
-  const getHighlightStyle = (value: number, allValues: number[], comparison?: 'higherIsBetter' | 'lowerIsBetter'): React.CSSProperties => {
-    if (allValues.length < 2 || !comparison) return {};
+  const getHighlightStyle = (value: number, allValues: number[], lowerIsBetter?: boolean): React.CSSProperties => {
+    if (allValues.length < 2 || typeof lowerIsBetter === 'undefined') return {};
 
     const min = Math.min(...allValues);
     const max = Math.max(...allValues);
@@ -55,7 +54,7 @@ export function ComparisonModal({ isOpen, onClose, configurations }: ComparisonM
 
     // Normalize value to a 0-1 scale (0 = worst, 1 = best)
     let score = (value - min) / (max - min);
-    if (comparison === 'lowerIsBetter') {
+    if (lowerIsBetter) {
       score = 1 - score;
     }
 
@@ -118,22 +117,29 @@ export function ComparisonModal({ isOpen, onClose, configurations }: ComparisonM
                       </tr>
                     </thead>
                     <tbody>
-                      {metrics.map(({ label, key, format, comparison }) => {
-                        const bestValue = getBestValue(key, comparison);
+                      {metrics.map(({ label, key, format, lowerIsBetter, tooltip }) => {
                         const allValues = configurations
-                          .map(c => c.summary?.[key as keyof typeof c.summary])
+                          .map(c => c.summary?.[key])
                           .filter(v => typeof v === 'number') as number[];
 
                         return (
                           <tr key={key} className="bg-white border-b">
-                            <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap sticky left-0 bg-white">{label}</td>
+                            <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap sticky left-0 bg-white">
+                              {tooltip ? (
+                                <Tooltip content={tooltip}>
+                                  <span className="cursor-help border-b border-dotted border-gray-400">{label}</span>
+                                </Tooltip>
+                              ) : (
+                                label
+                              )}
+                            </td>
                             {configurations.map(c => {
-                              const value = c.summary?.[key as keyof typeof c.summary];
+                              const value = c.summary?.[key];
                               const isNumeric = typeof value === 'number';
                               
                               let style = {};
-                              if (isNumeric && comparison) {
-                                style = getHighlightStyle(value as number, allValues, comparison);
+                              if (isNumeric && typeof lowerIsBetter !== 'undefined') {
+                                style = getHighlightStyle(value as number, allValues, lowerIsBetter);
                               }
 
                               let displayValue = value;

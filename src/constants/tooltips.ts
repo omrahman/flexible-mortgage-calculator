@@ -1,0 +1,17 @@
+export const TOOLTIPS = {
+  loanAmount: 'Total amount of the loan, calculated as Home Price - Down Payment.',
+  originalPI: 'Original monthly Principal & Interest payment from the baseline loan schedule (no extra payments or forgiveness).',
+  currentPI: 'Current monthly Principal & Interest payment after any recasts due to extra payments or forgiveness.',
+  originalPITI: 'Original P&I + monthly Property Tax + monthly Insurance = total monthly housing payment.',
+  currentPITI: 'Current P&I + monthly Property Tax + monthly Insurance = total monthly housing payment after recasts.',
+  totalInterestBaseline: 'Total interest paid over the life of the baseline loan (no extra payments or forgiveness).',
+  totalInterestCurrent: 'Total interest paid over the life of the loan with extra payments and/or forgiveness applied.',
+  interestSaved: 'Interest saved = Baseline Total Interest - Current Plan Total Interest. Shows how much interest you save with extra payments or forgiveness.',
+  monthsSaved: 'Number of months earlier the loan is paid off compared to the baseline schedule. Calculated as Baseline Payoff Month - Current Plan Payoff Month.',
+  totalPaid: 'Total cash payments made by the borrower = all scheduled P&I payments + all extra principal payments. Does not include forgiveness amounts.',
+  totalPrincipalPaid: 'Total amount of principal paid over the life of the loan, including both scheduled principal payments and extra principal payments.',
+  totalExtraPayments: 'Total amount of extra principal payments made beyond the scheduled monthly payments. This does not include forgiveness amounts.',
+  totalForgiveness: 'Total amount of loan forgiveness received. This reduces the loan balance without requiring cash payment from the borrower.',
+  lenderProfit: "Lender's net profit = Total Interest Paid - Total Forgiveness. This represents the lender's total earnings after accounting for any forgiven principal, which is a direct loss.",
+  lenderROI: "Lender's total Return on Investment, calculated as (Lender Profit / Principal). This shows the total net profit as a percentage of the original loan amount over the entire loan term.",
+};

@@ -3,6 +3,7 @@ import { SummaryCard } from './SummaryCard';
 import { fmtUSD } from '../utils/formatters';
 import { createDebugData, logDebugData } from '../utils/debug';
 import type { ScheduleResult, CachedInputs, ScheduleParams } from '../types';
+import { TOOLTIPS } from '../constants/tooltips';
 
 interface SummarySectionProps {
   baseline: ScheduleResult;
@@ -141,87 +142,87 @@ export const SummarySection: React.FC<SummarySectionProps> = ({
         <SummaryCard
           label="Loan Amount"
           value={fmtUSD(principal)}
-          tooltip="Total amount of the loan, calculated as Home Price - Down Payment."
+          tooltip={TOOLTIPS.loanAmount}
         />
         <SummaryCard 
           label="Original P&I" 
           value={fmtUSD(baseline.segments[0]?.payment || 0)} 
-          tooltip="Original monthly Principal & Interest payment from the baseline loan schedule (no extra payments or forgiveness)."
+          tooltip={TOOLTIPS.originalPI}
         />
         <SummaryCard 
           label="Current P&I" 
           value={fmtUSD(result.segments[result.segments.length - 1]?.payment || 0)} 
-          tooltip="Current monthly Principal & Interest payment after any recasts due to extra payments or forgiveness."
+          tooltip={TOOLTIPS.currentPI}
         />
         <SummaryCard 
           label="Original PITI" 
           value={fmtUSD((baseline.segments[0]?.payment || 0) + monthlyPITI.total)} 
-          tooltip="Original P&I + monthly Property Tax + monthly Insurance = total monthly housing payment."
+          tooltip={TOOLTIPS.originalPITI}
         />
         <SummaryCard 
           label="Current PITI" 
           value={fmtUSD((result.segments[result.segments.length - 1]?.payment || 0) + monthlyPITI.total)} 
-          tooltip="Current P&I + monthly Property Tax + monthly Insurance = total monthly housing payment after recasts."
+          tooltip={TOOLTIPS.currentPITI}
         />
 
         {/* Savings */}
         <SummaryCard 
           label="Total Interest (baseline)" 
           value={fmtUSD(baseline.totalInterest)} 
-          tooltip="Total interest paid over the life of the baseline loan (no extra payments or forgiveness)."
+          tooltip={TOOLTIPS.totalInterestBaseline}
         />
         <SummaryCard 
           label="Total Interest (this plan)" 
           value={fmtUSD(result.totalInterest)} 
-          tooltip="Total interest paid over the life of the loan with extra payments and/or forgiveness applied."
+          tooltip={TOOLTIPS.totalInterestCurrent}
         />
         <SummaryCard 
           label="Interest Saved" 
           value={fmtUSD(interestSaved)} 
           highlight={interestSaved > 0} 
-          tooltip="Interest saved = Baseline Total Interest - Current Plan Total Interest. Shows how much interest you save with extra payments or forgiveness."
+          tooltip={TOOLTIPS.interestSaved}
         />
         <SummaryCard 
           label="Months Saved" 
           value={`${monthsSaved}`} 
           highlight={monthsSaved > 0} 
-          tooltip="Number of months earlier the loan is paid off compared to the baseline schedule. Calculated as Baseline Payoff Month - Current Plan Payoff Month."
+          tooltip={TOOLTIPS.monthsSaved}
         />
 
         {/* Payment Totals */}
         <SummaryCard 
           label="Total Paid" 
           value={fmtUSD(result.totalPaid)} 
-          tooltip="Total cash payments made by the borrower = all scheduled P&I payments + all extra principal payments. Does not include forgiveness amounts."
+          tooltip={TOOLTIPS.totalPaid}
         />
         <SummaryCard 
           label="Total Principal Paid" 
           value={fmtUSD(totalPrincipalPaid)} 
-          tooltip="Total amount of principal paid over the life of the loan, including both scheduled principal payments and extra principal payments."
+          tooltip={TOOLTIPS.totalPrincipalPaid}
         />
         <SummaryCard 
           label="Total Extra Payments" 
           value={fmtUSD(totalExtraPayments)} 
           highlight={totalExtraPayments > 0} 
-          tooltip="Total amount of extra principal payments made beyond the scheduled monthly payments. This does not include forgiveness amounts."
+          tooltip={TOOLTIPS.totalExtraPayments}
         />
         <SummaryCard 
           label="Total Forgiveness" 
           value={fmtUSD(result.totalForgiveness)} 
           highlight={result.totalForgiveness > 0} 
-          tooltip="Total amount of loan forgiveness received. This reduces the loan balance without requiring cash payment from the borrower."
+          tooltip={TOOLTIPS.totalForgiveness}
         />
 
         {/* Lender Metrics */}
         <SummaryCard 
           label="Lender's Profit" 
           value={fmtUSD(lenderProfit)} 
-          tooltip="Lender's net profit = Total Interest Paid - Total Forgiveness. This represents the lender's total earnings after accounting for any forgiven principal, which is a direct loss."
+          tooltip={TOOLTIPS.lenderProfit}
         />
         <SummaryCard 
           label="Lender's ROI (Total)" 
           value={`${lendersReturnOnInvestment.toFixed(2)}%`} 
-          tooltip="Lender's total Return on Investment, calculated as (Lender Profit / Principal). This shows the total net profit as a percentage of the original loan amount over the entire loan term."
+          tooltip={TOOLTIPS.lenderROI}
         />
       </div>
 
