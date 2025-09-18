@@ -10,8 +10,8 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: 'Flexible Mortgage Calculator',
-        short_name: 'Mortgage Calc',
+        name: 'Mortgage Modeler',
+        short_name: 'Mortgage Modeler',
         description: 'A flexible and powerful mortgage calculator to help you plan your home loan, amortization schedule, and extra payments.',
         theme_color: '#3b82f6',
         icons: [

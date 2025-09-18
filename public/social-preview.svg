@@ -7,6 +7,6 @@
   <rect class="bg" width="1200" height="630" />
   <g transform="translate(600 315)">
     <text text-anchor="middle" y="-40" class="emoji">🏠</text>
-    <text text-anchor="middle" y="50" class="title">Flexible Mortgage Calculator</text>
+    <text text-anchor="middle" y="50" class="title">Mortgage Modeler</text>
   </g>
 </svg>

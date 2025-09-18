@@ -1,4 +1,4 @@
-# Flexible Mortgage Calculator
+# Mortgage Modeler
 
 A powerful, open-source mortgage calculator that allows for flexible scenario planning, including extra payments, recasting, and shareable configurations.
 
