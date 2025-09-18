@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:analyze": "cross-env ANALYZE=true vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint . --ext ts,tsx --fix",
     "preview": "vite preview",
@@ -39,6 +40,7 @@
     "@typescript-eslint/parser": "^8.44.0",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.16",
+    "cross-env": "^10.0.0",
     "eslint": "^9.35.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.7",
@@ -48,6 +50,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "postcss": "^8.4.39",
     "prettier": "^3.1.1",
+    "rollup-plugin-visualizer": "^6.0.3",
     "tailwindcss": "^3.4.4",
     "ts-jest": "^29.1.5",
     "typescript": "^5.2.2",
