@@ -300,114 +300,124 @@ export default function MortgageCalculator() {
   ];
 
   return (
-    <div className="min-h-screen w-full bg-gray-50 p-2 sm:p-4 lg:p-6">
-      <div className="mx-auto max-w-8xl">
-        {/* Mobile View */}
-        <div className="lg:hidden">
-          <Tabs tabs={tabs} />
-        </div>
-        
-        {/* Desktop View */}
-        <div className="hidden lg:grid grid-cols-1 lg:grid-cols-7 gap-3 sm:gap-4 lg:gap-6">
-          {/* Inputs */}
-          <div className="lg:col-span-2 space-y-3 sm:space-y-4 lg:space-y-6">
-            <Section title="Loan Inputs">
-              <LoanInputs
-                homePrice={homePrice}
-                setHomePrice={setHomePrice}
-                downPayment={downPayment}
-                setDownPayment={setDownPayment}
-                rate={rate}
-                setRate={setRate}
-                termYears={termYears}
-                setTermYears={setTermYears}
-                startYM={startYM}
-                setStartYM={setStartYM}
-                propertyTaxAnnual={propertyTaxAnnual}
-                setPropertyTaxAnnual={setPropertyTaxAnnual}
-                insuranceAnnual={insuranceAnnual}
-                setInsuranceAnnual={setInsuranceAnnual}
-                loanAmount={principal}
-                onReset={clearAllInputs}
-              />
-            </Section>
-
-            {result.rows.length > 0 && (
-              <Section title="Extra Payments">
-                <ExtraPayments
-                  extras={extras}
-                  termMonths={termMonths}
+    <>
+      <div className="min-h-screen w-full bg-gray-50 p-2 sm:p-4 lg:p-6">
+        <div className="mx-auto max-w-8xl">
+          {/* Mobile View */}
+          <div className="lg:hidden">
+            <Tabs tabs={tabs} />
+          </div>
+          
+          {/* Desktop View */}
+          <div className="hidden lg:grid grid-cols-1 lg:grid-cols-7 gap-3 sm:gap-4 lg:gap-6">
+            {/* Inputs */}
+            <div className="lg:col-span-2 space-y-3 sm:space-y-4 lg:space-y-6">
+              <Section title="Loan Inputs">
+                <LoanInputs
+                  homePrice={homePrice}
+                  setHomePrice={setHomePrice}
+                  downPayment={downPayment}
+                  setDownPayment={setDownPayment}
+                  rate={rate}
+                  setRate={setRate}
+                  termYears={termYears}
+                  setTermYears={setTermYears}
                   startYM={startYM}
-                  onAddExtra={handleAddExtra}
-                  onRemoveExtra={handleRemoveExtra}
-                  onUpdateExtra={handleUpdateExtra}
-                  autoRecast={autoRecast}
-                  setAutoRecast={setAutoRecast}
-                  recastMonthsText={recastMonthsText ?? ''}
-                  setRecastMonthsText={setRecastMonthsText}
+                  setStartYM={setStartYM}
+                  propertyTaxAnnual={propertyTaxAnnual}
+                  setPropertyTaxAnnual={setPropertyTaxAnnual}
+                  insuranceAnnual={insuranceAnnual}
+                  setInsuranceAnnual={setInsuranceAnnual}
+                  loanAmount={principal}
+                  onReset={clearAllInputs}
                 />
               </Section>
-            )}
 
-            <Section title="Saved Scenarios">
-              <SavedConfigurations
-                onLoadConfiguration={handleLoadConfiguration}
-                onClearLoadedConfiguration={clearLoadedConfiguration}
-                loadedConfigurationId={loadedConfigurationId}
-                currentInputs={currentInputs}
-                hasUnsavedChanges={hasUnsavedChanges}
-                onSaveChanges={handleSaveChanges}
-                loanSummary={loanSummary}
-              />
-            </Section>
-          </div>
+              {result.rows.length > 0 && (
+                <Section title="Extra Payments">
+                  <ExtraPayments
+                    extras={extras}
+                    termMonths={termMonths}
+                    startYM={startYM}
+                    onAddExtra={handleAddExtra}
+                    onRemoveExtra={handleRemoveExtra}
+                    onUpdateExtra={handleUpdateExtra}
+                    autoRecast={autoRecast}
+                    setAutoRecast={setAutoRecast}
+                    recastMonthsText={recastMonthsText ?? ''}
+                    setRecastMonthsText={setRecastMonthsText}
+                  />
+                </Section>
+              )}
 
-          {/* Results */}
-          <div className="lg:col-span-3 space-y-3 sm:space-y-4 lg:space-y-6">
-            <Section title="Summary">
-              <SummarySection
-                baseline={baseline}
-                result={result}
-                interestSaved={interestSaved}
-                monthsSaved={monthsSaved}
-                monthlyPITI={monthlyPITI}
-                principal={principal}
-                cachedInputs={cachedInputs}
-                termMonths={termMonths}
-                scheduleParams={params}
-              />
-            </Section>
-
-            <Section title="Balance Chart">
-              <Suspense fallback={<div className="rounded-2xl bg-white p-5 shadow animate-pulse"><div className="h-64 bg-gray-200 rounded"></div></div>}>
-                <BalanceChart chartData={result.chart} />
-              </Suspense>
-            </Section>
-
-            <Section title="Amortization Table">
-              <Suspense fallback={<div className="rounded-2xl bg-white p-5 shadow animate-pulse"><div className="h-64 bg-gray-200 rounded"></div></div>}>
-                <AmortizationTable
-                  rows={result.rows}
-                  showAll={showAll}
-                  onToggleShowAll={() => setShowAll(!showAll)}
-                  onDownloadCSV={handleDownloadCSV}
+              <Section title="Saved Scenarios">
+                <SavedConfigurations
+                  onLoadConfiguration={handleLoadConfiguration}
+                  onClearLoadedConfiguration={clearLoadedConfiguration}
+                  loadedConfigurationId={loadedConfigurationId}
+                  currentInputs={currentInputs}
+                  hasUnsavedChanges={hasUnsavedChanges}
+                  onSaveChanges={handleSaveChanges}
+                  loanSummary={loanSummary}
                 />
-              </Suspense>
-            </Section>
-          </div>
+              </Section>
+            </div>
 
-          {/* Payment Segments */}
-          <div className="lg:col-span-2 min-w-0">
-            <Section title="Payment Segments">
-              <PaymentSegments
-                baseline={baseline}
-                result={result}
-                monthlyPITI={monthlyPITI}
-              />
-            </Section>
+            {/* Results */}
+            <div className="lg:col-span-3 space-y-3 sm:space-y-4 lg:space-y-6">
+              <Section title="Summary">
+                <SummarySection
+                  baseline={baseline}
+                  result={result}
+                  interestSaved={interestSaved}
+                  monthsSaved={monthsSaved}
+                  monthlyPITI={monthlyPITI}
+                  principal={principal}
+                  cachedInputs={cachedInputs}
+                  termMonths={termMonths}
+                  scheduleParams={params}
+                />
+              </Section>
+
+              <Section title="Balance Chart">
+                <Suspense fallback={<div className="rounded-2xl bg-white p-5 shadow animate-pulse"><div className="h-64 bg-gray-200 rounded"></div></div>}>
+                  <BalanceChart chartData={result.chart} />
+                </Suspense>
+              </Section>
+
+              <Section title="Amortization Table">
+                <Suspense fallback={<div className="rounded-2xl bg-white p-5 shadow animate-pulse"><div className="h-64 bg-gray-200 rounded"></div></div>}>
+                  <AmortizationTable
+                    rows={result.rows}
+                    showAll={showAll}
+                    onToggleShowAll={() => setShowAll(!showAll)}
+                    onDownloadCSV={handleDownloadCSV}
+                  />
+                </Suspense>
+              </Section>
+            </div>
+
+            {/* Payment Segments */}
+            <div className="lg:col-span-2 min-w-0">
+              <Section title="Payment Segments">
+                <PaymentSegments
+                  baseline={baseline}
+                  result={result}
+                  monthlyPITI={monthlyPITI}
+                />
+              </Section>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+      <footer className="text-center py-4 bg-gray-50 px-4">
+        <p className="text-sm text-gray-500">&copy; 2025 Omar Rahman. All Rights Reserved.</p>
+        <p className="text-xs text-gray-400 mt-1">
+          This tool is for informational purposes only and does not constitute financial advice. 
+          The accuracy of the results is not guaranteed, and no liability is assumed for errors. 
+          Please consult with a qualified professional before making any financial decisions.
+        </p>
+      </footer>
+    </>
   );
 }

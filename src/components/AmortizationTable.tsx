@@ -86,10 +86,6 @@ export const AmortizationTable: React.FC<AmortizationTableProps> = ({
           </tbody>
         </table>
       </div>
-      
-      <p className="text-xs text-gray-500 mt-3">
-        Notes: This sim assumes monthly compounding, level-payment mortgage. Recast keeps the original maturity date, recalculating P&I on the remaining balance. Lenders may charge a fee and have rules; this is a planning tool, not advice.
-      </p>
     </div>
   );
 };
